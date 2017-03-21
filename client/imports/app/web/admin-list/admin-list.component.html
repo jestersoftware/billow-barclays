@@ -1,0 +1,46 @@
+<div *ngIf="things && things.length > 0" class="thing-list alignCenter">
+
+  <md-card (click)="click({ event: $event })">
+
+    <md-list>
+
+      <h3 md-subheader>Items</h3>
+
+      <md-list-item *ngFor="let thing of things; let i=index; trackBy: getKey">
+        <md-icon md-list-avatar>folder</md-icon>
+        <!--<h4 md-line>{{thing.type}}</h4>-->
+        <!--<p md-line> -->
+        <!--{{thing.title}} -->
+
+        <md-input-container>
+          <input type="text" md-input [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" />
+        </md-input-container>
+
+        <div *ngFor="let prop of props(thing); trackBy: getKey">
+          <md-input-container *ngIf="prop.type!=='image'">
+            <input type="text" md-input [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" style="width: 100px;" />
+          </md-input-container>
+        </div>
+
+        <!--</p>-->
+        <app-admin-action [auth]="auth" [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" [enableCreate]="'none'"></app-admin-action>
+      </md-list-item>
+
+      <!--<md-divider></md-divider>-->
+
+      <!--<h3 md-subheader>Notes</h3>
+      <md-list-item *ngFor="let note of notes">
+        <md-icon md-list-avatar>note</md-icon>
+        <h4 md-line>{{note.name}}</h4>
+        <p md-line> {{note.updated | date}} </p>
+      </md-list-item>-->
+
+    </md-list>
+
+    <div style="text-align: center;">
+      <app-admin-action [auth]="auth" [thing]="parent" (onCreate)="create($event)" [enableCreate]="'only'"></app-admin-action>
+    </div>
+
+  </md-card>
+
+</div>

@@ -1,0 +1,37 @@
+<div *ngIf="enableCreate==='yes'">
+  <button md-icon-button *ngIf="!thing.view || !thing.view.showContent" (click)="toggle($event)">
+    <md-icon>expand_more</md-icon>
+  </button>
+
+  <div class="alignCenter">
+    <button md-icon-button *ngIf="thing.view && thing.view.showContent" (click)="toggle($event)">
+      <md-icon>expand_less</md-icon>
+    </button>
+  </div>
+</div>
+
+<button *ngIf="!isEditing && enableCreate!=='none'" md-icon-button color='primary' [disabled]="isEditing" [md-menu-trigger-for]="menu">
+  <md-icon>add_circle</md-icon>
+</button>
+
+
+<button *ngIf="isEditing" md-raised-button md-icon-button color='primary' [style.position]="position2()" [style.right]="right2()" [disabled]="!isEditing" (click)="cancel($event)">
+  <md-icon>cancel</md-icon>
+</button>
+
+<!--<span *ngIf="(thing.view && thing.view.showContent) && enableCreate!=='only'" [style.position]="position()" [style.right]="right()">-->
+<span *ngIf="enableEdit!=='none' && enableCreate!=='only'" [style.position]="position()" [style.right]="right()">
+  <button *ngIf="!isEditing" md-icon-button color='primary' [disabled]="isEditing" (click)="edit($event)">
+    <md-icon>edit</md-icon>
+  </button>
+
+  <button *ngIf="isEditing" md-raised-button md-icon-button color='primary' [disabled]="!isEditing" (click)="save($event)">
+    <md-icon>save</md-icon> 
+  </button>
+</span>
+
+<md-menu #menu="mdMenu">
+  <button md-menu-item *ngFor="let archetype of archetypes(thing)" (click)="create($event)">
+    {{archetype.display}}
+  </button>
+</md-menu>

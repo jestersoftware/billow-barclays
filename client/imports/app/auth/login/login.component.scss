@@ -1,0 +1,45 @@
+.form-container button {
+  padding: 1.2em;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+#lock {
+  width: 80px;
+  margin: 1.5em auto 4em auto;
+  display: block;
+}
+
+#fb {
+  background: url('/assets/images/facebook.svg') no-repeat 25px;
+  background-size: 25px;
+}
+
+#google {
+  background: url('/assets/images/google.svg') no-repeat 25px;
+  background-size: 25px;
+}
+
+#email {
+  background: url('/assets/images/email.svg') no-repeat 25px;
+  background-size: 25px;
+}
+
+// @media (max-width: 600px) {
+//   #page {
+//     padding: 1em;
+//   }
+//   #toolbar {
+//     width: 90%;
+//     margin-left: -45%;
+//   }
+//   #fb {
+//     background: #3B5998;
+//   }
+//   #google {
+//     background: #fff;
+//   }
+//   #email {
+//     background: #ECECEC;
+//   }
+// }

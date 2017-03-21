@@ -1,0 +1,101 @@
+body {
+     overflow-y: scroll;
+}
+
+// .md-tab-label {
+//     font-family: 'Special Elite';
+// }
+md-toolbar {
+    // font-family: 'Special Elite';
+    background-color: transparent;
+}
+
+[md-tab-link],
+md-toolbar .title {
+    color: white;
+    opacity: 1;
+}
+
+md-toolbar .title {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+:host /deep/ md-ink-bar {
+    background-color: white;
+}
+
+md-toolbar-row {
+    height: auto;
+}
+
+[md-tab-nav-bar] {
+    border-bottom: 0;
+}
+
+.scrollable {
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  // background-image: url(/assets/images/background/carbon_fibre.png);
+//   background-color: #dedede;
+//   background-repeat: repeat;
+}
+
+.background {
+    padding-top: 100px;
+    padding-bottom: 100px;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.tab-overlay {
+    padding: 50px;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.section {
+    background-color: white;
+}
+
+.container {
+    max-width: 1250px;
+    margin: 0 auto;
+}
+
+.content {
+    padding: 50px 50px;
+}
+
+.fixed {
+    position: fixed !important;
+}
+
+.transparent {
+    background-color: transparent;
+}
+
+.container .header {
+    height: 200px;
+    color: white;
+    text-align: center;
+    padding-top: 100px;
+    padding-bottom: 100px;
+    // background-color: rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 5px;
+}
+
+.page-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 110;
+    // transition: color 0.3s cubic-bezier(0.86, 0, 0.07, 1), background-color 0.3s cubic-bezier(0.86, 0, 0.07, 1);
+}
+
+.logo {
+    margin-right: 10px;
+}

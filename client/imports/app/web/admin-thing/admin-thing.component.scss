@@ -1,0 +1,224 @@
+:host { 
+  // white-space: nowrap; 
+  display: inline-flex;
+  // width: auto;
+}  
+
+// :host > * { 
+//   white-space: initial; 
+// }  
+
+md-card {
+  // min-width: 250px;
+  display: inline-block;
+  margin-left: 25px;
+  margin-right: 25px;
+  margin-bottom: 40px;
+  margin-top: 25px;
+  // padding: 24px;
+}
+
+md-card-actions {
+  text-align: center;
+}
+
+md-card-footer {
+  margin-top: 20px;
+  text-align: center;
+  background-color: transparent;
+  bottom: -40px;
+}
+
+/*md-card-footer .add {
+  position: relative;
+  top: 20px;
+}*/
+
+md-card .connector {
+  text-align: center;
+  height: 10px;
+}
+
+md-card .above {
+  position: relative; 
+  top: -50px;
+}
+
+md-card.vertical .above {
+  top: -32px;
+}
+
+md-card .right {
+  position: absolute;
+  right: 0;
+}
+
+md-card.vertical .right {
+  right: -10px;
+}
+
+md-card .top {
+  position: absolute;
+  top: 0;
+}
+
+md-card.vertical .top {
+  top: -12px;
+}
+
+// md-card .file .background {
+//   // margin-top: 10px;
+//   background-size: contain;
+//   background-repeat: no-repeat;
+//   width: 100%;
+// }
+
+md-card .file .preview {
+  // margin-top: 10px;
+  max-width: 256px;
+  max-height: 256px;
+}
+
+md-card.reference {
+  border: 2px dashed black;
+}
+
+/*md-card-footer .below {
+  position: relative;
+  top: 32px;
+}*/
+
+md-card-footer {
+  margin-top: 2px;
+}
+
+// TODO ??? FIXES TO BASE MATERIAL LIBRARY BECAUSE IT'S BETA
+md-select {
+  padding-top: 12px;
+}
+
+.md-select-trigger {
+  margin-bottom: 8px;
+  height: 28px;
+}
+
+.md-select-placeholder.md-floating-placeholder {
+  top: -20px;
+}
+// TODO END
+
+md-card.vertical {
+  padding: 6px;
+  border-radius: 50px;
+  // min-width: initial;
+}
+
+md-card.vertical md-card-header {
+  flex-direction: column;
+  align-items: center;
+  height: auto;
+  margin-bottom: 0;
+} 
+
+md-card.vertical .md-input-element {
+  width: 100px;
+}
+
+md-card textarea.md-input-element[disabled] {
+  overflow: hidden;
+}
+
+md-card-actions, md-card-content, md-card-subtitle, md-card-title {
+  // margin-bottom: 8px;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.thing {
+  display: inline-block; 
+  vertical-align: top; 
+  text-align: center;
+  margin: -1px;
+  flex-shrink: 0;
+  // width: auto;
+}
+
+.thing > * {
+  text-align: initial;
+}
+
+.thing .thing {
+  border-top: 3px double orangered; 
+}
+
+.thing .thing:first-child {
+  border-top-left-radius: 25px;
+}
+
+.thing .thing:last-child {
+  border-top-right-radius: 25px;
+}
+
+.thing.root {
+  // display: table-cell;
+  padding-top: 64px;
+  padding-left: 50px;
+  padding-right: 50px;
+  padding-bottom: 250px;
+}
+
+/*.root.thing > * > * > .thing {
+  margin-left: 20px;
+  margin-right: 20px;
+}*/
+
+/*input[disabled] {
+  background-color: transparent;
+  border: 2px solid transparent;
+}*/
+
+// .header-image {
+//   background-image: url('/assets/images/lock.svg');
+//   background-size: 100% 100%;
+//   min-width: 40px;
+// }
+
+[md-card-avatar] {
+  text-align: center;
+  width: auto;
+  height: auto;
+}
+
+[md-card-avatar] .material-icons {
+  transform: scale(1.5) translateY(5px);
+}
+
+
+.inputfile {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+// .inputfile + label {
+//     // font-size: 1.25em;
+//     // font-weight: 700;
+//     // color: white;
+//     // background-color: black;
+//     font-decoration: underline;
+//     display: inline-block;
+//     cursor: pointer; /* "hand" cursor */
+// }
+
+// .inputfile:focus + label,
+// .inputfile + label:hover {
+//     background-color: red;
+// }
+
+// .inputfile:focus + label {
+// 	outline: 1px dotted #000;
+// 	outline: -webkit-focus-ring-color auto 5px;
+// }

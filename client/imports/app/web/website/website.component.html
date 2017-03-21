@@ -1,0 +1,89 @@
+<div class="page-header fixed transparent">
+  <div class="container">
+    <md-toolbar>
+
+      <!--<div class="container">-->
+      <!--<md-toolbar-row>-->
+
+      <img *ngIf="thing.logo && thing.logo.path" [src]="thing.logo.path" class="logo" />
+
+      <h3 class="title">
+        {{thing.title}}
+      </h3>
+
+      <!-- This fills the remaining space of the current row -->
+      <span class="fill-remaining-space"></span>
+
+      <nav md-tab-nav-bar>
+        <a md-tab-link *ngFor="let thing of things; let i=index; trackBy: getKey" [routerLink]="getLink(thing)" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+          {{thing.title}}
+        </a>
+      </nav>
+
+      <!--<router-outlet></router-outlet>-->
+
+      <span class="fill-remaining-space"></span>
+
+      <span>
+        <a md-button color="warn" href="/login">
+          Login
+        </a>
+      </span>
+
+      <!--</md-toolbar-row>-->
+
+      <!--</div>-->
+
+    </md-toolbar>
+  </div>
+</div>
+
+<div class="scrollable">
+  <!--class="alignCenter"-->
+
+  <div style="background-color: rgba(0,0,0,1);">
+
+    <div class="background" [ngStyle]="{'background-image': 'url(' + (currentThing.background && currentThing.background.path ? currentThing.background.path : (thing.background ? thing.background.path : '')) + ')'}">
+
+      <div class="container">
+
+        <div class="header content">
+          <h1>
+            {{currentThing.title}}
+          </h1>
+          <h3>
+            {{currentThing.description}}
+          </h3>
+        </div>
+
+      </div>
+
+      <!--<div class="tab-overlay">
+
+      <md-tab-group>
+
+        <md-tab *ngFor="let thing of things; let i=index; trackBy: getKey" [label]="thing.title">
+
+          <h1>{{thing.title}}</h1>
+
+          <p>{{thing.description}}</p>
+
+          <app-website-section [parent]="thing"></app-website-section>
+
+        </md-tab>
+
+      </md-tab-group>
+
+    </div>-->
+
+    </div>
+
+    <div class="section">
+      <div class="container content">
+        <app-website-section *ngIf="currentThing && currentThing._id" [parent]="currentThing"></app-website-section>
+      </div>
+    </div>
+
+  </div>
+
+</div>

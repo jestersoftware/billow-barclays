@@ -1,0 +1,108 @@
+<div *ngFor='let thing of things; let i=index; trackBy: getKey' class="thing" [class.root]="!this.parent._id">  <!--[style.width]="maxWidth"-->
+
+  <md-card [class.vertical]="!thing.view || !thing.view.showContent" [class.reference]="thing.parent!==parent._id" (click)="click({ event: $event, thing: thing })">
+
+    <div class="connector">
+      <md-icon color="warn" class="above">more_vert</md-icon>
+    </div>
+
+    <md-card-header>
+
+      <!--<div md-card-avatar class="header-image"></div>-->
+      <div md-card-avatar><md-icon>{{archetype(thing).icon}}</md-icon></div>
+
+      <button *ngIf="thing.type==='Web Site'" md-icon-button color="warn" class="top right" (click)="open(thing)" title="Open in new window">
+        <md-icon>call_made</md-icon>
+      </button>
+
+      <md-card-title>
+        <md-input-container style="padding-top: 2px; padding-bottom: 2px;">
+          <input md-input type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" title="Id: {{thing._id}}" />
+        </md-input-container>
+      </md-card-title>
+
+      <!--
+      <md-card-subtitle>
+        {{thing._id}}
+      </md-card-subtitle>
+      -->
+
+    </md-card-header>
+
+    <md-card-content *ngIf="thing.view && thing.view.showContent">
+
+      <div>
+        <md-input-container class="full-width">
+          <textarea md-input type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.description" placeholder="Description"></textarea>
+        </md-input-container>
+      </div>
+
+      <md-select name="type" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.type" placeholder="Type" (ngModelChange)="typeChanged(thing)">
+        <md-option *ngFor="let archetype of archetypes(parent)" [value]="archetype.key">
+          {{archetype.display}}
+        </md-option>
+      </md-select>
+
+      <div *ngFor="let prop of props(thing); trackBy: getKey">
+        <md-input-container *ngIf="prop.type!=='image'">
+          <input type="text" md-input [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
+        </md-input-container>
+        <div *ngIf="prop.type==='image'" class="file">
+          <md-input-container>
+            <input type="text" md-input [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
+          </md-input-container>
+          <span>
+            <input #inputFile type="file" ng2FileSelect class="inputfile" [disabled]="!thing.session || thing.session.disabled" [uploader]="uploader" accept="image/*" (change)="onFile($event, thing, prop)" />
+            <button md-icon-button (click)="openFileDialog($event, inputFile)" [disabled]="!thing.session || thing.session.disabled">
+              <md-icon>menu</md-icon>
+            </button>
+          </span>
+          <!--<div *ngIf="thing[prop.key] && thing[prop.key][prop.preview]" class="background" [ngStyle]="{'background-image': 'url(' + thing[prop.key][prop.preview] + ')', 'height': '150px' }"></div>-->
+          <div>
+            <img *ngIf="thing[prop.key] && thing[prop.key][prop.preview]" class="preview" [src]="thing[prop.key][prop.preview]"></img>
+          </div>
+        </div>
+      </div>
+
+    </md-card-content>
+
+    <md-card-actions>
+
+      <app-admin-action [auth]="auth" [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" (onCreate)="create($event)" (onToggle)="toggleContent($event)" [enableEdit]="thing.view && thing.view.showContent ? 'yes' : 'none'"></app-admin-action>
+
+    </md-card-actions>
+
+    <md-card-footer>
+
+      <!--<div class="alignCenter">
+        <button md-icon-button *ngIf="thing.view && thing.view.showContent" (click)="toggleContent(thing)">
+          <md-icon>expand_less</md-icon>
+        </button>
+      </div>-->
+
+      <!--<input type="text" *ngIf="auth" placeholder="Add here..." (keyup.enter)="action($event, thing)" />-->
+
+      <span style="position: absolute; bottom: 10px; left: -160px; width: 200px; text-align: right;">
+        {{thing.childrenLength}}
+      </span>
+
+      <!--*ngIf="!thing.view || thing.view.showChildren || thing.hasChildren"-->
+      <button md-icon-button color='warn' class="below" (click)="toggleChildren({ event: $event, thing: thing, force: false })">
+        <md-icon *ngIf="!thing.view || !thing.view.showChildren">add_circle_outline</md-icon>
+        <md-icon *ngIf="thing.view && thing.view.showChildren">remove_circle_outline</md-icon>
+      </button>
+
+      <button *ngIf="thing.view && thing.view.showChildren" md-icon-button color='warn' class="below right" (click)="toggleFormat({ event: $event, thing: thing })">
+        <md-icon>menu</md-icon>
+      </button>
+
+    </md-card-footer>
+
+  </md-card>
+
+  <div class="alignCenter" *ngIf="thing.view && thing.view.showChildren && thing.parent===parent._id">
+    <app-admin-thing *ngIf="!thing.view || !thing.view.format" [parent]="thing" [auth]="auth" (onResize)="doResize($event)"></app-admin-thing>
+    <app-admin-list *ngIf="thing.view && thing.view.format" [parent]="thing" [auth]="auth" (onResize)="doResize($event)"></app-admin-list>
+  </div>
+
+</div>

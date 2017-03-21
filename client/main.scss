@@ -1,0 +1,128 @@
+
+/*@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';*/
+
+@import '../node_modules/@angular/material/core/theming/all-theme';
+@include md-core();
+$primary: md-palette($md-deep-purple);
+$accent : md-palette($md-amber, A200, A100, A400);
+$theme: md-light-theme($primary, $accent);
+$background-card: md-color($md-light-theme-background, card);
+$foreground: map-get($theme, foreground);
+@include angular-material-theme($theme);
+.m2app-dark {
+  $dark-primary: md-palette($md-pink, 700, 500, 900);
+  $dark-accent: md-palette($md-blue-grey, A200, A100, A400);
+  $dark-warn: md-palette($md-deep-orange);
+  $dark-theme: md-dark-theme($dark-primary, $dark-accent, $dark-warn);
+  $background-card: md-color($md-dark-theme-background, card);
+  // $foreground: map-get($dark-theme, foreground);
+  @include angular-material-theme($dark-theme);
+}
+
+body {
+  margin: 0; // KEEP: Chrome defaults to having a margin on body
+  // background-image: url(/assets/images/background/carbon_fibre.png);
+  // background-repeat: repeat;
+  // font-family: 'Special Elite';
+  font-family: Roboto,"Helvetica Neue",sans-serif;
+}
+
+.form-container {
+  padding: 3em;
+  max-width: 500px;
+}
+
+.form-container {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%);
+  margin-bottom: 20px;
+  margin-top: 20px;
+}
+
+.error {
+  background: #f1f0ef;
+  padding: 1em;
+  // width: 100%;
+  display: block;
+  margin-bottom: 20px;
+}
+
+.loading {
+  width: 30px;
+  height: 30px;
+  border: 5px solid #ccc;
+  position: fixed;
+  left: 50%;
+  margin-left: -20px;
+  top: 50%;
+  margin-top: -20px;
+  border-radius: 50%;
+}
+
+.loading:after {
+  content: '';
+  position: absolute;
+  width: 40px;
+  height: 10px;
+  background: #E2E4E6;
+  top: 10px;
+  left: -5px;
+  animation: spin 1.2s infinite;
+}
+
+.alignCenter {
+  text-align: center !important;
+}
+
+.alignCenter>* {
+  text-align: initial;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.md-select-value {
+  .md-select-disabled & {
+    color: md-color($foreground, text);
+  }
+}
+
+.fill-remaining-space {
+    // This fills the remaining space, by using flexbox. 
+    // Every toolbar row uses a flexbox row layout.
+    flex: 1 1 auto;
+}
+
+
+md-card.vertical input[disabled] ~ .md-input-placeholder, 
+md-card.vertical .md-select-disabled .md-select-placeholder {
+  visibility: hidden;
+}
+
+// http://webagility.com/posts/remove-forced-yellow-input-background-in-chrome
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0px 1000px $background-card inset;
+  box-shadow: 0 0 0px 1000px $background-card inset;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 600px) {
+  // body {
+  //   padding-top: 1.2em;
+  // }
+  .form-container {
+    // padding: 1.2em;
+    width: 90%;
+    // margin-left: -45%;
+  }
+  // button {
+  //   font-size: 1em;
+  // }
+}

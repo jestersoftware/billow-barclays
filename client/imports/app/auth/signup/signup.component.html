@@ -1,0 +1,25 @@
+<md-card class="form-container">
+
+  <button md-icon-button color="warn" routerLink="/login" style="transform: rotate(180deg); left: -8px;">
+    <md-icon>play_circle_filled</md-icon>
+  </button>
+
+  <h2>Sign Up</h2>
+
+  <span class="error" *ngIf="error" [@fallIn]='state'>{{ error }}</span>
+
+  <form #formData='ngForm' (ngSubmit)="onSubmit(formData)">
+
+    <md-input-container class="full-width">
+      <input md-input type="text" placeholder="Email" (ngModel)="email" name="email" class="txt" required>
+    </md-input-container>
+
+    <md-input-container class="full-width">
+      <input md-input type="password" placeholder="Password" (ngModel)="password" name="password" class="txt" required>
+    </md-input-container>
+
+    <button md-raised-button type="submit" [disabled]="!formData.valid">Create an account</button>
+
+  </form>
+
+</md-card>

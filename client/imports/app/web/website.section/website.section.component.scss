@@ -1,0 +1,43 @@
+
+$text-width: 180px;
+$num-width: 80px;
+
+.table-row {
+    border-bottom: 1px dotted #e0e0e0;
+    border-collapse: collapse;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.table-row {
+    display: flex;
+    display: -webkit-flex;
+    flex-direction: row;
+    -webkit-flex-direction: row;
+    flex-grow: 0;
+    -webkit-flex-grow: 0;
+    flex-wrap: wrap;
+    -webkit-flex-wrap: wrap;
+    width: 100%;
+    // padding-left: 15px;
+    // padding-right: 15px;
+}
+
+.text {
+    flex-grow: 1;
+    -webkit-flex-grow: 1;
+    // overflow: hidden;
+    // white-space: nowrap;
+    // text-overflow: ellipsis;
+    padding-right: 20px;
+}
+
+// Fix the minimum width of the leaf level cells
+.text {
+  width: $text-width;
+}
+
+.num {
+  width: $num-width;
+  text-align: right;
+}

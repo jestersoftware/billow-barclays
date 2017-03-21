@@ -1,0 +1,25 @@
+.thing-list {
+  display: inline-block;
+}
+
+:host /deep/ md-list-item > .md-list-item {
+  align-items: flex-end;
+}
+
+app-admin-action {
+  white-space: nowrap;
+}
+
+md-card {
+  // min-width: 250px;
+  display: inline-block;
+  margin-left: 25px;
+  margin-right: 25px;
+  margin-bottom: 40px;
+  margin-top: 25px;
+  padding: 24px;
+}
+
+md-list-item .md-list-item > * {
+  flex-shrink: 0;
+}
