@@ -21,7 +21,7 @@ export class ThingImageService {
   }
 
   uploadFile(file): Promise<any> {
-    console.log("uploadFile", file);
+    // console.log("uploadFile", file);
 
     let promise = new Promise((resolve, reject) => {
 

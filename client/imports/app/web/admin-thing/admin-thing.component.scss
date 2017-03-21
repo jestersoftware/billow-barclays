@@ -120,11 +120,11 @@ md-card.vertical md-card-header {
   margin-bottom: 0;
 } 
 
-md-card.vertical .md-input-element {
+md-card.vertical .mat-input-element {
   width: 100px;
 }
 
-md-card textarea.md-input-element[disabled] {
+md-card textarea.mat-input-element[disabled] {
   overflow: hidden;
 }
 

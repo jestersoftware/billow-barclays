@@ -11,11 +11,11 @@
   <form #formData='ngForm' (ngSubmit)="onSubmit(formData)">
 
     <md-input-container class="full-width">
-      <input md-input type="text" placeholder="Email" (ngModel)="email" name="email" class="txt" required>
+      <input mdInput type="text" placeholder="Email" (ngModel)="email" name="email" class="txt" required>
     </md-input-container>
 
     <md-input-container class="full-width">
-      <input md-input type="password" placeholder="Password" (ngModel)="password" name="password" class="txt" required>
+      <input mdInput type="password" placeholder="Password" (ngModel)="password" name="password" class="txt" required>
     </md-input-container>
 
     <button md-raised-button type="submit" [disabled]="!formData.valid">Create an account</button>

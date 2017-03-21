@@ -143,12 +143,12 @@ export class AdminThingComponent implements OnInit {
 
     let el = event.event.target;
 
-    if (!el.parentElement)
-      console.log ("??????????????");
+    // if (!el.parentElement)
+    //   console.log ("??????????????");
 
-    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing')) {
-      console.log (el.parentElement);
-    }
+    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing')) /*{
+      // console.log (el.parentElement);
+    }*/
       
 
     this.eventElement = el;
@@ -222,7 +222,7 @@ export class AdminThingComponent implements OnInit {
   }
 
   openFileDialog($event, inputFile) {
-    console.log($event);
+    // console.log($event);
 
     inputFile.dispatchEvent(new MouseEvent('click', {
       'view': window,
@@ -329,7 +329,7 @@ export class AdminThingComponent implements OnInit {
 
           count++;
 
-          console.log("Success uploading file", result);
+          // console.log("Success uploading file", result);
 
           let propKey = item.alias.split(":")[1];
 

@@ -17,7 +17,7 @@
 
       <md-card-title>
         <md-input-container style="padding-top: 2px; padding-bottom: 2px;">
-          <input md-input type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" title="Id: {{thing._id}}" />
+          <input mdInput type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" title="Id: {{thing._id}}" />
         </md-input-container>
       </md-card-title>
 
@@ -33,7 +33,7 @@
 
       <div>
         <md-input-container class="full-width">
-          <textarea md-input type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.description" placeholder="Description"></textarea>
+          <textarea mdInput type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.description" placeholder="Description"></textarea>
         </md-input-container>
       </div>
 
@@ -45,11 +45,11 @@
 
       <div *ngFor="let prop of props(thing); trackBy: getKey">
         <md-input-container *ngIf="prop.type!=='image'">
-          <input type="text" md-input [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
+          <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
         </md-input-container>
         <div *ngIf="prop.type==='image'" class="file">
           <md-input-container>
-            <input type="text" md-input [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
+            <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
           </md-input-container>
           <span>
             <input #inputFile type="file" ng2FileSelect class="inputfile" [disabled]="!thing.session || thing.session.disabled" [uploader]="uploader" accept="image/*" (change)="onFile($event, thing, prop)" />

@@ -20,7 +20,7 @@ export const ThumbsStore = new UploadFS.store.GridFS({
     remove: loggedIn
   }),
   transformWrite(from, to, fileId, file) {
-    console.log('transform write started', fileId /*, from*/);
+    // console.log('transform write started', fileId /*, from*/);
 
     var ImageJS = require("imagejs");
 
@@ -31,7 +31,7 @@ export const ThumbsStore = new UploadFS.store.GridFS({
     bitmap.read(from, { type: fileType })
       .then(function () {
 
-        console.log('bitmap read');
+        // console.log('bitmap read');
 
         // If it's bigger than 500 x 500
         if (bitmap._data && bitmap._data.width && (bitmap._data.width * bitmap._data.height > 500 * 500)) {
@@ -45,12 +45,12 @@ export const ThumbsStore = new UploadFS.store.GridFS({
 
           thumbnail.write(to, { type: fileType })
             .then(function () {
-              console.log('bitmap has been written and stream ended');
+              // console.log('bitmap has been written and stream ended');
             });
         }
       });
 
-    console.log('transform write ended', fileId);
+    // console.log('transform write ended', fileId);
   }
 });
 

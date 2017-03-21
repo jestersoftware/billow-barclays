@@ -1,20 +1,17 @@
-
-/*@import '~@angular/material/core/theming/prebuilt/deeppurple-amber.css';*/
-
-@import '../node_modules/@angular/material/core/theming/all-theme';
-@include md-core();
-$primary: md-palette($md-deep-purple);
-$accent : md-palette($md-amber, A200, A100, A400);
-$theme: md-light-theme($primary, $accent);
-$background-card: md-color($md-light-theme-background, card);
+@import './../node_modules/@angular/material/core/theming/all-theme';
+@include mat-core();
+$primary: mat-palette($mat-deep-purple);
+$accent : mat-palette($mat-amber, A200, A100, A400);
+$theme: mat-light-theme($primary, $accent);
+$background-card: mat-color($mat-light-theme-background, card);
 $foreground: map-get($theme, foreground);
 @include angular-material-theme($theme);
 .m2app-dark {
-  $dark-primary: md-palette($md-pink, 700, 500, 900);
-  $dark-accent: md-palette($md-blue-grey, A200, A100, A400);
-  $dark-warn: md-palette($md-deep-orange);
-  $dark-theme: md-dark-theme($dark-primary, $dark-accent, $dark-warn);
-  $background-card: md-color($md-dark-theme-background, card);
+  $dark-primary: mat-palette($mat-pink, 700, 500, 900);
+  $dark-accent: mat-palette($mat-blue-grey, A200, A100, A400);
+  $dark-warn: mat-palette($mat-deep-orange);
+  $dark-theme: mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
+  $background-card: mat-color($mat-dark-theme-background, card);
   // $foreground: map-get($dark-theme, foreground);
   @include angular-material-theme($dark-theme);
 }
@@ -85,7 +82,7 @@ body {
 
 .md-select-value {
   .md-select-disabled & {
-    color: md-color($foreground, text);
+    color: mat-color($foreground, text);
   }
 }
 
@@ -95,9 +92,8 @@ body {
     flex: 1 1 auto;
 }
 
-
-md-card.vertical input[disabled] ~ .md-input-placeholder, 
-md-card.vertical .md-select-disabled .md-select-placeholder {
+md-card.vertical input[disabled] ~ .mat-input-placeholder, 
+md-card.vertical .mat-select-disabled .mat-select-placeholder {
   visibility: hidden;
 }
 

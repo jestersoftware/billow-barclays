@@ -75,7 +75,7 @@ export class AdminListComponent implements OnInit {
   }
 
   save(event) {
-    console.log(event);
+    // console.log(event);
 
     event.event.stopPropagation();
 
@@ -85,7 +85,7 @@ export class AdminListComponent implements OnInit {
   }
 
   create(event) {
-    console.log(event);
+    // console.log(event);
 
     event.event.stopPropagation();
 

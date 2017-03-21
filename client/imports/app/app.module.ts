@@ -62,7 +62,7 @@ import { DisplayNamePipe } from './pipe/display-name.pipe';
     BrowserModule,
     RouterModule,
     AppRoutes,
-    MaterialModule.forRoot(),
+    MaterialModule/*.forRoot()*/,
     HttpModule,
     FormsModule,
     FileUploadModule
