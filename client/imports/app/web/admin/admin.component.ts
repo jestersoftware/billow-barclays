@@ -18,6 +18,7 @@ import template from "./admin.component.html";
 import style1 from './admin.component.scss';
 
 import * as anime from "animejs";
+// import anime from 'animejs';
 
 @Component({
   selector: 'app-admin',
@@ -99,7 +100,7 @@ export class AdminComponent implements OnInit {
 
     this.requests.push(event);
 
-    console.log(event.event);
+    // console.log(event.event);
 
     setTimeout((length) => {
       if (this.requests.length > length) {
@@ -186,7 +187,7 @@ export class AdminComponent implements OnInit {
         let el = event.event;
         positionNumberEnd = (widthOfContainer / 2) - (el.offsetLeft + (el.clientWidth / 2));
 
-        console.log('offset: ' + el.offsetLeft, el);
+        // console.log('offset: ' + el.offsetLeft, el);
         // console.log('width: ' + el.clientWidth);
 
         scrollEnd = Math.max(0, el.offsetTop - 200);
@@ -199,10 +200,10 @@ export class AdminComponent implements OnInit {
     if (this.animation) this.animation.pause();
 
     // console.log('width of thing: ' + widthOfThing);
-    console.log('Start: ' + positionNumberStart);
-    console.log('End: ' + positionNumberEnd);
+    // console.log('Start: ' + positionNumberStart);
+    // console.log('End: ' + positionNumberEnd);
 
-    console.log('Set Position due to Thing: ' + event.thing.title);
+    // console.log('Set Position due to Thing: ' + event.thing.title);
 
     ///////////////
     // let duration = Math.min(1000, 1000 - ((widthOfContainer / widthOfThing) * 1000));
