@@ -1,48 +1,59 @@
-
-
 <!--<md-list>-->
 <!--<md-list-item *ngFor='let layer of layers'>-->
 <md-toolbar color="warn">
   <!--<md-toolbar-row>-->
-    <span>Billow</span>
+  <span>Billow</span>
   <!--</md-toolbar-row>-->
 
   <span class="fill-remaining-space"></span>
 
-  <div [hidden]="user">
-    <a md-button [routerLink]="['/login']" >Login</a>
+  <button md-icon-button [md-menu-trigger-for]="menu" title="Tools">
+    <md-icon>more_vert</md-icon>
+  </button>
+
+  <md-menu #menu="mdMenu">
+    <button [hidden]="!user" md-menu-item disabled>
+      {{ user | displayName }}
+    </button>
+    <button [hidden]="!user" md-menu-item (click)="logout()">
+      Sign Out
+    </button>
+    <button [hidden]="user" md-menu-item (click)="login()">
+      Sign In
+    </button>
+  </md-menu>
+
+  <!--<div [hidden]="user">
+    <a md-button [routerLink]="['/login']">Login</a>
     <a md-button [routerLink]="['/signup']">Sign up</a>
   </div>
   <div [hidden]="!user">
     <span style="font-size: smaller;">{{ user | displayName }}</span>
     <button md-button (click)="logout()">Logout</button>
-  </div>
-  
+  </div>-->
+
 </md-toolbar>
 
 
-<div class="scrollable">  <!--class="alignCenter"-->
+<div class="scrollable">
+  <!--class="alignCenter"-->
 
   <div class="hovernav left" (mouseenter)="onLeftMouseEnter($event)" (mouseleave)="onMouseLeave($event)" (click)="onClickLeft($event)"></div>
 
-  <app-admin-thing 
-    [parent]="parent" 
-    [auth]="auth" 
-    (onResize)="doResize($event)"
-    style="left: -1000px; position: relative; transform-origin: 0 0 0;"></app-admin-thing>   <!--left: 50%; transform: translateX(-50%); -->
-    
+  <app-admin-thing [parent]="parent" [auth]="auth" (onResize)="doResize($event)" style="left: -1000px; position: relative; transform-origin: 0 0 0;"></app-admin-thing>
+  <!--left: 50%; transform: translateX(-50%); -->
+
   <div class="hovernav right" (mouseenter)="onRightMouseEnter($event)" (mouseleave)="onMouseLeave($event)" (click)="onClickRight($event)"></div>
 
 </div>
 
-    <!--[@moveDesktop]="positionX" -->
+<!--[@moveDesktop]="positionX" -->
 
-    <!--(@moveDesktop.start)="animationStarted($event)" 
+<!--(@moveDesktop.start)="animationStarted($event)" 
     (@moveDesktop.done)="animationDone($event)" -->
 
 
-  <!--[style.left]="left" [style.transform]="translate"-->
+<!--[style.left]="left" [style.transform]="translate"-->
 
 <!--</md-list-item>-->
 <!--</md-list>-->
-

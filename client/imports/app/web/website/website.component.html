@@ -1,4 +1,4 @@
-<div class="page-header fixed transparent">
+<div class="page-header fixed transparent" [ngStyle]="{ 'font-family': font }">
   <div class="container">
     <md-toolbar>
 
@@ -20,15 +20,23 @@
         </a>
       </nav>
 
-      <!--<router-outlet></router-outlet>-->
-
       <span class="fill-remaining-space"></span>
 
-      <span>
-        <a md-button color="warn" href="/login">
-          Login
-        </a>
-      </span>
+      <button md-icon-button [md-menu-trigger-for]="menu" title="Tools" style="color: white;">
+        <md-icon>more_vert</md-icon>
+      </button>
+
+      <md-menu #menu="mdMenu">
+        <button *ngIf="user" md-menu-item disabled>
+          {{ user | displayName }}
+        </button>
+        <button *ngIf="user" md-menu-item (click)="logout()">
+          Sign Out
+        </button>
+        <button *ngIf="!user" md-menu-item (click)="login()">
+          Sign In
+        </button>
+      </md-menu>
 
       <!--</md-toolbar-row>-->
 
@@ -38,12 +46,12 @@
   </div>
 </div>
 
-<div class="scrollable">
+<div class="scrollable" [ngStyle]="{ 'font-family': font }">
   <!--class="alignCenter"-->
 
-  <div style="background-color: rgba(0,0,0,1);">
+  <div>
 
-    <div class="background" [ngStyle]="{'background-image': 'url(' + (currentThing.background && currentThing.background.path ? currentThing.background.path : (thing.background ? thing.background.path : '')) + ')'}">
+    <div class="background" [ngStyle]="{ 'background-image': 'url(' + (currentThing.background && currentThing.background.path ? currentThing.background.path : (thing.background ? thing.background.path : '')) + ')' }">
 
       <div class="container">
 
@@ -78,11 +86,11 @@
 
     </div>
 
-    <div class="section">
-      <div class="container content">
+    <!--<div class="section">
+      <div class="container content">-->
         <app-website-section *ngIf="currentThing && currentThing._id" [parent]="currentThing"></app-website-section>
-      </div>
-    </div>
+      <!--</div>
+    </div>-->
 
   </div>
 

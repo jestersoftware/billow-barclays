@@ -27,9 +27,6 @@ body {
 .form-container {
   padding: 3em;
   max-width: 500px;
-}
-
-.form-container {
   position: fixed;
   left: 50%;
   transform: translate(-50%);
@@ -80,22 +77,43 @@ body {
   width: 100%;
 }
 
-.md-select-value {
-  .md-select-disabled & {
+.fill-remaining-space {
+  // This fills the remaining space, by using flexbox. 
+  // Every toolbar row uses a flexbox row layout.
+  flex: 1 1 auto;
+}
+
+.mat-select-disabled {
+   .mat-select-value & {
     color: mat-color($foreground, text);
   }
 }
 
-.fill-remaining-space {
-    // This fills the remaining space, by using flexbox. 
-    // Every toolbar row uses a flexbox row layout.
-    flex: 1 1 auto;
-}
-
-md-card.vertical input[disabled] ~ .mat-input-placeholder, 
+md-card.vertical input[disabled] ~ .mat-input-placeholder-wrapper > .mat-input-placeholder, 
 md-card.vertical .mat-select-disabled .mat-select-placeholder {
   visibility: hidden;
 }
+
+////////////////// 
+// TODO: ??? FIXES TO BASE MATERIAL LIBRARY BECAUSE IT'S BETA
+// Fix spacing around a SELECT
+.mat-select {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.mat-select-trigger {
+  // margin-bottom: 8px;
+  // height: 28px;
+  font-size: 14px !important;
+}
+
+.mat-select-placeholder.mat-floating-placeholder {
+  top: -20px;
+}
+// TODO END
+////////////////// 
+
 
 // http://webagility.com/posts/remove-forced-yellow-input-background-in-chrome
 input:-webkit-autofill {

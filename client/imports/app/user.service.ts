@@ -46,25 +46,4 @@ export class UserService {
 
     return subject;
   }
-
-  // getUser(getParam) {
-  //   let subject = new Subject();
-
-  //   let things = [
-  //     {
-  //       _id: getParam.userId,
-  //       title: "Jesse", // TODO   this.auth.auth.email,
-  //       type: "User",
-  //       view: {
-  //         showChildren: false
-  //       }
-  //     }];
-
-  //   things = this.fixup(things);
-
-  //   setTimeout(() => { subject.next(things); }, 0);
-
-  //   return subject;
-  // }
-
 }

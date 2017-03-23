@@ -2,7 +2,7 @@
   display: inline-block;
 }
 
-:host /deep/ md-list-item > .md-list-item {
+:host /deep/ md-list-item > .mat-list-item {
   align-items: flex-end;
 }
 
@@ -20,6 +20,6 @@ md-card {
   padding: 24px;
 }
 
-md-list-item .md-list-item > * {
+md-list-item .mat-list-item > * {
   flex-shrink: 0;
 }

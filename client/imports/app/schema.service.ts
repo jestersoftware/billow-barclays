@@ -28,7 +28,7 @@ export class SchemaService {
       display: "Employee",
       icon: "person_outline",
       from: "User",
-      parent: ["Organization", "Business"]
+      parent: ["Business", "Department"]
     },
     {
       key: "Department",
@@ -37,25 +37,33 @@ export class SchemaService {
       parent: ["Business"]
     },
     {
+      key: "Collection",
+      display: "Collection",
+      icon: "list",
+      parent: ["Business", "Department"]
+    },
+    {
       key: "Product",
       display: "Product",
       icon: "attach_money",
-      parent: ["Business", "Department"]
+      displaytype: "table",
+      parent: ["Collection", "Menu", "Section"]
     },
     {
       key: "Menu",
       display: "Menu",
       icon: "restaurant_menu",
-      displaytype: "table",
-      parent: ["Department"]
-    },
+      // displaytype: "table",
+      parent: ["Collection"]
+    }/*,
     {
       key: "Menu Item",
       display: "Menu Item",
       icon: "short_text",
       from: "Product",
-      parent: ["Menu"]
-    },
+      displaytype: "table",
+      parent: ["Menu", "Section"]
+    }*/,
     {
       key: "Web Site",
       display: "Web Site",
@@ -63,54 +71,61 @@ export class SchemaService {
       parent: ["Business"]
     },
     {
-      key: "Facebook Site",
-      display: "Facebook Site",
+      key: "Social Site",
+      display: "Social Site",
       icon: "share",
-      parent: ["Business", "Department"]
+      parent: ["User", "Business", "Department", "Collection"]
     },
     {
       key: "Section",
       display: "Section",
       icon: "web",
-      parent: ["Web Site", "Section"]
+      parent: ["Web Site", "Section", "Menu"]
+    },
+    {
+      key: "Reference",
+      display: "Reference",
+      icon: "tab_unselected",
+      parent: ["*"]
     }
   ]
 
   properties: any = [
-    {
-      key: "order",
-      name: "index",
-      title: "Order",
-      type: "number",
-      hidden: true,
-      parent: ["*"]
-    },
+    // {
+    //   key: "order",
+    //   name: "index",
+    //   title: "Order",
+    //   type: "number",
+    //   hidden: true,
+    //   parent: ["*"]
+    // },
     {
       key: "price",
       name: "dollar",
       title: "Price",
       type: "currency",
-      parent: ["Product", "Menu Item"]
+      parent: ["Product"/*, "Menu Item"*/]
     },
     {
       key: "category",
       name: "name",
       title: "Category",
       type: "string",
-      parent: ["Product", "Menu Item"]
+      parent: ["Product"/*, "Menu Item"*/]
     },
     {
       key: "supplier",
       name: "name",
       title: "Supplier",
       type: "string",
-      parent: ["Product", "Menu Item"]
+      parent: ["Product"/*, "Menu Item"*/]
     },
     {
       key: "logo",
       name: "path",
       title: "Logo",
       type: "image",
+      hidden: true,
       preview: "previewPath",
       parent: ["Organization", "Business", "Web Site"]
     },
@@ -119,8 +134,9 @@ export class SchemaService {
       name: "path",
       title: "Background",
       type: "image",
+      hidden: true,
       preview: "previewPath",
-      parent: ["Web Site", "Section"]
+      parent: ["Web Site", "Section", "Menu"]
     },
     {
       key: "site",
@@ -128,7 +144,23 @@ export class SchemaService {
       title: "Site",
       type: "url",
       hidden: true,
-      parent: ["Facebook Site"]
+      parent: ["Social Site"]
+    },
+    {
+      key: "font",
+      name: "url",
+      title: "Font Url",
+      type: "url",
+      hidden: true,
+      parent: ["Web Site"]
+    },
+    {
+      key: "font",
+      name: "name",
+      title: "Font Name",
+      type: "string",
+      hidden: true,
+      parent: ["Web Site"]
     },
     {
       key: "reference",
@@ -136,24 +168,24 @@ export class SchemaService {
       title: "Refers To",
       type: "thing",
       hidden: true,
-      parent: ["Section"]
+      parent: ["Reference"]
     }
   ];
 
   getArchetype(thing) {
     let archetype;
 
-    if(thing.type)
+    if (thing.type)
       archetype = this.archetypes.find(archetype => archetype.key === thing.type);
 
-    if(!archetype)
+    if (!archetype)
       archetype = { key: "unknown", name: "unknown", icon: "help_outline" };
 
     return archetype;
   }
 
   getArchetypes(thing) {
-    let archetypes = this.archetypes.filter(archetype => archetype.parent.find(parent => parent === thing.type));
+    let archetypes = this.archetypes.filter(archetype => archetype.parent.find(parent => parent === thing.type || parent === "*"));
     return archetypes;
   }
 
@@ -163,7 +195,17 @@ export class SchemaService {
   }
 
   fixup(things) {
+    let count = 0;
     things.forEach(thing => {
+      // Fix up Order Index
+      count++;
+      if (!thing.order) {
+        thing.order = { index: count };
+      }
+      else if(thing.order.index) {
+        count = thing.order.index + 1;
+      }
+      // Fix up all other properties
       for (let property of this.getProperties(thing)) {
         if (!thing[property.key]) {
           thing[property.key] = {};
@@ -174,8 +216,6 @@ export class SchemaService {
           thing[property.key][property.name] = val;
         }
       }
-
-      if(thing['session']) delete thing['session'];
     });
 
     return things;

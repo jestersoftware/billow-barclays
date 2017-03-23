@@ -19,7 +19,7 @@ export const router: Routes = [
     { path: 'signup', component: SignupComponent },
     { path: 'login-email', component: EmailComponent },
     { path: 'admin', component: AdminComponent, canActivate: [AuthGuard] },
-    { path: 'website', component: WebsiteComponent },
+    // { path: 'website', component: WebsiteComponent },
 
     { path: ':id', component: WebsiteComponent },
     { path: ':id/:id2', component: WebsiteComponent }

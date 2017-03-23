@@ -1,57 +1,69 @@
-<div>
+<div *ngIf="things.length > 0" [class.section-container]="parent.type!=='Reference'">
 
-  <section *ngIf="archetype(parent).displaytype!=='table'">
+  <div *ngFor="let thing of things; let i=index; trackBy: getKey">
 
-    <div *ngFor="let thing of things; let i=index; trackBy: getKey">
+    <div *ngIf="!thing.reference || !thing.reference._id">
 
-      <h1>{{thing.title}}</h1>
+      <div [class.background]="thing.background && thing.background.path" [ngStyle]="{ 'background-image': 'url(' + (thing.background && thing.background.path ? thing.background.path : '') + ')' }">
 
-      <p>{{thing.description}}</p>
+        <section *ngIf="archetype(thing).displaytype!=='table'" class="container content">
 
-      <div *ngFor="let prop of props(thing); trackBy: getKey">
-        <div *ngIf="!prop.hidden && thing[prop.key] && thing[prop.key][prop.name]">
-          {{ thing[prop.key][prop.name] }}
+          <h1 style="text-align: center;">{{thing.title}}</h1>
+
+          <p style="text-align: center; line-height: 2;">{{thing.description}}</p>
+
+          <div *ngFor="let prop of props(thing); trackBy: getKey">
+            <div *ngIf="!prop.hidden && thing[prop.key] && thing[prop.key][prop.name]">
+              {{ thing[prop.key][prop.name] }}
+            </div>
+          </div>
+
+          <div *ngIf="thing.type==='Social Site' && thing.site && thing.site.url">
+            <div *ngIf="thing.site.url.indexOf('facebook') > -1">
+              <div 
+                class="fb-page" 
+                [attr.data-href]="thing.site.url" 
+                [attr.data-tabs]="'timeline,events'" 
+                [attr.data-width]="500" 
+                [attr.data-small-header]="false" 
+                [attr.data-adapt-container-width]="true" 
+                [attr.data-hide-cover]="false" 
+                [attr.data-show-facepile]="false">
+                <blockquote [attr.cite]="thing.site.url" class="fb-xfbml-parse-ignore">
+                  <a [attr.href]="thing.site.url">{{thing.description}}</a>
+                </blockquote>
+              </div>
+            </div>
+            <div *ngIf="thing.site.url.indexOf('facebook') < 0">
+              <blockquote [attr.cite]="thing.site.url">
+                <a [attr.href]="thing.site.url">{{thing.description}}</a>
+              </blockquote>
+            </div>
+          </div>
+
+        </section>
+
+        <div *ngIf="archetype(thing).displaytype==='table'" class="container">
+
+          <div class="table-row">
+
+            <div class="text">{{thing.title}}</div>
+
+            <div class="text">{{thing.description}}</div>
+
+            <div *ngFor="let prop of props(thing); trackBy: getKey" class="text" [class.num]="prop.type==='number' || prop.type==='currency'">
+              {{thing[prop.key] ? thing[prop.key][prop.name] : ''}}
+            </div>
+
+          </div>
+
         </div>
-      </div>
 
-      <div *ngIf="thing.type==='Facebook Site'">
-        <div 
-          class="fb-page" 
-          [attr.data-href]="thing.site.url" 
-          [attr.data-tabs]="'timeline,events'" 
-          [attr.data-width]="500" 
-          [attr.data-small-header]="false" 
-          [attr.data-adapt-container-width]="true" 
-          [attr.data-hide-cover]="false" 
-          [attr.data-show-facepile]="false">
-          <blockquote [attr.cite]="thing.site.url" class="fb-xfbml-parse-ignore">
-            <a [attr.href]="thing.site.url">Barclay&#039;s Restaurant and Pub</a>
-          </blockquote>
-        </div>
       </div>
-
-      <app-website-section [parent]="thing"></app-website-section>
 
     </div>
-
-  </section>
-
-
-  <div *ngIf="archetype(parent).displaytype==='table'">
-
-    <div *ngFor="let thing of things; let i=index; trackBy: getKey" class="table-row">
-
-      <div class="text">{{thing.title}}</div>
-
-      <div class="text">{{thing.description}}</div>
-
-      <div *ngFor="let prop of props(thing); trackBy: getKey" class="text" [class.num]="prop.type==='number' || prop.type==='currency'">
-        {{thing[prop.key] ? thing[prop.key][prop.name] : ''}}
-      </div>
-
-      <app-website-section [parent]="thing"></app-website-section>
-
-    </div>
+    
+    <app-website-section [parent]="thing"></app-website-section>
 
   </div>
 

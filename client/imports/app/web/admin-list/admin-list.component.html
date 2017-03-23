@@ -7,13 +7,14 @@
       <h3 md-subheader>Items</h3>
 
       <md-list-item *ngFor="let thing of things; let i=index; trackBy: getKey">
-        <md-icon md-list-avatar>folder</md-icon>
+        <md-icon md-list-avatar>{{archetype(thing).icon}}</md-icon>
+        
         <!--<h4 md-line>{{thing.type}}</h4>-->
         <!--<p md-line> -->
         <!--{{thing.title}} -->
 
         <md-input-container>
-          <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" />
+          <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" title="Id: {{thing._id}}" />
         </md-input-container>
 
         <div *ngFor="let prop of props(thing); trackBy: getKey">

@@ -1,9 +1,9 @@
-import { 
-  Component, 
-  OnInit, 
-  Input, 
-  Output, 
-  EventEmitter 
+import {
+  Component,
+  OnInit,
+  Input,
+  Output,
+  EventEmitter
 } from '@angular/core';
 
 import { SchemaService } from './../../schema.service';
@@ -32,8 +32,8 @@ export class AdminActionComponent implements OnInit {
   isEditing: any = false;
 
   constructor(
-    public thingService: ThingService, 
-    private schemaService: SchemaService) { 
+    public thingService: ThingService,
+    private schemaService: SchemaService) {
   }
 
   ngOnInit() {
@@ -61,8 +61,8 @@ export class AdminActionComponent implements OnInit {
 
   toggle(event) {
     this.onToggle.emit(
-      { 
-        event: event, 
+      {
+        event: event,
         thing: this.thing
       });
   }
@@ -71,8 +71,8 @@ export class AdminActionComponent implements OnInit {
     this.isEditing = true;
 
     this.onEdit.emit(
-      { 
-        event: event, 
+      {
+        event: event,
         thing: this.thing,
         value: this.isEditing
       });
@@ -82,8 +82,8 @@ export class AdminActionComponent implements OnInit {
     this.isEditing = false;
 
     this.onEdit.emit(
-      { 
-        event: event, 
+      {
+        event: event,
         thing: this.thing,
         value: this.isEditing
       });
@@ -91,19 +91,23 @@ export class AdminActionComponent implements OnInit {
 
   save(event) {
     this.onSave.emit(
-      { 
-        event: event, 
-        thing: this.thing 
+      {
+        event: event,
+        thing: this.thing
       });
 
     this.cancel(event);
   }
 
+  add(event) {
+    event.stopPropagation();
+  }
+
   create(event) {
     this.onCreate.emit(
-      { 
-        event: event, 
-        thing: this.thing 
+      {
+        event: event,
+        thing: this.thing
       });
   }
 }

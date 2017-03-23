@@ -38,6 +38,7 @@ export class AdminThingComponent implements OnInit {
   things: any = [];
 
   eventElement: any = null;
+  eventThing: any = null;
 
   uploading: boolean = false;
 
@@ -65,10 +66,10 @@ export class AdminThingComponent implements OnInit {
             this.things = users;
             this.parent.childrenLength = this.things.length;
 
-            if(!this.timeout) {
+            if (!this.timeout) {
               this.timeout = true;
-              setTimeout(() => { 
-                this.onResize.emit({ event: null, thing: this.parent }); 
+              setTimeout(() => {
+                this.onResize.emit({ event: null, thing: this.parent, eventType: "load", lastThing: this.parent });
                 this.timeout = false;
               }, 0);
             }
@@ -81,10 +82,10 @@ export class AdminThingComponent implements OnInit {
             this.things = things;
             this.parent.childrenLength = this.things.length;
 
-            if(!this.timeout) {
+            if (!this.timeout) {
               this.timeout = true;
               setTimeout(() => {
-                this.doResize({ event: this.eventElement, thing: this.parent });
+                this.doResize({ event: this.eventElement, thing: this.eventThing || this.parent, eventType: "load", lastThing: this.eventThing || this.parent });
                 // this.eventElement = null;
                 this.timeout = false;
               }, 0);
@@ -108,68 +109,58 @@ export class AdminThingComponent implements OnInit {
   }
 
   click(event) {
-
-    event.event.stopPropagation();
-
     let el = event.event.target;
-    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
+    
+    // Did they click on "div" or some other input?
+    if (el.localName !== "button"
+      && el.localName !== "input"
+      && el.localName !== "textarea") {
 
-    this.eventElement = el;
+      event.event.stopPropagation();
 
-    setTimeout(() => {
-      this.doResize({ event: this.eventElement, thing: event.thing });
-      // this.eventElement = null;
-    }, 0);
+      while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
 
+      this.eventElement = el;
+      this.eventThing = event.thing;
+
+      this.doResize({ event: this.eventElement, thing: event.thing, eventType: "focus", lastThing: event.thing });
+    }
   }
 
   toggleContent(event) {
-
     event.event.stopPropagation();
 
-    let thing = event.thing;
+    if (!event.thing.view)
+      event.thing.view = {};
 
-    if (!thing.view)
-      thing.view = {};
-
-    thing.view.showContent = !thing.view.showContent;
+    event.thing.view.showContent = !event.thing.view.showContent;
 
     var param: any = {
-      _id: thing._id,
-      view: thing.view
+      _id: event.thing._id,
+      view: event.thing.view
     }
 
     this.thingService.update(param, null);
 
     let el = event.event.target;
 
-    // if (!el.parentElement)
-    //   console.log ("??????????????");
+    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'))
 
-    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing')) /*{
-      // console.log (el.parentElement);
-    }*/
-      
-
-    this.eventElement = el;
-
-    // console.log(typeof this.eventElement);
+      this.eventElement = el;
+    this.eventThing = event.thing;
   }
 
   toggleChildren(event) {
+    // event.event.stopPropagation();
 
-    event.event.stopPropagation();
-    
-    let thing = event.thing;
+    if (!event.thing.view)
+      event.thing.view = {};
 
-    if (!thing.view)
-      thing.view = {};
-
-    thing.view.showChildren = event.force ? true : !thing.view.showChildren;
+    event.thing.view.showChildren = event.force ? true : !event.thing.view.showChildren;
 
     var param: any = {
-      _id: thing._id,
-      view: thing.view
+      _id: event.thing._id,
+      view: event.thing.view
     }
 
     this.thingService.update(param, null);
@@ -178,17 +169,17 @@ export class AdminThingComponent implements OnInit {
     while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
 
     this.eventElement = el;
+    this.eventThing = event.thing;
 
-    if (!thing.view.showChildren) {
+    if (!event.thing.view.showChildren) {
       setTimeout(() => {
-        this.doResize({ event: this.eventElement, thing: thing });
+        this.doResize({ event: this.eventElement, thing: this.eventThing, eventType: "toggleChildren", lastThing: this.eventThing });
         // this.eventElement = null;
       }, 0);
     }
   }
 
   toggleFormat(event) {
-
     event.event.stopPropagation();
 
     let thing = event.thing;
@@ -211,19 +202,22 @@ export class AdminThingComponent implements OnInit {
     while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
 
     this.eventElement = el;
+    this.eventThing = event.thing;
   }
 
   getKey(index: number, item: any): number {
     return item._id;
   }
 
-  typeChanged(thing) {
+  typeChange(thing) {
     this.schemaService.fixup([thing]);
   }
 
-  openFileDialog($event, inputFile) {
-    // console.log($event);
+  typeClick(event) {
+    event.stopPropagation();
+  }
 
+  openFileDialog(event, inputFile) {
     inputFile.dispatchEvent(new MouseEvent('click', {
       'view': window,
       'bubbles': true,
@@ -232,9 +226,7 @@ export class AdminThingComponent implements OnInit {
   }
 
   onFile($event, thing, prop) {
-
-    if($event.target.files.length > 0) {
-
+    if ($event.target.files.length > 0) {
       // Get last added item
       let item = this.uploader.queue[this.uploader.queue.length - 1];
 
@@ -247,61 +239,53 @@ export class AdminThingComponent implements OnInit {
       let existing = this.uploader.queue.find(q => q.alias === alias);
 
       // If so, remove it
-      if(existing) {
+      if (existing) {
         this.uploader.removeFromQueue(existing);
         // existing.item = item;
       }
       // else {
-        // existing = { prop: prop.key, item: item }
-        // this.files.push(existing);
+      // existing = { prop: prop.key, item: item }
+      // this.files.push(existing);
       // }
       item.alias = alias;
 
-      if(prop.preview)
+      if (prop.preview)
         thing[prop.key][prop.name] = item.file.name;
-
     }
-
   }
 
   edit(event) {
-
     event.event.stopPropagation();
-    
-    let thing = event.thing;
 
-    if (!thing.session)
-      thing.session = {};
+    if (!event.thing.session)
+      event.thing.session = {};
 
-    thing.session.disabled = !event.value;
+    event.thing.session.disabled = !event.value;
   }
 
   create(event) {
-    // console.log(event);
-
-    event.event.stopPropagation();
-
-    let thing = event.thing;
+    // event.event.stopPropagation();
 
     var param: any = {
       userId: this.auth._id,
-      parent: thing._id,
+      parent: event.thing._id,
       title: "(enter title)", //event.target.value
-      type: event.event.target.parentElement.parentElement.innerText
+      type: event.event.target.parentElement.innerText, // TODO!! breaks with angular material changes, obv
+      session: { disabled: false }
     }
 
-    if (thing.view) {
-      param.view = thing.view;
+    if (event.thing.view) {
+      param.view = event.thing.view;
     }
 
     this.thingService.insert(param);
 
-    this.toggleChildren({ event: event, thing: thing, force: true });
+    // setTimeout(() => {
+    this.toggleChildren({ event: event.event, thing: event.thing, force: true });
+    // }, 0);
   }
 
   save(event) {
-    // console.log(event);
-
     event.event.stopPropagation();
 
     let thing = event.thing;
@@ -312,6 +296,7 @@ export class AdminThingComponent implements OnInit {
     while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
 
     this.eventElement = el;
+    this.eventThing = thing;
 
     /*
      Upload images
@@ -333,7 +318,7 @@ export class AdminThingComponent implements OnInit {
 
           let propKey = item.alias.split(":")[1];
 
-          if(!thing[propKey])
+          if (!thing[propKey])
             thing[propKey] = {};
 
           // thing[alias].url = result.url;
@@ -347,12 +332,12 @@ export class AdminThingComponent implements OnInit {
 
           this.thingService.update(param, null);
 
-          this.thingImageService.getThumb({_id: result._id}).subscribe((thumb) => {
+          this.thingImageService.getThumb({ _id: result._id }).subscribe((thumb) => {
             param[propKey].previewPath = thumb.path;
             this.thingService.update(param, null);
           });
 
-          if(count >= queueLength) {
+          if (count >= queueLength) {
 
             this.uploading = false;
 
@@ -363,42 +348,60 @@ export class AdminThingComponent implements OnInit {
           }
 
         })
-        .catch((error) => {
-          // this.uploading = false;
+          .catch((error) => {
+            // this.uploading = false;
 
-          count++;
+            count++;
 
-          console.log("Error uploading file", error);
+            console.log("Error uploading file", error);
 
-          if(count >= queueLength) {
+            if (count >= queueLength) {
 
-            this.uploading = false;
+              this.uploading = false;
 
-            setTimeout(() => {
-              this.uploader.clearQueue();
-            }, 0);
+              setTimeout(() => {
+                this.uploader.clearQueue();
+              }, 0);
 
-          }
+            }
 
-        });
+          });
       });
 
     }
   }
 
   doResize(event) {
-    let things = this.elementRef.nativeElement.children;
-
     // console.log("do resize from " + event.thing.title);
 
+    if (!event.event && this.eventElement) {
+      event.event = this.eventElement;
+    }
+
+    if (event.event && (event.eventType === "toggleChildren" || event.eventType === "load")) {
+      this.things.forEach(thing => {
+        if (thing._id !== event.lastThing._id && thing.view && thing.view.showChildren) {
+          thing.view.showChildren = false;
+
+          var param: any = {
+            _id: thing._id,
+            view: thing.view
+          }
+          this.thingService.update(param, null);
+        }
+      });
+    }
+
+    let childrenElements = this.elementRef.nativeElement.children;
+
     // If only one child, don't need to do anything
-    if (things.length > 1) {
+    if (childrenElements.length > 1) {
       // Create an array to make other operations easier
       // TODO: better way?
       let thingsArray = [];
       let index = 0;
-      for (index = 0; index < things.length; index++) {
-        thingsArray.push(things[index]);
+      for (index = 0; index < childrenElements.length; index++) {
+        thingsArray.push(childrenElements[index]);
       }
 
       let currentWidths: number[] = thingsArray.map<number>(thing => { return thing.clientWidth });
@@ -419,9 +422,7 @@ export class AdminThingComponent implements OnInit {
       }
     }
 
-    if (!event.event && this.eventElement) {
-      event.event = this.eventElement;
-    }
+    event.lastThing = this.parent;
 
     this.onResize.emit(event);
   }

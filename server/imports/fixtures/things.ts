@@ -143,7 +143,7 @@ export function loadThings() {
                             "dollar": "5.56"
                           },
                           "title": "Sunnyvale Ale 1",
-                          "type": "Menu Item",
+                          "type": "Product",
                           "userId": "D6gr2ZMJtwv2jqpuD",
                           "view": {
                             "showChildren": true,
@@ -155,7 +155,7 @@ export function loadThings() {
                         entity: {
                           "description": "Summit",
                           "title": "Extra Pale Ale",
-                          "type": "Menu Item",
+                          "type": "Product",
                           "userId": "D6gr2ZMJtwv2jqpuD",
                           "view": {
                             "format": true,
@@ -167,7 +167,7 @@ export function loadThings() {
                       {
                         entity: {
                           "title": "Budweiser",
-                          "type": "Menu Item",
+                          "type": "Product",
                           "userId": "D6gr2ZMJtwv2jqpuD",
                           "view": {
                             "format": true,
@@ -266,7 +266,7 @@ export function loadThings() {
           children: [
             {
               entity: {
-                "description": "bla bla bla",
+                "description": "Another Restaurant description",
                 "title": "Another Restaurant Web Site",
                 "type": "Web Site",
                 "userId": "D6gr2ZMJtwv2jqpuD",

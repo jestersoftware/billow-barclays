@@ -1,21 +1,16 @@
 :host { 
-  // white-space: nowrap; 
   display: inline-flex;
-  // width: auto;
 }  
 
-// :host > * { 
-//   white-space: initial; 
-// }  
-
+/*
+   * MD-CARD
+*/
 md-card {
-  // min-width: 250px;
   display: inline-block;
   margin-left: 25px;
   margin-right: 25px;
   margin-bottom: 40px;
   margin-top: 25px;
-  // padding: 24px;
 }
 
 md-card-actions {
@@ -28,11 +23,6 @@ md-card-footer {
   background-color: transparent;
   bottom: -40px;
 }
-
-/*md-card-footer .add {
-  position: relative;
-  top: 20px;
-}*/
 
 md-card .connector {
   text-align: center;
@@ -48,9 +38,18 @@ md-card.vertical .above {
   top: -32px;
 }
 
+md-card .left {
+  position: absolute;
+  left: 0;
+}
+
 md-card .right {
   position: absolute;
   right: 0;
+}
+
+md-card.vertical .left {
+  left: -10px;
 }
 
 md-card.vertical .right {
@@ -66,15 +65,7 @@ md-card.vertical .top {
   top: -12px;
 }
 
-// md-card .file .background {
-//   // margin-top: 10px;
-//   background-size: contain;
-//   background-repeat: no-repeat;
-//   width: 100%;
-// }
-
 md-card .file .preview {
-  // margin-top: 10px;
   max-width: 256px;
   max-height: 256px;
 }
@@ -83,56 +74,51 @@ md-card.reference {
   border: 2px dashed black;
 }
 
-/*md-card-footer .below {
-  position: relative;
-  top: 32px;
-}*/
-
-md-card-footer {
-  margin-top: 2px;
-}
-
-// TODO ??? FIXES TO BASE MATERIAL LIBRARY BECAUSE IT'S BETA
-md-select {
-  padding-top: 12px;
-}
-
-.md-select-trigger {
-  margin-bottom: 8px;
-  height: 28px;
-}
-
-.md-select-placeholder.md-floating-placeholder {
-  top: -20px;
-}
-// TODO END
-
 md-card.vertical {
   padding: 6px;
   border-radius: 50px;
-  // min-width: initial;
 }
 
-md-card.vertical md-card-header {
+md-card.vertical .mat-card-header {
   flex-direction: column;
   align-items: center;
   height: auto;
-  margin-bottom: 0;
 } 
 
 md-card.vertical .mat-input-element {
   width: 100px;
 }
 
+.mat-card-header {
+  margin-bottom: 8px;
+}
+
+md-card-footer {
+  margin-top: 2px;
+}
+
+md-card-actions, md-card-content, md-card-subtitle, md-card-title {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
 md-card textarea.mat-input-element[disabled] {
   overflow: hidden;
 }
 
-md-card-actions, md-card-content, md-card-subtitle, md-card-title {
-  // margin-bottom: 8px;
-  margin-bottom: 0;
-  padding-bottom: 0;
+[md-card-avatar] {
+  text-align: center;
+  width: auto;
+  height: auto;
 }
+
+[md-card-avatar] .material-icons {
+  transform: scale(1.5) translateY(5px);
+}
+
+/*
+   * MD-SELECT
+*/
 
 .thing {
   display: inline-block; 
@@ -140,7 +126,6 @@ md-card-actions, md-card-content, md-card-subtitle, md-card-title {
   text-align: center;
   margin: -1px;
   flex-shrink: 0;
-  // width: auto;
 }
 
 .thing > * {
@@ -160,39 +145,11 @@ md-card-actions, md-card-content, md-card-subtitle, md-card-title {
 }
 
 .thing.root {
-  // display: table-cell;
   padding-top: 64px;
   padding-left: 50px;
   padding-right: 50px;
   padding-bottom: 250px;
 }
-
-/*.root.thing > * > * > .thing {
-  margin-left: 20px;
-  margin-right: 20px;
-}*/
-
-/*input[disabled] {
-  background-color: transparent;
-  border: 2px solid transparent;
-}*/
-
-// .header-image {
-//   background-image: url('/assets/images/lock.svg');
-//   background-size: 100% 100%;
-//   min-width: 40px;
-// }
-
-[md-card-avatar] {
-  text-align: center;
-  width: auto;
-  height: auto;
-}
-
-[md-card-avatar] .material-icons {
-  transform: scale(1.5) translateY(5px);
-}
-
 
 .inputfile {
 	width: 0.1px;
@@ -203,22 +160,28 @@ md-card-actions, md-card-content, md-card-subtitle, md-card-title {
 	z-index: -1;
 }
 
-// .inputfile + label {
-//     // font-size: 1.25em;
-//     // font-weight: 700;
-//     // color: white;
-//     // background-color: black;
-//     font-decoration: underline;
-//     display: inline-block;
-//     cursor: pointer; /* "hand" cursor */
-// }
+.field-order {
+  color: white; 
+  background-color: rgba(0, 0, 0, .1); 
+  border: 1px solid rgba(0, 0, 0, .1); 
+  border-radius: 100%;
+  top: -10px;
+}
 
-// .inputfile:focus + label,
-// .inputfile + label:hover {
-//     background-color: red;
-// }
+md-card .left.field-order {
+  left: -10px;
+}
 
-// .inputfile:focus + label {
-// 	outline: 1px dotted #000;
-// 	outline: -webkit-focus-ring-color auto 5px;
-// }
+md-card .top.field-order {
+  top: -10px;
+}
+
+.field-order > input {
+  width: 20px; 
+  background-color: transparent; 
+  text-align: center;
+}
+
+.field-order > input[disabled] {
+  border: 0;
+}

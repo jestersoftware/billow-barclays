@@ -30,13 +30,12 @@ export class WebsiteSectionComponent implements OnInit {
   }
 
   ngOnInit() {
-    let thing = { 
-      _id: this.parent.reference && this.parent.reference._id ? this.parent.reference._id : this.parent._id 
-    };
-    
-    this.thingService.getThings(thing).subscribe(things => {
+    this.thingService.getThings(this.parent).subscribe(things => {
       this.zone.run(() => {
         this.things = things;
+
+        // console.log(this.parent.title, this.parent._id, this.things);
+
       });
     });
   }

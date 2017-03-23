@@ -12,6 +12,8 @@ import {
   animate
 } from '@angular/core';
 
+import { Router } from '@angular/router';
+
 import { InjectUser } from "angular2-meteor-accounts-ui";
 
 import template from "./admin.component.html";
@@ -37,17 +39,26 @@ export class AdminComponent implements OnInit {
   animation: any;
   scale: any = 1;
 
-  constructor(elementRef: ElementRef) {
+  constructor(private router: Router, elementRef: ElementRef) {
     this.elementRef = elementRef;
   }
 
   ngOnInit() {
+    if(!Meteor.userId())
+      this.router.navigate(['/login']);
+    
     this.auth = { _id: Meteor.userId() };
     this.parent = { title: "Root", type: "Root" };
   }
 
+  login() {
+    // Meteor.logout();
+    this.router.navigate(['/login']);
+  }
+
   logout() {
     Meteor.logout();
+    this.router.navigate(['/login']);
   }
 
   onClickLeft(event) {
@@ -102,15 +113,21 @@ export class AdminComponent implements OnInit {
 
     // console.log(event.event);
 
+    let timeout = 500;
+
+    if (event.eventType === "focus")
+      timeout = 0;
+
     setTimeout((length) => {
       if (this.requests.length > length) {
       }
       else {
+        //console
         this.setPosition(this.requests[this.requests.length - 1], this.moveCenter, 0, null, 0, 'easeInQuad', 1 /*[1.0, 0.6, 1.0]*/ /*, 300*/);
 
         this.requests = [];
       }
-    }, 500, this.requests.length);
+    }, timeout, this.requests.length);
   }
 
   moveCenter(positionNumberStart, count, widthOfThing, widthOfContainer, scale) {
@@ -194,7 +211,7 @@ export class AdminComponent implements OnInit {
       }
     }
 
-    if (positionNumberStart === positionNumberEnd) return;
+    if (positionNumberStart === positionNumberEnd && scroller.scrollTop === scrollEnd) return;
 
     // if (this.animation) return;
     if (this.animation) this.animation.pause();
@@ -238,11 +255,10 @@ export class AdminComponent implements OnInit {
         .add({
           targets: scroller,
           scrollTop: scrollEnd,
-          duration: 200,
+          duration: 400,
           easing: easing,
           offset: 0
         });
-
     }
     else {
       this.animation = anime({

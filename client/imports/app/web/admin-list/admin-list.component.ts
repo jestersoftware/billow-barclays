@@ -21,9 +21,9 @@ export class AdminListComponent implements OnInit {
   things: any = [];
 
   constructor(
-    public elementRef: ElementRef, 
-    private schemaService: SchemaService, 
-    private thingService: ThingService, 
+    public elementRef: ElementRef,
+    private schemaService: SchemaService,
+    private thingService: ThingService,
     private zone: NgZone) {
   }
 
@@ -36,10 +36,18 @@ export class AdminListComponent implements OnInit {
           this.parent.childrenLength = this.things.length;
         });
 
-        // setTimeout(() => { this.doResize(this); }, 0);
+        setTimeout(() => {
+          let el = this.elementRef.nativeElement;
+          while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
+          this.doResize({ event: el, thing: this.parent, eventType: "load", lastThing: this.parent });
+        }, 0);
 
       });
     }
+  }
+
+  archetype(thing) {
+    return this.schemaService.getArchetype(thing);
   }
 
   props(thing) {
@@ -47,23 +55,15 @@ export class AdminListComponent implements OnInit {
   }
 
   click(event) {
-
     event.event.stopPropagation();
 
     let el = event.event.target;
     while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
 
-    // this.eventElement = el;
-
-    setTimeout(() => {
-      this.doResize({ event: el, thing: this.parent });
-      // this.eventElement = null;
-    }, 0);
-
+    this.doResize({ event: el, thing: this.parent, eventType: "focus", lastThing: event.thing });
   }
 
   edit(event) {
-
     event.event.stopPropagation();
 
     let thing = event.thing;
@@ -75,8 +75,6 @@ export class AdminListComponent implements OnInit {
   }
 
   save(event) {
-    // console.log(event);
-
     event.event.stopPropagation();
 
     let thing = event.thing;
@@ -85,8 +83,6 @@ export class AdminListComponent implements OnInit {
   }
 
   create(event) {
-    // console.log(event);
-
     event.event.stopPropagation();
 
     let thing = event.thing;
