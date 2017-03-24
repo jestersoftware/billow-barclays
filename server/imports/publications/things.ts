@@ -12,13 +12,16 @@ Meteor.publish('things', function (options: Options /*, location?: string*/) {
 
   // Counts.publish(this, 'numberOfParties', Things.collection.find(/*selector*/), { noReady: true });
 
+  ////////////////////////
+  // TODO: Get things based on parents... this is BIG???
+  ////////////////////////
+  
   return Things.find(selector, options);
   // return Things.find();
 });
 
 Meteor.publish('thing', function (id: string) {
   return Things.find(buildQuery.call(this, id));
-  // return Things.find({_id: id});  
 });
 
 function buildQuery(id?: string /*, location?: string*/): Object {

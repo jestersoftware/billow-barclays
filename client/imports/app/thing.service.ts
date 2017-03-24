@@ -54,6 +54,24 @@ export class ThingService {
     return subject;
   }
 
+  getThingsByQuery(query): Subject<any> {
+    let subject = new Subject();
+
+    MeteorObservable.subscribe('things').subscribe(() => {
+
+      let thingsSub = Things.find(query, { sort: { "order.index": 1, title: 1 } });
+
+      thingsSub.subscribe(things => {
+
+        subject.next(this.schemaService.fixup(things));
+
+      });
+
+    });
+
+    return subject;
+  }
+
   insert(pushParam) {
     let thing = {
       meta: {

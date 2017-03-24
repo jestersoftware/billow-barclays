@@ -6,7 +6,7 @@ import { MeteorObservable } from "meteor-rxjs";
 
 import { SchemaService } from './schema.service';
 
-import { ThingService } from './thing.service';
+// import { ThingService } from './thing.service';
 
 import { Thumbs, Images } from './../../../both/collections/images.collection';
 
@@ -16,8 +16,8 @@ import { upload } from './../../../both/methods/images.methods';
 export class ThingImageService {
 
   constructor(
-    private schemaService: SchemaService,
-    private thingService: ThingService) {
+    private schemaService: SchemaService/*,
+    private thingService: ThingService*/) {
   }
 
   uploadFile(file): Promise<any> {

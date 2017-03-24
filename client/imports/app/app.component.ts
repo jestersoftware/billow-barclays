@@ -6,8 +6,6 @@ import style from './app.component.scss';
   selector: 'app-root',
   template,
   styles: [style]
-//   templateUrl: "./app.component.html",
-//   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {
 }

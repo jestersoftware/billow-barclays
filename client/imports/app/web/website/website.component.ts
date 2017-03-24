@@ -27,6 +27,7 @@ export class WebsiteComponent implements OnInit {
   font: any = "Roboto";
 
   constructor(
+    private router: Router, 
     private thingService: ThingService,
     private zone: NgZone,
     private activatedRoute: ActivatedRoute) {
@@ -49,6 +50,16 @@ export class WebsiteComponent implements OnInit {
         });
       });
     });
+  }
+
+  login() {
+    // Meteor.logout();
+    this.router.navigate(['/login']);
+  }
+
+  logout() {
+    Meteor.logout();
+    this.router.navigate(['/login']);
   }
 
   getThings(thing, id) {
