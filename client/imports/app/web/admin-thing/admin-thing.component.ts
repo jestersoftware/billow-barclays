@@ -27,7 +27,8 @@ import style from './admin-thing.component.scss';
 @Component({
   selector: 'app-admin-thing',
   template,
-  styles: [style]
+  styles: [style],
+  providers: [ ThingService ]
 })
 export class AdminThingComponent implements OnInit {
 
@@ -40,11 +41,11 @@ export class AdminThingComponent implements OnInit {
   eventElement: any = null;
   eventThing: any = null;
 
-  uploading: boolean = false;
+  private uploading: boolean = false;
 
-  timeout: boolean = false;
+  private timeout: boolean = false;
 
-  public uploader: FileUploader = new FileUploader({});
+  private uploader: FileUploader = new FileUploader({});
 
   constructor(
     public elementRef: ElementRef,
@@ -65,32 +66,35 @@ export class AdminThingComponent implements OnInit {
           this.zone.run(() => {
             this.things = users;
             this.parent.childrenLength = this.things.length;
-
-            if (!this.timeout) {
-              this.timeout = true;
-              setTimeout(() => {
-                this.onResize.emit({ event: null, thing: this.parent, eventType: "load", lastThing: this.parent });
-                this.timeout = false;
-              }, 0);
-            }
           });
+
+          // if (!this.timeout) {
+          //   this.timeout = true;
+          //   setTimeout(() => {
+          //     this.onResize.emit({ event: null, thing: this.parent, eventType: "load", lastThing: this.parent });
+          //     this.timeout = false;
+          //   }, 0);
+          // }
         });
       }
       else {
-        this.thingService.getThings(this.parent).subscribe(things => {
+        this.thingService.getChildren(this.parent).subscribe(things => {
+          let isCountChanged = !this.things || this.things.length !== things.length;
+
           this.zone.run(() => {
             this.things = things;
             this.parent.childrenLength = this.things.length;
-
-            if (!this.timeout) {
-              this.timeout = true;
-              setTimeout(() => {
-                this.doResize({ event: this.eventElement, thing: this.eventThing || this.parent, eventType: "load", lastThing: this.eventThing || this.parent });
-                // this.eventElement = null;
-                this.timeout = false;
-              }, 0);
-            }
           });
+
+          if (isCountChanged && !this.timeout) {
+            this.timeout = true;
+            setTimeout(() => {
+              // console.log("ngInit setTimeout ************************", this.parent);
+              this.doResize({ event: this.eventElement, thing: this.eventThing || this.parent, eventType: "load", lastThing: this.eventThing || this.parent });
+              // this.eventElement = null;
+              this.timeout = false;
+            }, 0);
+          }
         });
       }
     }
@@ -143,10 +147,9 @@ export class AdminThingComponent implements OnInit {
     this.thingService.update(param, null);
 
     let el = event.event.target;
-
     while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'))
 
-      this.eventElement = el;
+    this.eventElement = el;
     this.eventThing = event.thing;
   }
 
@@ -180,7 +183,7 @@ export class AdminThingComponent implements OnInit {
   }
 
   toggleFormat(event) {
-    event.event.stopPropagation();
+    // event.event.stopPropagation();
 
     let thing = event.thing;
 

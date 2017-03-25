@@ -1,4 +1,4 @@
-<div class="page-header fixed transparent" [ngStyle]="{ 'font-family': font }">
+<div class="page-header fixed" [class.transparent]="transparent" [ngStyle]="{ 'font-family': font }">
   <div class="container">
     <md-toolbar>
 
@@ -22,7 +22,7 @@
 
       <span class="fill-remaining-space"></span>
 
-      <button md-icon-button [md-menu-trigger-for]="menu" title="Tools" style="color: white;">
+      <button md-icon-button [md-menu-trigger-for]="menu" title="Tools">
         <md-icon>more_vert</md-icon>
       </button>
 
@@ -46,7 +46,7 @@
   </div>
 </div>
 
-<div class="scrollable" [ngStyle]="{ 'font-family': font }">
+<div scrollSpyElement="test" class="scrollable" [ngStyle]="{ 'font-family': font }">
   <!--class="alignCenter"-->
 
   <div>
@@ -88,7 +88,7 @@
 
     <!--<div class="section">
       <div class="container content">-->
-        <app-website-section *ngIf="currentThing && currentThing._id" [parent]="currentThing"></app-website-section>
+        <app-website-section *ngIf="currentThing && currentThing._id" [parent]="currentThing" (onResize)="routeChanged()"></app-website-section>
       <!--</div>
     </div>-->
 

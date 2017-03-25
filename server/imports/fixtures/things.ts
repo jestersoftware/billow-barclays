@@ -2,6 +2,7 @@ import { Things } from './../../../both/collections/things.collection';
 
 export function loadThings() {
   if (Things.find().cursor.count() === 0) {
+  // if (Things.find().count() === 0) {
     const things: any[] = [
       {
         entity: {
@@ -300,6 +301,15 @@ export function insertThings(things, id) {
         }
 
       });
+
+      // let id1 = Things.insert(thing.entity); //.subscribe((id1) => {
+    
+      //   if(thing.children && thing.children.length > 0) {
+          
+      //     insertThings(thing.children, id1);
+
+      //   }
+
 
     });
 

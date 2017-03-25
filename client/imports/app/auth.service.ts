@@ -21,12 +21,12 @@ export class AuthGuard implements CanActivate {
   }
 
   canActivate(): Observable<boolean> {
-    console.log(this.router);
+    // console.log(this.router);
 
     return Observable.from([!!Meteor.userId()])
       .do(authenticated => {
         if (!authenticated) {
-          console.log(window.location.hostname);
+          // console.log(window.location.hostname);
 
           this.thingService.getThingsByQuery({ domain: { url: window.location.hostname } }).subscribe(things => {
             if (things.length > 0) {

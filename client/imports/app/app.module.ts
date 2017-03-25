@@ -36,6 +36,8 @@ import { ThingService } from './thing.service';
 import { ThingImageService } from './thing.image.service';
 import { DataService } from './data.service';
 
+import { ScrollSpyModule } from 'ng2-scrollspy';
+
 /*IMAGES*/
 import { FileUploadModule } from 'ng2-file-upload';
 
@@ -62,10 +64,11 @@ import { DisplayNamePipe } from './pipe/display-name.pipe';
     BrowserModule,
     RouterModule,
     AppRoutes,
-    MaterialModule/*.forRoot()*/,
+    MaterialModule,
     HttpModule,
     FormsModule,
-    FileUploadModule
+    FileUploadModule,
+  	ScrollSpyModule.forRoot()
   ],
   providers: [
     SchemaService,

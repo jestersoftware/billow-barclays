@@ -17,7 +17,7 @@ Meteor.methods({
         // console.log('things.insert');
         // console.log(thing);
         // check(id, String);
-        // check(userId, String);
+        check(this.userId, String);
 
         // let party = Parties.collection.findOne(id);
 
@@ -32,6 +32,13 @@ Meteor.methods({
 
         // if (userId !== party.owner && (party.invited || []).indexOf(userId) == -1) {
         Things.collection.insert(thing);
+
+
+
+        // Things.insert(thing);
+
+
+
 
         //   let from = getContactEmail(Meteor.users.findOne(this.userId));
         //   let to = getContactEmail(Meteor.users.findOne(userId));
@@ -53,7 +60,7 @@ Meteor.methods({
         // console.log(thing);
 
         // check(id, String);
-        // check(userId, String);
+        check(this.userId, String);
 
         // let party = Parties.collection.findOne(id);
 
@@ -68,6 +75,11 @@ Meteor.methods({
 
         // if (userId !== party.owner && (party.invited || []).indexOf(userId) == -1) {
         Things.collection.update(id, { $set: thing });
+
+
+        // Things.update(id, { $set: thing });
+
+
 
         //   let from = getContactEmail(Meteor.users.findOne(this.userId));
         //   let to = getContactEmail(Meteor.users.findOne(userId));

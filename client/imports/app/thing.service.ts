@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 
-import { Observable, Subject } from "rxjs/Rx";
+import { Observable, Subscription, Subject } from "rxjs/Rx";
 
-import { MeteorObservable } from "meteor-rxjs";
+import { MeteorObservable, ObservableCursor } from "meteor-rxjs";
 
 import { Things } from "./../../../both/collections/things.collection";
 
@@ -11,17 +11,26 @@ import { SchemaService } from './schema.service';
 @Injectable()
 export class ThingService {
 
+  thingSubscription: Subscription;
+  thingCursor: ObservableCursor<any>;
+  childrenSubscription: Subscription;
+  childrenCursor: ObservableCursor<any[]>;
+
   constructor(private schemaService: SchemaService) {
   }
 
-  getThingsByKey(getParam): Subject<any> {
+  getThing(thing): Observable<any> {
     let subject = new Subject();
 
-    MeteorObservable.subscribe('thing').subscribe(() => {
+    this.thingSubscription = MeteorObservable.subscribe('thing', thing._id).subscribe(() => {
 
-      let thingsSub = Things.find({ _id: getParam._id });
+      this.thingCursor = Things.find({ _id: thing._id });
+      
+      let things = this.thingCursor.fetch();
 
-      thingsSub.subscribe(things => {
+      subject.next(this.schemaService.fixup(things));
+
+      this.thingCursor.subscribe(things => {
 
         subject.next(this.schemaService.fixup(things));
 
@@ -31,23 +40,35 @@ export class ThingService {
     return subject;
   }
 
-  getThings(thing): Subject<any> {
+  getChildren(thing): Subject<any> {
+    // console.log("getChildren called by ", thing.title);
+
     let subject = new Subject();
 
-    MeteorObservable.subscribe('things').subscribe(() => {
+    let query: any = { parent: thing._id };
 
-      let query: any = { parent: thing._id };
+    if(thing.reference && thing.reference._id) {
+      query = { $or: [query, { _id: thing.reference._id }] }; 
+    }
 
-      if(thing.reference && thing.reference._id)
-        query = { $or: [query, { _id: thing.reference._id }] }; 
+    this.childrenSubscription = MeteorObservable.subscribe('things', query).subscribe(() => {
+      // console.log("childrenSubscription returned ", thing.title);
 
-      let thingsSub = Things.find(query, { sort: { "order.index": 1, title: 1 } });
+      this.childrenCursor = Things.find(query, { sort: { "order.index": 1, title: 1 } });
+      
+      let things = this.childrenCursor.fetch();
 
-      thingsSub.subscribe(things => {
+      subject.next(this.schemaService.fixup(things));
+
+      this.childrenCursor.subscribe(things => {
+        // console.log("childrenCursor returned ", thing.title, things);
 
         subject.next(this.schemaService.fixup(things));
-
-      });
+      }/*, err => {
+        console.log(err);
+      }, () => {
+        console.log("things subscription complete", thing.title);
+      }*/);
 
     });
 
@@ -59,13 +80,14 @@ export class ThingService {
 
     MeteorObservable.subscribe('things').subscribe(() => {
 
-      let thingsSub = Things.find(query, { sort: { "order.index": 1, title: 1 } });
+      // let thingsSub = Things.find(query, { sort: { "order.index": 1, title: 1 } });
+      let things = Things.find(query, { sort: { "order.index": 1, title: 1 } }).fetch();
 
-      thingsSub.subscribe(things => {
+      // thingsSub.subscribe(things => {
 
         subject.next(this.schemaService.fixup(things));
 
-      });
+      // });
 
     });
 

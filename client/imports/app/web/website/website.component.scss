@@ -9,11 +9,24 @@ body {
 
 .mat-tab-link,
 .mat-toolbar .title {
-    color: white;
+    color: black;
     opacity: 1;
     font-family: inherit;
     text-transform: uppercase;
     letter-spacing: 2px;
+}
+
+.transparent .mat-tab-link,
+.transparent .mat-toolbar .title {
+    color: white;
+}
+
+.mat-icon-button {
+    color: black;
+}
+
+.transparent .mat-icon-button {
+    color: white;
 }
 
 .mat-toolbar .title {
@@ -22,6 +35,10 @@ body {
 }
 
 :host /deep/ md-ink-bar {
+    background-color: black;
+}
+
+:host /deep/ .transparent md-ink-bar {
     background-color: white;
 }
 
@@ -34,10 +51,10 @@ md-toolbar-row {
 }
 
 .scrollable {
-  width: 100%;
-  height: 100vh;
-  overflow-x: hidden;
-  overflow-y: scroll;
+    width: 100%;
+    height: 100vh;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 .background {
@@ -67,12 +84,12 @@ md-toolbar-row {
     position: fixed !important;
 }
 
-.transparent {
+.transparent.page-header {
     background-color: transparent;
 }
 
 .container .header {
-    height: 200px;
+    min-height: 100px;
     text-align: center;
     padding-top: 100px;
     padding-bottom: 100px;
@@ -81,6 +98,7 @@ md-toolbar-row {
 }
 
 .page-header {
+    background-color: white;
     position: absolute;
     top: 0;
     left: 0;

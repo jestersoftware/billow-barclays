@@ -2,7 +2,9 @@ import {
   Component,
   OnInit,
   NgZone,
-  Input
+  Input,
+  Output,
+  EventEmitter
 } from '@angular/core';
 
 import { SchemaService } from './../../schema.service';
@@ -15,29 +17,34 @@ import style from './website.section.component.scss';
 @Component({
   selector: 'app-website-section',
   template,
-  styles: [style]
+  styles: [style],
+  providers: [ThingService]
 })
 export class WebsiteSectionComponent implements OnInit {
 
   @Input() parent: any;
+  @Output() onResize = new EventEmitter();
 
   things: any = [];
 
+  private timeout = false;
+
   constructor(
     private schemaService: SchemaService,
-    private thingService: ThingService, 
+    private thingService: ThingService,
     private zone: NgZone) {
   }
 
   ngOnInit() {
-    this.thingService.getThings(this.parent).subscribe(things => {
+    this.thingService.getChildren(this.parent).subscribe(things => {
       this.zone.run(() => {
         this.things = things;
 
         // console.log(this.parent.title, this.parent._id, this.things);
-
       });
     });
+
+    this.onResize.emit();
   }
 
   getKey(index: number, item: any): number {

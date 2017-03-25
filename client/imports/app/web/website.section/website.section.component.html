@@ -8,9 +8,9 @@
 
         <section *ngIf="archetype(thing).displaytype!=='table'" class="container content">
 
-          <h1 style="text-align: center;">{{thing.title}}</h1>
+          <h1 class="header" style="text-align: center;">{{thing.title}}</h1>
 
-          <p style="text-align: center; line-height: 2;">{{thing.description}}</p>
+          <p class="subheader" style="text-align: center; line-height: 2;">{{thing.description}}</p>
 
           <div *ngFor="let prop of props(thing); trackBy: getKey">
             <div *ngIf="!prop.hidden && thing[prop.key] && thing[prop.key][prop.name]">

@@ -8,8 +8,6 @@ import {
 
 import { SchemaService } from './../../schema.service';
 
-import { ThingService } from './../../thing.service';
-
 import template from "./admin-action.component.html";
 import style from './admin-action.component.scss';
 
@@ -32,7 +30,6 @@ export class AdminActionComponent implements OnInit {
   isEditing: any = false;
 
   constructor(
-    public thingService: ThingService,
     private schemaService: SchemaService) {
   }
 

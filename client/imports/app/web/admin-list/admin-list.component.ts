@@ -10,7 +10,8 @@ import style from './admin-list.component.scss';
 @Component({
   selector: 'app-admin-list',
   template,
-  styles: [style]
+  styles: [style],
+  providers: [ ThingService ]
 })
 export class AdminListComponent implements OnInit {
 
@@ -29,7 +30,7 @@ export class AdminListComponent implements OnInit {
 
   ngOnInit() {
     if (this.auth) {
-      this.thingService.getThings(this.parent).subscribe(things => {
+      this.thingService.getChildren(this.parent).subscribe(things => {
 
         this.zone.run(() => {
           this.things = things;

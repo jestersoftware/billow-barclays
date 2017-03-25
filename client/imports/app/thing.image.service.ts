@@ -6,8 +6,6 @@ import { MeteorObservable } from "meteor-rxjs";
 
 import { SchemaService } from './schema.service';
 
-// import { ThingService } from './thing.service';
-
 import { Thumbs, Images } from './../../../both/collections/images.collection';
 
 import { upload } from './../../../both/methods/images.methods';
@@ -16,28 +14,19 @@ import { upload } from './../../../both/methods/images.methods';
 export class ThingImageService {
 
   constructor(
-    private schemaService: SchemaService/*,
-    private thingService: ThingService*/) {
+    private schemaService: SchemaService) {
   }
 
   uploadFile(file): Promise<any> {
-    // console.log("uploadFile", file);
-
     let promise = new Promise((resolve, reject) => {
-
       upload(file)
         .then((result) => {
-          // console.log("Success uploading file", result);
-
           resolve(result);
         })
         .catch((error) => {
-          // console.log("Error uploading file", error);
-
           reject(error);
         });
-
-      });
+    });
 
     return promise;
   }
@@ -46,13 +35,9 @@ export class ThingImageService {
     let subject = new Subject();
 
     MeteorObservable.subscribe('images').subscribe(() => {
-
       let thingsSub = Images.find({ _id: getParam._id });
-
       thingsSub.subscribe(things => {
-
         subject.next(things);
-
       });
     });
 
@@ -63,14 +48,10 @@ export class ThingImageService {
     let subject = new Subject();
 
     MeteorObservable.subscribe('thumbs', [getParam._id]).subscribe(() => {
-
       let thumb = Thumbs.findOne({ originalId: getParam._id });
-
       subject.next(thumb);
     });
 
     return subject;
   }
-
-  
 }

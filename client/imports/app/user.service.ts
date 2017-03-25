@@ -33,7 +33,7 @@ export class UserService {
           userArray.push(
             {
               _id: user._id, 
-              title: this.displayNamePipe.transform(user), // user.emails[0].address,
+              title: this.displayNamePipe.transform(user),
               type: "User",
               view: { showChildren: true }
             });

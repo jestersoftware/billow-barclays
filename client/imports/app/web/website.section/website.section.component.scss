@@ -3,13 +3,13 @@ $text-width: 180px;
 $num-width: 80px;
 
 :host > .section-container {
-    padding-top: 25px;
-    padding-bottom: 25px;
+    padding-top: 35px;
+    padding-bottom: 35px;
 }
 
 :host > .section-container .section-container {
-    padding-top: 50px;
-    padding-bottom: 50px;
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
 
 .background {
@@ -33,6 +33,11 @@ section {
 .container {
     max-width: 1250px;
     margin: 0 auto;
+}
+
+.background .container .header {
+    text-transform: uppercase;
+    letter-spacing: 5px;
 }
 
 .content {
@@ -82,3 +87,4 @@ section {
   width: $num-width;
   text-align: right;
 }
+
