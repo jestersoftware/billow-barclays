@@ -3,14 +3,15 @@ import { Meteor } from 'meteor/meteor';
 import { MongoObservable } from 'meteor-rxjs';
 
 export const Things = new MongoObservable.Collection<any>('things');
-// export const Things = new Mongo.Collection<any>('things');
 
-function loggedIn() {
-  return !!Meteor.user();
+function allow() {
+  // return !!Meteor.user();
+  return false;
 }
 
 Things.allow({
-  insert: loggedIn,
-  update: loggedIn,
-  remove: loggedIn
+  insert: allow,
+  update: allow,
+  remove: allow
 });
+

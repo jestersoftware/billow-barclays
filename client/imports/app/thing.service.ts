@@ -12,7 +12,7 @@ import { SchemaService } from './schema.service';
 export class ThingService {
 
   thingSubscription: Subscription;
-  thingCursor: ObservableCursor<any>;
+  // thingCursor: ObservableCursor<any>;
   childrenSubscription: Subscription;
   childrenCursor: ObservableCursor<any[]>;
 
@@ -24,17 +24,18 @@ export class ThingService {
 
     this.thingSubscription = MeteorObservable.subscribe('thing', thing._id).subscribe(() => {
 
-      this.thingCursor = Things.find({ _id: thing._id });
+      // this.thingCursor = Things.findOne({ _id: thing._id });
+      let thing1 = Things.findOne({ _id: thing._id });
       
-      let things = this.thingCursor.fetch();
+      // let things = this.thingCursor.fetch();
 
-      subject.next(this.schemaService.fixup(things));
+      subject.next(this.schemaService.fixup([thing1]));
 
-      this.thingCursor.subscribe(things => {
+      // this.thingCursor.subscribe(things => {
 
-        subject.next(this.schemaService.fixup(things));
+      //   subject.next(this.schemaService.fixup(things));
 
-      });
+      // });
     });
 
     return subject;
@@ -45,13 +46,17 @@ export class ThingService {
 
     let subject = new Subject();
 
-    let query: any = { parent: thing._id };
+    let parentId = /*thing.type === "User" ? "Root" :*/ thing._id;
+    let refId;
+
+    let query: any = { parent: parentId };
 
     if(thing.reference && thing.reference._id) {
-      query = { $or: [query, { _id: thing.reference._id }] }; 
+      refId = thing.reference._id;
+      query = { $or: [query, { _id: refId }] }; 
     }
 
-    this.childrenSubscription = MeteorObservable.subscribe('things', query).subscribe(() => {
+    this.childrenSubscription = MeteorObservable.subscribe('thing.children', parentId, refId).subscribe(() => {
       // console.log("childrenSubscription returned ", thing.title);
 
       this.childrenCursor = Things.find(query, { sort: { "order.index": 1, title: 1 } });

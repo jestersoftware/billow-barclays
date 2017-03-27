@@ -62,7 +62,7 @@ export class AdminThingComponent implements OnInit {
         let getParam = {
           _id: this.auth._id
         };
-        this.userService.getUserByKey(getParam).subscribe(users => {
+        this.userService.getUser(getParam).subscribe(users => {
           this.zone.run(() => {
             this.things = users;
             this.parent.childrenLength = this.things.length;

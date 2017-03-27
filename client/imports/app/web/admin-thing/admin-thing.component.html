@@ -1,6 +1,8 @@
 <div *ngFor="let thing of things; let i=index; trackBy: getKey" class="thing" [class.root]="!this.parent._id">
 
-  <md-card [class.vertical]="!thing.view || !thing.view.showContent" [class.reference]="thing.parent!==parent._id" (click)="click({ event: $event, thing: thing })">
+  <md-card [class.vertical]="!thing.view || !thing.view.showContent" [class.reference]="thing.parent && thing.parent.type==='Reference'" (click)="click({ event: $event, thing: thing })"> 
+
+    <!--thing.parent!==parent._id-->
 
     <div class="connector">
       <md-icon color="warn" class="above">more_vert</md-icon>

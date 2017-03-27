@@ -6,7 +6,7 @@ import { MeteorObservable } from "meteor-rxjs";
 
 import { SchemaService } from './schema.service';
 
-import { Users } from './../../../both/collections/users.collection';
+// import { Users } from './../../../both/collections/users.collection';
 
 // import { User } from './../../../both/models/user.model';
 
@@ -18,31 +18,46 @@ export class UserService {
   constructor(private schemaService: SchemaService, private displayNamePipe: DisplayNamePipe) {
   }
 
-  getUserByKey(getParam): Subject<any> {
+  getUser(getParam): Subject<any> {
     let subject = new Subject();
 
-    MeteorObservable.subscribe('users', getParam._id).subscribe(() => {
+    MeteorObservable.subscribe('users'/*, getParam._id*/).subscribe(() => {
 
-      let usersSub = Users.find({ _id: getParam._id });
+      // let usersSub = Users.find({ _id: getParam._id });
+      let user = Meteor.users.findOne({ _id: getParam._id });
 
-      usersSub.subscribe(users => {
+      // usersSub.subscribe(users => {
 
         let userArray = [];
 
-        users.forEach(user => {
+        // users.forEach(user => {
           userArray.push(
             {
-              _id: user._id, 
+              _id: "Root", //user._id, 
               title: this.displayNamePipe.transform(user),
               type: "User",
               view: { showChildren: true }
             });
-        });
+        // });
 
         subject.next(this.schemaService.fixup(userArray));
 
-      });
+      // });
     });
+
+    // let user = Meteor.user() || { username: "Unknown User" };
+
+    // let userArray = [];
+
+    // userArray.push(
+    //   {
+    //     _id: "Root",
+    //     title: this.displayNamePipe.transform(user),
+    //     type: "User",
+    //     view: { showChildren: true }
+    //   });
+
+    // subject.next(this.schemaService.fixup(userArray));
 
     return subject;
   }

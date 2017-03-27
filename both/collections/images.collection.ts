@@ -1,6 +1,9 @@
-import { MongoObservable } from 'meteor-rxjs';
 import { Meteor } from 'meteor/meteor';
+
+import { MongoObservable } from 'meteor-rxjs';
+
 import { UploadFS } from 'meteor/jalik:ufs';
+
 // import { Thumb, Image } from "../models/image.model";
 // import { Jimp } from '../../node_modules/jimp';
 

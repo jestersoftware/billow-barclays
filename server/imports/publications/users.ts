@@ -1,8 +1,8 @@
 import { Meteor } from 'meteor/meteor';
 
-import { Users } from './../../../both/collections/users.collection';
+// import { Users } from './../../../both/collections/users.collection';
 
-Meteor.publish('users', function (id: string) {
+Meteor.publish('users', function (/*id: string*/) {
   // const user = Users.find(id);
 
   // if (!user) {
@@ -17,7 +17,7 @@ Meteor.publish('users', function (id: string) {
   // });
 
   return Meteor.users.find({
-    _id: id
+    _id: this.userId
   });
 
 });
