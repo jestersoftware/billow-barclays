@@ -9,7 +9,7 @@ export class DataService {
   constructor(private http: Http) { }
 
   fetchData() {
-    //console.log('fetch');
+    //console.log('fetchData');
     return this.http.get('/api/tasks').map(this.extractData);
   }
 

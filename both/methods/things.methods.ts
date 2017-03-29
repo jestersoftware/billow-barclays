@@ -3,7 +3,7 @@ import { Meteor } from 'meteor/meteor';
 // import {Email} from 'meteor/email';
 // import {check} from 'meteor/check';
 
-import { Things } from './../collections/things.collection';
+import { Things, Security } from './../collections/things.collection';
 
 // function getContactEmail(user:Meteor.User):string {
 //   if (user.emails && user.emails.length)
@@ -15,9 +15,21 @@ import { Things } from './../collections/things.collection';
 Meteor.methods({
     "things.insert": function (thing: any) {
         console.log('things.insert', thing);
-        // // console.log(thing);
-        // // check(id, String);
-        // check(this.userId, String);
+
+        const security = new Security();
+
+        if(!security.checkRole(thing.parent, "update", this.userId)) {
+          throw new Meteor.Error('403', 'No permissions');
+        }
+
+        check(thing, Object); // TODO
+
+        if (!thing.meta) {
+            thing.meta = {};
+        }
+
+        thing.meta.creator = this.userId;
+        thing.meta.modifier = this.userId;
 
         // // let party = Parties.collection.findOne(id);
 
@@ -31,13 +43,9 @@ Meteor.methods({
         // //   throw new Meteor.Error('403', 'No permissions!');
 
         // // if (userId !== party.owner && (party.invited || []).indexOf(userId) == -1) {
+
+
         Things.collection.insert(thing);
-
-
-
-        // // Things.insert(thing);
-
-
 
 
         // //   let from = getContactEmail(Meteor.users.findOne(this.userId));
@@ -57,43 +65,22 @@ Meteor.methods({
     },
     "things.update": function (id: string, thing: any) {
         console.log('things.update', id, thing);
-        // // console.log(thing);
+
+        const security = new Security();
+
+        if(!security.checkRole(id, "update", this.userId)) {
+          throw new Meteor.Error('403', 'No permissions');
+        }
 
         check(id, String);
-        // check(this.userId, String);
+        check(thing, Object); // TODO
 
-        // // let party = Parties.collection.findOne(id);
+        if (!thing.meta) {
+            thing.meta = {};
+        }
 
-        // // if (!party)
-        // //   throw new Meteor.Error('404', 'No such party!');
-
-        // // if (party.public)
-        // //   throw new Meteor.Error('400', 'That party is public. No need to invite people.');
-
-        // // if (party.owner !== this.userId)
-        // //   throw new Meteor.Error('403', 'No permissions!');
-
-        // // if (userId !== party.owner && (party.invited || []).indexOf(userId) == -1) {
+        thing.meta.modifier = this.userId;
+        
         Things.collection.update(id, { $set: thing });
-
-
-        // // Things.update(id, { $set: thing });
-
-
-
-        // //   let from = getContactEmail(Meteor.users.findOne(this.userId));
-        // //   let to = getContactEmail(Meteor.users.findOne(userId));
-
-        // //   if (Meteor.isServer && to) {
-        // //     Email.send({
-        // //       from: 'noreply@socially.com',
-        // //       to: to,
-        // //       replyTo: from || undefined,
-        // //       subject: 'PARTY: ' + party.name,
-        // //       text: `Hi, I just invited you to ${party.name} on Socially.
-        // //                     \n\nCome check it out: ${Meteor.absoluteUrl()}\n`
-        // //     });
-        // //   }
-        // // }
     }
 });

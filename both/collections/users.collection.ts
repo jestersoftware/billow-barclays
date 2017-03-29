@@ -1,5 +1,5 @@
-// import { Meteor } from 'meteor/meteor';
+import { Meteor } from 'meteor/meteor';
 
-// import { MongoObservable } from 'meteor-rxjs';
+import { MongoObservable } from 'meteor-rxjs';
 
-// export const Users = MongoObservable.fromExisting(Meteor.users);
+export const Users = MongoObservable.fromExisting(Meteor.users);

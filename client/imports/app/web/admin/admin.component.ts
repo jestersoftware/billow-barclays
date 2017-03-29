@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { Tracker } from 'meteor/tracker';
 
 import {
   Component,
@@ -14,45 +15,51 @@ import {
 
 import { Router } from '@angular/router';
 
-import { InjectUser } from "angular2-meteor-accounts-ui";
+import { ViewService } from './../../view.service';
 
 import template from "./admin.component.html";
 import style1 from './admin.component.scss';
 
 import * as anime from "animejs";
-// import anime from 'animejs';
 
 @Component({
   selector: 'app-admin',
   template,
   styles: [style1]
 })
-@InjectUser('user')
 export class AdminComponent implements OnInit {
 
-  auth: any;
-  parent: any;
-  elementRef: ElementRef;
+  user: any;
+  userId: string;
+  parent: Object;
 
-  isMoving = false;
-
+  moving = false;
   animation: any;
-  scale: any = 1;
+  // scale: any = 1;
 
-  constructor(private router: Router, elementRef: ElementRef) {
-    this.elementRef = elementRef;
+  constructor(
+    public elementRef: ElementRef, 
+    private router: Router, 
+    private viewService: ViewService) {
   }
 
   ngOnInit() {
-    if(!Meteor.userId())
+    this.userId = Meteor.userId();
+
+    if(!this.userId)
       this.router.navigate(['/login']);
+
+    Tracker.autorun(() => {
+      this.user = Meteor.user();
+      if(this.user && this.user.views) {
+        this.viewService.setCurrentView(this.user.views);
+      }
+    });
     
-    this.auth = { _id: Meteor.userId() };
-    this.parent = { title: "Root", type: "Root" };
+    this.parent = { _id: "", title: "Root", type: "Root" };
   }
 
   login() {
-    // Meteor.logout();
     this.router.navigate(['/login']);
   }
 
@@ -74,19 +81,19 @@ export class AdminComponent implements OnInit {
   }
 
   onLeftMouseEnter(event) {
-    this.isMoving = true;
+    this.moving = true;
 
     setTimeout(() => {
-      if (this.isMoving)
+      if (this.moving)
         this.setPosition({ event: null, thing: this.parent }, this.moveLeft, 300, null, 0, 'easeInQuad', 0.6 /*, 700*/);
     }, 250);
   }
 
   onRightMouseEnter(event) {
-    this.isMoving = true;
+    this.moving = true;
 
     setTimeout(() => {
-      if (this.isMoving)
+      if (this.moving)
         this.setPosition({ event: null, thing: this.parent }, this.moveRight, 300, null, 0, 'easeInQuad', 0.6 /*, 700*/);
     }, 250);
   }
@@ -158,7 +165,7 @@ export class AdminComponent implements OnInit {
   // }
 
   cancelMovement() {
-    this.isMoving = false;
+    this.moving = false;
     if (this.animation) {
       this.animation.pause();
       this.animation = null;
@@ -183,16 +190,16 @@ export class AdminComponent implements OnInit {
 
     let positionNumberEnd = 0;
 
-    let scrollEnd = scroller.scrollTop * scale;
+    let scrollEnd = scroller.scrollTop < 100 ? 0 : scroller.scrollTop * scale;
 
-    // console.log('*******');
+    // console.log('scrollEnd: ' + scrollEnd);
 
     let scalexx = !scale[0] ? scale : 1;
 
-    // console.log('scalexx' + scalexx);
+    // console.log('Scale: ' + scalexx);
 
-    if (widthOfThing * this.scale <= widthOfContainer) {
-      positionNumberEnd = (widthOfContainer - (widthOfThing * this.scale)) / 2;
+    if (widthOfThing * scalexx <= widthOfContainer) {
+      positionNumberEnd = (widthOfContainer - (widthOfThing * scalexx)) / 2;
       // scale = 1;
     }
     else {
@@ -210,6 +217,8 @@ export class AdminComponent implements OnInit {
         scrollEnd = Math.max(0, el.offsetTop - 200);
       }
     }
+
+    positionNumberEnd = Math.floor(positionNumberEnd);
 
     if (positionNumberStart === positionNumberEnd && scroller.scrollTop === scrollEnd) return;
 
@@ -239,7 +248,7 @@ export class AdminComponent implements OnInit {
 
     // console.log(scale);
 
-    if (scrollEnd && scrollEnd > 0) {
+    // if (scrollEnd /*&& scrollEnd > 0*/) {
 
       this.animation = anime.timeline();
 
@@ -259,26 +268,26 @@ export class AdminComponent implements OnInit {
           easing: easing,
           offset: 0
         });
-    }
-    else {
-      this.animation = anime({
-        targets: thing,
-        left: [leftStart, leftEnd],
-        scale: scale,
-        duration: 400,
-        easing: easing //,
-        // delay: 100
-      });
-    }
+    // }
+    // else {
+    //   this.animation = anime({
+    //     targets: thing,
+    //     left: [leftStart, leftEnd],
+    //     scale: scale,
+    //     duration: 400,
+    //     easing: easing //,
+    //     // delay: 100
+    //   });
+    // }
 
     // this.animation.begin =  function() { console.log('began'); };
 
     this.animation.finished.then(() => {
-      this.scale = scalexx;
+      // this.scale = scalexx;
       // console.log("animation finished with scale " + this.scale);
       setTimeout(() => {
         this.animation = null;
-        if (this.isMoving || (test && test(event))) {
+        if (this.moving || (test && test(event))) {
           this.setPosition(event, calc, timeout, test, count, 'linear', scale /*, 300*/);
         }
       }, 0);

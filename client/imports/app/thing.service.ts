@@ -4,7 +4,7 @@ import { Observable, Subscription, Subject } from "rxjs/Rx";
 
 import { MeteorObservable, ObservableCursor } from "meteor-rxjs";
 
-import { Things } from "./../../../both/collections/things.collection";
+import { Things, Security } from "./../../../both/collections/things.collection";
 
 import { SchemaService } from './schema.service';
 
@@ -12,9 +12,11 @@ import { SchemaService } from './schema.service';
 export class ThingService {
 
   thingSubscription: Subscription;
-  // thingCursor: ObservableCursor<any>;
+
   childrenSubscription: Subscription;
-  childrenCursor: ObservableCursor<any[]>;
+  childrenCursor: ObservableCursor<any>;
+
+  security = new Security();
 
   constructor(private schemaService: SchemaService) {
   }
@@ -24,29 +26,18 @@ export class ThingService {
 
     this.thingSubscription = MeteorObservable.subscribe('thing', thing._id).subscribe(() => {
 
-      // this.thingCursor = Things.findOne({ _id: thing._id });
       let thing1 = Things.findOne({ _id: thing._id });
       
-      // let things = this.thingCursor.fetch();
-
-      subject.next(this.schemaService.fixup([thing1]));
-
-      // this.thingCursor.subscribe(things => {
-
-      //   subject.next(this.schemaService.fixup(things));
-
-      // });
+      subject.next(this.schemaService.fixup([thing1], true));
     });
 
     return subject;
   }
 
   getChildren(thing): Subject<any> {
-    // console.log("getChildren called by ", thing.title);
-
     let subject = new Subject();
 
-    let parentId = /*thing.type === "User" ? "Root" :*/ thing._id;
+    let parentId = thing._id;
     let refId;
 
     let query: any = { parent: parentId };
@@ -57,24 +48,26 @@ export class ThingService {
     }
 
     this.childrenSubscription = MeteorObservable.subscribe('thing.children', parentId, refId).subscribe(() => {
-      // console.log("childrenSubscription returned ", thing.title);
-
       this.childrenCursor = Things.find(query, { sort: { "order.index": 1, title: 1 } });
       
       let things = this.childrenCursor.fetch();
 
-      subject.next(this.schemaService.fixup(things));
+      let editable = this.security.checkRole(parentId, "update", Meteor.userId());
+      things.forEach(thing1 => {
+        if(!thing1.session)
+          thing1.session = {};
+
+        if(!editable)
+          editable = this.security.checkRole(thing1._id, "update", Meteor.userId());
+
+        thing1.session.editable = editable;
+      });
+
+      subject.next(this.schemaService.fixup(things, true));
 
       this.childrenCursor.subscribe(things => {
-        // console.log("childrenCursor returned ", thing.title, things);
-
-        subject.next(this.schemaService.fixup(things));
-      }/*, err => {
-        console.log(err);
-      }, () => {
-        console.log("things subscription complete", thing.title);
-      }*/);
-
+        subject.next(this.schemaService.fixup(things, true));
+      });
     });
 
     return subject;
@@ -90,7 +83,7 @@ export class ThingService {
 
       // thingsSub.subscribe(things => {
 
-        subject.next(this.schemaService.fixup(things));
+        subject.next(this.schemaService.fixup(things, true));
 
       // });
 
@@ -101,14 +94,10 @@ export class ThingService {
 
   insert(pushParam) {
     let thing = {
-      meta: {
-        creator: pushParam.userId,
-        modifier: pushParam.userId
-      },
       parent: pushParam.parent,
       title: pushParam.title,
-      type: pushParam.type,
-      view: pushParam.view
+      type: pushParam.type /*,
+      view: pushParam.view*/
     };
 
     MeteorObservable.call('things.insert', thing).subscribe({
@@ -121,28 +110,28 @@ export class ThingService {
     });
   }
 
-  update(thing, userId) {
-
-    if (userId) {
-      if (!thing.meta)
-        thing.meta = {}
-      thing.meta.modifier = userId;
-    }
+  update(thing) {
+    let subject = new Subject();
 
     let copy = Object.assign({}, thing);
 
     let id = copy._id;
 
+    // Don't update _id or session or view properties
     delete copy['_id'];
     delete copy['session'];
+    delete copy['view'];
 
     MeteorObservable.call('things.update', id, copy).subscribe({
       next: () => {
-        // console.log('update success ' + id);
+        // subject.next("Success");
       },
       error: (e: Error) => {
-        console.log(e);
+        // console.log(e);
+        subject.error(e);
       }
     });
+
+    return subject;
   }
 }

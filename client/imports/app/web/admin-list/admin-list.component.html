@@ -4,7 +4,7 @@
 
     <md-list>
 
-      <h3 md-subheader>Items</h3>
+      <h3 md-subheader>{{parent.title}}</h3>
 
       <md-list-item *ngFor="let thing of things; let i=index; trackBy: getKey">
         <md-icon md-list-avatar>{{archetype(thing).icon}}</md-icon>
@@ -24,7 +24,7 @@
         </div>
 
         <!--</p>-->
-        <app-admin-action [auth]="auth" [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" [enableCreate]="'none'"></app-admin-action>
+        <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" [enableCreate]="'none'" [enableEdit]="thing.parent===parent._id && thing.session && thing.session.editable ? 'yes' : 'none'" [showExpand]="false"></app-admin-action>
       </md-list-item>
 
       <!--<md-divider></md-divider>-->
@@ -39,7 +39,7 @@
     </md-list>
 
     <div style="text-align: center;">
-      <app-admin-action [auth]="auth" [thing]="parent" (onCreate)="create($event)" [enableCreate]="'only'"></app-admin-action>
+      <app-admin-action [thing]="parent" (onCreate)="create($event)" [enableCreate]="parent.session && parent.session.editable ? 'yes' : 'none'" [enableEdit]="'none'" [showExpand]="false"></app-admin-action>
     </div>
 
   </md-card>

@@ -13,14 +13,10 @@ import style from './signup.component.scss';
   selector: 'app-signup',
   template,
   styles: [style],
-  // templateUrl: './signup.component.html',
-  // styleUrls: ['./signup.component.css'],
   animations: [moveIn(), fallIn()],
   host: { '[@moveIn]': '' }
 })
 export class SignupComponent implements OnInit {
-
-  // @ViewChild('formData') form;
 
   state: string = '';
   error: any;

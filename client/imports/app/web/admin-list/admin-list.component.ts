@@ -11,11 +11,10 @@ import style from './admin-list.component.scss';
   selector: 'app-admin-list',
   template,
   styles: [style],
-  providers: [ ThingService ]
+  providers: [ThingService]
 })
 export class AdminListComponent implements OnInit {
 
-  @Input() auth: any;
   @Input() parent: any;
   @Output() onResize = new EventEmitter<any>();
 
@@ -29,22 +28,18 @@ export class AdminListComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.auth) {
-      this.thingService.getChildren(this.parent).subscribe(things => {
-
-        this.zone.run(() => {
-          this.things = things;
-          this.parent.childrenLength = this.things.length;
-        });
-
-        setTimeout(() => {
-          let el = this.elementRef.nativeElement;
-          while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
-          this.doResize({ event: el, thing: this.parent, eventType: "load", lastThing: this.parent });
-        }, 0);
-
+    this.thingService.getChildren(this.parent).subscribe(things => {
+      this.zone.run(() => {
+        this.things = things;
+        this.parent.childrenLength = this.things.length;
       });
-    }
+
+      setTimeout(() => {
+        let el = this.elementRef.nativeElement;
+        while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
+        this.doResize({ event: el, thing: this.parent, eventType: "load", lastThing: this.parent });
+      }, 0);
+    });
   }
 
   archetype(thing) {
@@ -80,7 +75,7 @@ export class AdminListComponent implements OnInit {
 
     let thing = event.thing;
 
-    this.thingService.update(thing, this.auth._id);
+    this.thingService.update(thing);
   }
 
   create(event) {
@@ -89,14 +84,9 @@ export class AdminListComponent implements OnInit {
     let thing = event.thing;
 
     var param: any = {
-      userId: this.auth._id,
       parent: thing._id,
       title: "(enter title)", //event.target.value
       type: event.event.target.parentElement.parentElement.innerText // TODO
-    }
-
-    if (thing.view) {
-      param.view = thing.view;
     }
 
     this.thingService.insert(param);

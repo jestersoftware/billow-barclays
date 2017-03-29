@@ -13,11 +13,11 @@ import { SchemaService } from './../../schema.service';
 
 import { UserService } from './../../user.service';
 
+import { ViewService } from './../../view.service';
+
 import { ThingService } from './../../thing.service';
 
 import { ThingImageService } from './../../thing.image.service';
-
-import { AdminActionComponent } from './../admin-action/admin-action.component';
 
 import { FileUploader } from 'ng2-file-upload';
 
@@ -28,11 +28,10 @@ import style from './admin-thing.component.scss';
   selector: 'app-admin-thing',
   template,
   styles: [style],
-  providers: [ ThingService ]
+  providers: [ThingService]
 })
 export class AdminThingComponent implements OnInit {
 
-  @Input() auth: any;
   @Input() parent: any;
   @Output() onResize = new EventEmitter();
 
@@ -41,7 +40,7 @@ export class AdminThingComponent implements OnInit {
   eventElement: any = null;
   eventThing: any = null;
 
-  private uploading: boolean = false;
+  // private uploading: boolean = false;
 
   private timeout: boolean = false;
 
@@ -50,6 +49,7 @@ export class AdminThingComponent implements OnInit {
   constructor(
     public elementRef: ElementRef,
     private userService: UserService,
+    private viewService: ViewService,
     private schemaService: SchemaService,
     private thingService: ThingService,
     private thingImageService: ThingImageService,
@@ -57,46 +57,48 @@ export class AdminThingComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.auth) {
-      if (!this.parent._id) {
-        let getParam = {
-          _id: this.auth._id
-        };
-        this.userService.getUser(getParam).subscribe(users => {
-          this.zone.run(() => {
-            this.things = users;
-            this.parent.childrenLength = this.things.length;
-          });
+    if (!this.parent._id) {
 
-          // if (!this.timeout) {
-          //   this.timeout = true;
-          //   setTimeout(() => {
-          //     this.onResize.emit({ event: null, thing: this.parent, eventType: "load", lastThing: this.parent });
-          //     this.timeout = false;
-          //   }, 0);
-          // }
+      this.viewService.viewsChanged$.take(1).subscribe(views => {
+        // Do NOT use zone.run() here
+        this.schemaService.fixup(this.things, true);
+      });
+
+      this.userService.getCurrentUser().subscribe(users => {
+        this.zone.run(() => {
+          this.things = users;
+          this.parent.childrenLength = this.things.length;
         });
-      }
-      else {
-        this.thingService.getChildren(this.parent).subscribe(things => {
-          let isCountChanged = !this.things || this.things.length !== things.length;
 
-          this.zone.run(() => {
-            this.things = things;
-            this.parent.childrenLength = this.things.length;
-          });
+        // Needed when top-level user object is only one shown
+        if (!this.timeout) {
+          this.timeout = true;
+          setTimeout(() => {
+            this.onResize.emit({ event: null, thing: this.parent, eventType: "load", lastThing: this.parent });
+            this.timeout = false;
+          }, 0);
+        }
+      });
+    }
+    else {
+      this.thingService.getChildren(this.parent).subscribe(things => {
+        let isCountChanged = !this.things || this.things.length !== things.length;
 
-          if (isCountChanged && !this.timeout) {
-            this.timeout = true;
-            setTimeout(() => {
-              // console.log("ngInit setTimeout ************************", this.parent);
-              this.doResize({ event: this.eventElement, thing: this.eventThing || this.parent, eventType: "load", lastThing: this.eventThing || this.parent });
-              // this.eventElement = null;
-              this.timeout = false;
-            }, 0);
-          }
+        this.zone.run(() => {
+          this.things = things;
+          this.parent.childrenLength = this.things.length;
         });
-      }
+
+        if (isCountChanged && !this.timeout) {
+          this.timeout = true;
+          setTimeout(() => {
+            // console.log("ngInit setTimeout ************************", this.parent);
+            this.doResize({ event: this.eventElement, thing: this.eventThing || this.parent, eventType: "load", lastThing: this.eventThing || this.parent });
+            // this.eventElement = null;
+            this.timeout = false;
+          }, 0);
+        }
+      });
     }
   }
 
@@ -114,8 +116,8 @@ export class AdminThingComponent implements OnInit {
 
   click(event) {
     let el = event.event.target;
-    
-    // Did they click on "div" or some other input?
+
+    // TODO: Did they click on "div" or some other input?
     if (el.localName !== "button"
       && el.localName !== "input"
       && el.localName !== "textarea") {
@@ -139,15 +141,16 @@ export class AdminThingComponent implements OnInit {
 
     event.thing.view.showContent = !event.thing.view.showContent;
 
-    var param: any = {
-      _id: event.thing._id,
-      view: event.thing.view
-    }
+    // var param: any = {
+    //   _id: event.thing._id,
+    //   view: event.thing.view
+    // }
 
-    this.thingService.update(param, null);
+    // this.thingService.update(param, null);
+    this.viewService.updateView(event.thing);
 
     let el = event.event.target;
-    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'))
+    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
 
     this.eventElement = el;
     this.eventThing = event.thing;
@@ -161,12 +164,13 @@ export class AdminThingComponent implements OnInit {
 
     event.thing.view.showChildren = event.force ? true : !event.thing.view.showChildren;
 
-    var param: any = {
-      _id: event.thing._id,
-      view: event.thing.view
-    }
+    // var param: any = {
+    //   _id: event.thing._id,
+    //   view: event.thing.view
+    // }
 
-    this.thingService.update(param, null);
+    // this.thingService.update(param, null);
+    this.viewService.updateView(event.thing);
 
     let el = event.event.target;
     while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
@@ -194,12 +198,13 @@ export class AdminThingComponent implements OnInit {
 
     thing.view.showChildren = true;
 
-    var param: any = {
-      _id: thing._id,
-      view: thing.view
-    }
+    // var param: any = {
+    //   _id: thing._id,
+    //   view: thing.view
+    // }
 
-    this.thingService.update(param, null);
+    // this.thingService.update(param, null);
+    this.viewService.updateView(event.thing);
 
     let el = event.event.target;
     while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
@@ -213,7 +218,7 @@ export class AdminThingComponent implements OnInit {
   }
 
   typeChange(thing) {
-    this.schemaService.fixup([thing]);
+    this.schemaService.fixup([thing], false);
   }
 
   typeClick(event) {
@@ -229,32 +234,7 @@ export class AdminThingComponent implements OnInit {
   }
 
   onFile($event, thing, prop) {
-    if ($event.target.files.length > 0) {
-      // Get last added item
-      let item = this.uploader.queue[this.uploader.queue.length - 1];
-
-      // Set custom alias for tracking purposes
-      // TODO: could break, use separate array instead??
-      let alias = thing._id + ":" + prop.key;
-
-      // See if same item already queued
-      // let existing = this.files.find(file => file.prop === key);
-      let existing = this.uploader.queue.find(q => q.alias === alias);
-
-      // If so, remove it
-      if (existing) {
-        this.uploader.removeFromQueue(existing);
-        // existing.item = item;
-      }
-      // else {
-      // existing = { prop: prop.key, item: item }
-      // this.files.push(existing);
-      // }
-      item.alias = alias;
-
-      if (prop.preview)
-        thing[prop.key][prop.name] = item.file.name;
-    }
+    this.thingImageService.onFile($event, thing, prop, this.uploader);
   }
 
   edit(event) {
@@ -270,7 +250,7 @@ export class AdminThingComponent implements OnInit {
     // event.event.stopPropagation();
 
     var param: any = {
-      userId: this.auth._id,
+      // userId: this.auth._id,
       parent: event.thing._id,
       title: "(enter title)", //event.target.value
       type: event.event.target.parentElement.innerText, // TODO!! breaks with angular material changes, obv
@@ -293,7 +273,16 @@ export class AdminThingComponent implements OnInit {
 
     let thing = event.thing;
 
-    this.thingService.update(thing, this.auth._id);
+    this.thingService.update(thing).subscribe({
+      next: () => {
+        thing.session.error = {};
+      },
+      error: (e: Error) => {
+        this.zone.run(() => {
+          thing.session.error = e;
+        });
+      }
+    });
 
     let el = event.event.target;
     while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
@@ -304,74 +293,7 @@ export class AdminThingComponent implements OnInit {
     /*
      Upload images
     */
-    let queueLength = this.uploader.queue.length;
-
-    if (queueLength > 0) {
-      this.uploading = true;
-
-      let count = 0;
-
-      this.uploader.queue.filter(qItem => qItem.alias.split(":")[0] === thing._id).forEach(item => {
-
-        this.thingImageService.uploadFile(item._file).then((result) => {
-
-          count++;
-
-          // console.log("Success uploading file", result);
-
-          let propKey = item.alias.split(":")[1];
-
-          if (!thing[propKey])
-            thing[propKey] = {};
-
-          // thing[alias].url = result.url;
-          thing[propKey] = result; // TODO: pass all the data like this, or just some?
-
-          let param: any = {
-            _id: thing._id
-          };
-
-          param[propKey] = thing[propKey];
-
-          this.thingService.update(param, null);
-
-          this.thingImageService.getThumb({ _id: result._id }).subscribe((thumb) => {
-            param[propKey].previewPath = thumb.path;
-            this.thingService.update(param, null);
-          });
-
-          if (count >= queueLength) {
-
-            this.uploading = false;
-
-            setTimeout(() => {
-              this.uploader.clearQueue();
-            }, 0);
-
-          }
-
-        })
-          .catch((error) => {
-            // this.uploading = false;
-
-            count++;
-
-            console.log("Error uploading file", error);
-
-            if (count >= queueLength) {
-
-              this.uploading = false;
-
-              setTimeout(() => {
-                this.uploader.clearQueue();
-              }, 0);
-
-            }
-
-          });
-      });
-
-    }
+    this.thingImageService.upload(this.uploader, thing);
   }
 
   doResize(event) {
@@ -385,12 +307,13 @@ export class AdminThingComponent implements OnInit {
       this.things.forEach(thing => {
         if (thing._id !== event.lastThing._id && thing.view && thing.view.showChildren) {
           thing.view.showChildren = false;
+          thing.view.showContent = false;
 
-          var param: any = {
-            _id: thing._id,
-            view: thing.view
-          }
-          this.thingService.update(param, null);
+          // var param: any = {
+          //   _id: thing._id,
+          //   view: thing.view
+          // }
+          // this.thingService.update(param, null);
         }
       });
     }

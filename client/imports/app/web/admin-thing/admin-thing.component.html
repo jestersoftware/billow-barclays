@@ -2,10 +2,8 @@
 
   <md-card [class.vertical]="!thing.view || !thing.view.showContent" [class.reference]="thing.parent && thing.parent.type==='Reference'" (click)="click({ event: $event, thing: thing })"> 
 
-    <!--thing.parent!==parent._id-->
-
-    <div class="connector">
-      <md-icon color="warn" class="above">more_vert</md-icon>
+    <div *ngIf="thing._id !== 'Root'" class="connector">
+      <md-icon class="above">more_vert</md-icon>
     </div>
 
     <md-card-header>
@@ -13,16 +11,16 @@
       <div md-card-avatar><md-icon>{{archetype(thing).icon}}</md-icon></div>
 
       <span class="top left field-order">
-        <input type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.order.index" tabindex="100" />
+        <input type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.order.index" tabindex="100" title="{{thing._id}}" />
       </span>
 
-      <button *ngIf="thing.type==='Web Site'" md-icon-button color="warn" class="top right" (click)="open(thing)" title="Open in new window">
+      <button *ngIf="thing.type==='Web Site'" md-icon-button class="top right" (click)="open(thing)" title="Open in new window">
         <md-icon>call_made</md-icon>
       </button>
 
       <md-card-title>
         <md-input-container style="padding-top: 2px; padding-bottom: 2px;">
-          <input mdInput type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" title="Id: {{thing._id}}" />
+          <input mdInput type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" title="{{thing.title}}" />
         </md-input-container>
       </md-card-title>
 
@@ -43,7 +41,7 @@
       </div>
 
       <md-select name="type" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.type" placeholder="Type" (ngModelChange)="typeChange(thing)" (click)="typeClick($event)">  
-        <md-option *ngFor="let archetype of archetypes(parent)" [value]="archetype.key" >   <!--(click)="typeClick($event)"-->
+        <md-option *ngFor="let archetype of archetypes(parent)" [value]="archetype.key">
           {{archetype.display}}
         </md-option>
       </md-select>
@@ -63,7 +61,7 @@
             </button>
           </span>
           <div>
-            <img *ngIf="thing[prop.key] && thing[prop.key][prop.preview]" class="preview" [src]="thing[prop.key][prop.preview]"></img>
+            <img *ngIf="thing[prop.key] && thing[prop.key][prop.preview]" class="preview" [src]="thing[prop.key][prop.preview]" />
           </div>
         </div>
       </div>
@@ -72,7 +70,13 @@
 
     <md-card-actions>
 
-      <app-admin-action [auth]="auth" [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" (onCreate)="create($event)" (onToggle)="toggleContent($event)" [enableEdit]="thing.view && thing.view.showContent && thing.parent===parent._id ? 'yes' : 'none'"></app-admin-action>
+      <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" (onCreate)="create($event)" (onToggle)="toggleContent($event)" [enableCreate]="thing.parent===parent._id && thing.session && thing.session.editable ? 'yes' : 'none'" [enableEdit]="thing.view && thing.view.showContent && thing.parent===parent._id && thing.session && thing.session.editable ? 'yes' : 'none'"></app-admin-action>
+
+      <div *ngIf="thing.session?.error?.message">
+        <md-chip-list>
+          <md-chip color="warn">{{thing.session?.error?.message}}</md-chip>
+        </md-chip-list>      
+      </div>
 
     </md-card-actions>
 
@@ -84,12 +88,12 @@
         {{thing.childrenLength}}
       </span>
 
-      <button md-icon-button color="warn" class="below" (click)="toggleChildren({ event: $event, thing: thing, force: false })">
+      <button md-icon-button class="below" (click)="toggleChildren({ event: $event, thing: thing, force: false })">
         <md-icon *ngIf="!thing.view || !thing.view.showChildren">add_circle</md-icon>
         <md-icon *ngIf="thing.view && thing.view.showChildren">remove_circle_outline</md-icon>
       </button>
 
-      <button *ngIf="thing.view && thing.view.showChildren && thing.childrenLength > 0" md-icon-button color="warn" class="below right" (click)="toggleFormat({ event: $event, thing: thing })">
+      <button *ngIf="thing.view && thing.view.showChildren && thing.childrenLength > 0" md-icon-button class="below right" (click)="toggleFormat({ event: $event, thing: thing })">
         <md-icon>menu</md-icon>
       </button>
 
@@ -97,9 +101,11 @@
 
   </md-card>
 
-  <div class="alignCenter" *ngIf="thing.view && thing.view.showChildren && thing.parent===parent._id"> <!--Stop propagation if this is a reference-->
-    <app-admin-thing *ngIf="!thing.view || !thing.view.format" [parent]="thing" [auth]="auth" (onResize)="doResize($event)"></app-admin-thing>
-    <app-admin-list *ngIf="thing.view && thing.view.format" [parent]="thing" [auth]="auth" (onResize)="doResize($event)"></app-admin-list>
+  <!-- RECURSIVE -->
+  <!-- thing.parent===parent._id ... don't show children if this is a reference -->
+  <div class="alignCenter" *ngIf="thing.view && thing.view.showChildren && thing.parent===parent._id"> 
+    <app-admin-thing *ngIf="!thing.view || !thing.view.format" [parent]="thing" (onResize)="doResize($event)"></app-admin-thing>
+    <app-admin-list *ngIf="thing.view && thing.view.format" [parent]="thing" (onResize)="doResize($event)"></app-admin-list>
   </div>
 
 </div>

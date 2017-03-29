@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 
+import { ViewService } from './view.service';
+
 @Injectable()
 export class SchemaService {
 
-  archetypes: any = [
+  private archetypes: any = [
     {
       key: "User",
       display: "User",
@@ -53,17 +55,8 @@ export class SchemaService {
       key: "Menu",
       display: "Menu",
       icon: "restaurant_menu",
-      // displaytype: "table",
       parent: ["Collection"]
-    }/*,
-    {
-      key: "Menu Item",
-      display: "Menu Item",
-      icon: "short_text",
-      from: "Product",
-      displaytype: "table",
-      parent: ["Menu", "Section"]
-    }*/,
+    },
     {
       key: "Web Site",
       display: "Web Site",
@@ -90,35 +83,27 @@ export class SchemaService {
     }
   ]
 
-  properties: any = [
-    // {
-    //   key: "order",
-    //   name: "index",
-    //   title: "Order",
-    //   type: "number",
-    //   hidden: true,
-    //   parent: ["*"]
-    // },
+  private properties: any = [
     {
       key: "price",
       name: "dollar",
       title: "Price",
       type: "currency",
-      parent: ["Product"/*, "Menu Item"*/]
+      parent: ["Product"]
     },
     {
       key: "category",
       name: "name",
       title: "Category",
       type: "string",
-      parent: ["Product"/*, "Menu Item"*/]
+      parent: ["Product"]
     },
     {
       key: "supplier",
       name: "name",
       title: "Supplier",
       type: "string",
-      parent: ["Product"/*, "Menu Item"*/]
+      parent: ["Product"]
     },
     {
       key: "logo",
@@ -172,6 +157,9 @@ export class SchemaService {
     }
   ];
 
+  constructor(private viewService: ViewService) {
+  }
+
   getArchetype(thing) {
     let archetype;
 
@@ -194,7 +182,7 @@ export class SchemaService {
     return properties;
   }
 
-  fixup(things) {
+  fixup(things, flag) {
     let count = 0;
     things.forEach(thing => {
       // Fix up Order Index
@@ -202,8 +190,18 @@ export class SchemaService {
       if (!thing.order) {
         thing.order = { index: count };
       }
-      else if(thing.order.index) {
+      else if(thing.order.index > 0) {
         count = thing.order.index + 1;
+      }
+      else {
+        thing.order.index = count;
+      }
+      // Schema migration
+      if(flag) {
+        if(this.viewService.getCurrentView().things && this.viewService.getCurrentView().things[thing._id])
+          thing.view = this.viewService.getCurrentView().things[thing._id].view;
+        else
+          thing.view = {};
       }
       // Fix up all other properties
       for (let property of this.getProperties(thing)) {

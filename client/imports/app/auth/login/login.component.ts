@@ -11,8 +11,6 @@ import style from './login.component.scss';
   selector: 'app-login',
   template,
   styles: [style],
-  // templateUrl: './login.component.html',
-  // styleUrls: ['./login.component.scss'],
   animations: [moveIn(), fallIn()],
   host: { '[@moveIn]': '' }
 })

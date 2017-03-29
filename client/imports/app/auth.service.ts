@@ -11,7 +11,7 @@ import 'rxjs/add/operator/take';
 import { ThingService } from './thing.service';
 
 @Injectable()
-export class AuthGuard implements CanActivate {
+export class AuthService implements CanActivate {
 
   routed = false;
 

@@ -13,8 +13,6 @@ import style from './email.component.scss';
   selector: 'app-email',
   template,
   styles: [style],
-  // templateUrl: './email.component.html',
-  // styleUrls: ['./email.component.css'],
   animations: [moveIn(), fallIn()],
   host: { '[@moveIn]': '' }
 })

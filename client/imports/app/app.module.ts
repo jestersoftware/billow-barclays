@@ -7,7 +7,7 @@ import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
 
 /*AUTH*/
-import { AuthGuard } from './auth.service';
+import { AuthService } from './auth.service';
 
 /*MATERIAL*/
 import { MaterialModule } from '@angular/material';
@@ -31,6 +31,7 @@ import { WebsiteSectionComponent } from './web/website.section/website.section.c
 
 /*SERVICES*/
 import { UserService } from './user.service';
+import { ViewService } from './view.service';
 import { SchemaService } from './schema.service';
 import { ThingService } from './thing.service';
 import { ThingImageService } from './thing.image.service';
@@ -71,12 +72,13 @@ import { DisplayNamePipe } from './pipe/display-name.pipe';
   	ScrollSpyModule.forRoot()
   ],
   providers: [
-    SchemaService,
+    AuthService,
     UserService,
+    ViewService,
+    SchemaService,
     ThingService,
     ThingImageService,
     DataService,
-    AuthGuard,
     DisplayNamePipe
   ],
   bootstrap: [

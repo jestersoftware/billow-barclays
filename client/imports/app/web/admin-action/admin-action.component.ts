@@ -18,10 +18,10 @@ import style from './admin-action.component.scss';
 })
 export class AdminActionComponent implements OnInit {
 
-  @Input() auth: any;
   @Input() thing: any;
   @Input() enableCreate: string = "yes";
   @Input() enableEdit: string = "yes";
+  @Input() showExpand: boolean = true;
   @Output() onCreate = new EventEmitter<any>();
   @Output() onEdit = new EventEmitter<any>();
   @Output() onSave = new EventEmitter<any>();

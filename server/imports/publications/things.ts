@@ -3,24 +3,13 @@ import { Meteor } from "meteor/meteor";
 
 import { Roles } from "meteor/alanning:roles";
 
-import { Things } from "./../../../both/collections/things.collection";
+import { Things, Security } from "./../../../both/collections/things.collection";
 // import { Things } from "./../collections/things.collection";
 
 // interface Options {
 //   [key: string]: any;
 // }
 
-function checkRole(id) {
-  let roleId = id;
-  while (roleId) {
-    if (Roles.userIsInRole(this.userId, ["view"], roleId)) {
-      return true;
-    }
-    let thing = Things.findOne(roleId);
-    roleId = thing ? thing.parent : null;
-  }
-  return false;
-}
 
 Meteor.publish("thing.children", function (id: string, refId?: string /*, options: Options*/) {
 
@@ -28,7 +17,9 @@ Meteor.publish("thing.children", function (id: string, refId?: string /*, option
 
   check(_id, String);
 
-  if (!checkRole.call(this, _id)) {
+  let security = new Security();
+
+  if (!security.checkRole.call(this, _id, "view", this.userId)) {
     _id = null;
   }
   //else -> Has access to parent, so has access to children
@@ -36,7 +27,7 @@ Meteor.publish("thing.children", function (id: string, refId?: string /*, option
   if (_refId) {
     check(_refId, String);
 
-    if (!checkRole.call(this, _refId)) {
+    if (!security.checkRole.call(this, _refId, "view", this.userId)) {
       _refId = null;
     }
   }
@@ -62,14 +53,16 @@ Meteor.publish("thing.children", function (id: string, refId?: string /*, option
 Meteor.publish("thing", function (id: string) {
   check(id, String);
 
-  if (!checkRole(id)) {
+  let security = new Security();
+
+  if (!security.checkRole(id, "view", this.userId)) {
     this.stop();
     return;
   }
 
   const selector = buildQuery.call(this, id);
 
-  return Things.findOne(selector);
+  return Things.find(selector);
 });
 
 function buildQuery(id?: string, parentId?: string, groups?: Array<any>): Object {
