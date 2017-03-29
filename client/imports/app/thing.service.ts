@@ -52,13 +52,13 @@ export class ThingService {
       
       let things = this.childrenCursor.fetch();
 
-      let editable = this.security.checkRole(parentId, "update", Meteor.userId());
+      let editable = this.security.checkRole(parentId, ["update"], Meteor.userId());
       things.forEach(thing1 => {
         if(!thing1.session)
           thing1.session = {};
 
         if(!editable)
-          editable = this.security.checkRole(thing1._id, "update", Meteor.userId());
+          editable = this.security.checkRole(thing1._id, ["update"], Meteor.userId());
 
         thing1.session.editable = editable;
       });
@@ -76,7 +76,7 @@ export class ThingService {
   getThingsByQuery(query): Subject<any> {
     let subject = new Subject();
 
-    MeteorObservable.subscribe('things').subscribe(() => {
+    MeteorObservable.subscribe('thing.query', query).subscribe(() => {
 
       // let thingsSub = Things.find(query, { sort: { "order.index": 1, title: 1 } });
       let things = Things.find(query, { sort: { "order.index": 1, title: 1 } }).fetch();

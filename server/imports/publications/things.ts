@@ -4,37 +4,35 @@ import { Meteor } from "meteor/meteor";
 import { Roles } from "meteor/alanning:roles";
 
 import { Things, Security } from "./../../../both/collections/things.collection";
-// import { Things } from "./../collections/things.collection";
 
 // interface Options {
 //   [key: string]: any;
 // }
 
+Meteor.publish("thing.children", function (parentId: string, refId?: string /*, options: Options*/) {
 
-Meteor.publish("thing.children", function (id: string, refId?: string /*, options: Options*/) {
+  let _parentId = parentId, _refId = refId, _groups;
 
-  let _id = id, _refId = refId, _groups;
-
-  check(_id, String);
+  check(_parentId, String);
 
   let security = new Security();
 
-  if (!security.checkRole.call(this, _id, "view", this.userId)) {
-    _id = null;
+  // If we can access parent, we can access children
+  if (!security.checkRole(_parentId, ["view"], this.userId)) {
+    _parentId = null;
   }
-  //else -> Has access to parent, so has access to children
+  
+  // if (_refId) {
+  //   check(_refId, String);
 
-  if (_refId) {
-    check(_refId, String);
+  //   if (!security.checkRole.call(this, _refId, "view", this.userId)) {
+  //     _refId = null;
+  //   }
+  // }
 
-    if (!security.checkRole.call(this, _refId, "view", this.userId)) {
-      _refId = null;
-    }
-  }
-
-  if (!_id && !_refId) {
-    if (id === "Root") {
-      _id = "Root";
+  if (!_parentId /*&& !_refId*/) {
+    if (parentId === "Root") {
+      _parentId = "Root";
       _groups = Roles.getGroupsForUser(this.userId, "view");
     }
     else {
@@ -43,7 +41,7 @@ Meteor.publish("thing.children", function (id: string, refId?: string /*, option
     }
   }
 
-  const selector = buildQuery.call(this, _refId, _id, _groups);
+  const selector = buildQuery.call(this, _refId, _parentId, _groups);
 
   // Counts.publish(this, "numberOfParties", Things.collection.find(/*selector*/), { noReady: true });
 
@@ -55,12 +53,29 @@ Meteor.publish("thing", function (id: string) {
 
   let security = new Security();
 
-  if (!security.checkRole(id, "view", this.userId)) {
+  if (!security.checkRole(id, ["view"], this.userId)) {
     this.stop();
     return;
   }
 
   const selector = buildQuery.call(this, id);
+
+  return Things.find(selector);
+});
+
+Meteor.publish("thing.query", function (query: Object) {
+  check(query, Object);
+
+  // TODO!!
+
+  // let security = new Security();
+
+  // if (!security.checkRole(id, ["view"], this.userId)) {
+  //   this.stop();
+  //   return;
+  // }
+
+  const selector = query; //buildQuery.call(this, id);
 
   return Things.find(selector);
 });

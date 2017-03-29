@@ -18,7 +18,7 @@ Meteor.methods({
 
         const security = new Security();
 
-        if(!security.checkRole(thing.parent, "update", this.userId)) {
+        if(!security.checkRole(thing.parent, ["update"], this.userId)) {
           throw new Meteor.Error('403', 'No permissions');
         }
 
@@ -68,7 +68,7 @@ Meteor.methods({
 
         const security = new Security();
 
-        if(!security.checkRole(id, "update", this.userId)) {
+        if(!security.checkRole(id, ["update"], this.userId)) {
           throw new Meteor.Error('403', 'No permissions');
         }
 

@@ -18,15 +18,33 @@ Things.allow({
 });
 
 export class Security {
-  checkRole(id, role, userId): boolean {
-    let roleId = id;
-    while (roleId) {
-      if (Roles.userIsInRole(userId, [role], roleId)) {
+
+  /// Check all parents and all refs to see if they match roles for the user
+  checkRole(parentId: string, roles: Array<any>, userId: string, refFlag: boolean = false): boolean {
+    let _parentId = parentId, _ref;
+
+    while (_parentId) {
+      if (userId && roles && Roles.userIsInRole(userId, roles, _parentId)) {
         return true;
       }
-      let thing = Things.findOne(roleId);
-      roleId = thing ? thing.parent : null;
+      if (refFlag) {
+        _ref = Things.findOne({ reference: { _id: _parentId } });
+      }
+      if (_ref) {
+        _parentId = _ref.parent;
+      }
+      else {
+        let thing = Things.findOne(_parentId);
+        if (thing && thing.type === "Web Site") {
+          return true;
+        }
+        _parentId = thing ? thing.parent : null;
+      }
     }
-    return false;
+
+    if(!refFlag)
+      return this.checkRole(parentId, roles, userId, true);
+    else
+      return false;
   }
 }
