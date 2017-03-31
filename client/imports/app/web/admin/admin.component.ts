@@ -15,6 +15,8 @@ import {
 
 import { Router } from '@angular/router';
 
+import { MdSnackBar } from '@angular/material';
+
 import { ViewService } from './../../view.service';
 
 import template from "./admin.component.html";
@@ -35,27 +37,29 @@ export class AdminComponent implements OnInit {
 
   moving = false;
   animation: any;
-  // scale: any = 1;
+
+  choosing: any;
 
   constructor(
-    public elementRef: ElementRef, 
-    private router: Router, 
-    private viewService: ViewService) {
+    private elementRef: ElementRef,
+    private router: Router,
+    private viewService: ViewService,
+    private snackBar: MdSnackBar) {
   }
 
   ngOnInit() {
     this.userId = Meteor.userId();
 
-    if(!this.userId)
+    if (!this.userId)
       this.router.navigate(['/login']);
 
     Tracker.autorun(() => {
       this.user = Meteor.user();
-      if(this.user && this.user.views) {
+      if (this.user && this.user.views) {
         this.viewService.setCurrentView(this.user.views);
       }
     });
-    
+
     this.parent = { _id: "", title: "Root", type: "Root" };
   }
 
@@ -121,17 +125,33 @@ export class AdminComponent implements OnInit {
     // console.log(event.event);
 
     let timeout = 500;
+    let scale = 1;
 
-    if (event.eventType === "focus")
+    if (event.eventType === "focus") {
       timeout = 0;
+    }
+
+    if (event.eventType === "lookupThing") {
+      scale = 0.6;
+      this.choosing = event;
+      const snackBarRef = this.snackBar.open('Choose a thing to refer to', 'Cancel');
+      snackBarRef.onAction().subscribe(() => {
+        this.setPosition(this.choosing, this.moveCenter, 0, null, 0, 'easeInQuad', 1);
+        this.choosing = null;
+      });
+    }
+
+    if (event.eventType === "chooseThing") {
+      this.snackBar._openedSnackBarRef.dismiss();
+      this.choosing.thing.reference._id = event.thing._id; // TODO
+      this.choosing.thing.title = event.thing.title; // TODO
+      // this.choosing.thing.description = "Reference to " + event.thing.title; // TODO
+      this.choosing = null;
+    }
 
     setTimeout((length) => {
-      if (this.requests.length > length) {
-      }
-      else {
-        //console
-        this.setPosition(this.requests[this.requests.length - 1], this.moveCenter, 0, null, 0, 'easeInQuad', 1 /*[1.0, 0.6, 1.0]*/ /*, 300*/);
-
+      if (this.requests.length <= length) {
+        this.setPosition(this.requests[this.requests.length - 1], this.moveCenter, 0, null, 0, 'easeInQuad', scale /*[1.0, 0.6, 1.0]*/ /*, 300*/);
         this.requests = [];
       }
     }, timeout, this.requests.length);
@@ -192,29 +212,28 @@ export class AdminComponent implements OnInit {
 
     let scrollEnd = scroller.scrollTop < 100 ? 0 : scroller.scrollTop * scale;
 
-    // console.log('scrollEnd: ' + scrollEnd);
+    // console.log('Scroll end: ' + scrollEnd);
 
-    let scalexx = !scale[0] ? scale : 1;
+    let scaleX = !scale[0] ? scale : 1;
 
-    // console.log('Scale: ' + scalexx);
+    // console.log('ScaleX: ' + scaleX);
 
-    if (widthOfThing * scalexx <= widthOfContainer) {
-      positionNumberEnd = (widthOfContainer - (widthOfThing * scalexx)) / 2;
-      // scale = 1;
+    if (event.eventType !== "focus" && widthOfThing * scaleX <= widthOfContainer) {
+      positionNumberEnd = (widthOfContainer - (widthOfThing * scaleX)) / 2;
     }
     else {
-      positionNumberEnd = calc(positionNumberStart, count, widthOfThing, widthOfContainer, scalexx);
+      positionNumberEnd = calc(positionNumberStart, count, widthOfThing, widthOfContainer, scaleX);
 
-      // console.log('original end: ' + positionNumberEnd);
+      // console.log('Original end: ' + positionNumberEnd);
 
       if (event.event) {
-        let el = event.event;
-        positionNumberEnd = (widthOfContainer / 2) - (el.offsetLeft + (el.clientWidth / 2));
+        let thingElement = event.event;
+        positionNumberEnd = (widthOfContainer / 2) - (thingElement.offsetLeft + (thingElement.clientWidth / 2));
 
-        // console.log('offset: ' + el.offsetLeft, el);
-        // console.log('width: ' + el.clientWidth);
+        // console.log('Offset: ' + thingElement.offsetLeft, thingElement);
+        // console.log('Width: ' + thingElement.clientWidth);
 
-        scrollEnd = Math.max(0, el.offsetTop - 200);
+        scrollEnd = Math.max(0, thingElement.offsetTop - 200);
       }
     }
 
@@ -222,21 +241,17 @@ export class AdminComponent implements OnInit {
 
     if (positionNumberStart === positionNumberEnd && scroller.scrollTop === scrollEnd) return;
 
-    // if (this.animation) return;
     if (this.animation) this.animation.pause();
 
-    // console.log('width of thing: ' + widthOfThing);
+    // console.log('Width of thing: ' + widthOfThing);
     // console.log('Start: ' + positionNumberStart);
     // console.log('End: ' + positionNumberEnd);
-
     // console.log('Set Position due to Thing: ' + event.thing.title);
 
-    ///////////////
     // let duration = Math.min(1000, 1000 - ((widthOfContainer / widthOfThing) * 1000));
+    // let duration = 500;
     let duration = Math.abs((positionNumberEnd - positionNumberStart) / 2);
     // console.log(duration);
-    // let duration = 500;
-    ///////////////
 
     let positionStart = positionNumberStart.toString();
     let positionEnd = positionNumberEnd.toString();
@@ -246,45 +261,28 @@ export class AdminComponent implements OnInit {
 
     count = count + 1;
 
-    // console.log(scale);
+    this.animation = anime.timeline();
 
-    // if (scrollEnd /*&& scrollEnd > 0*/) {
-
-      this.animation = anime.timeline();
-
-      this.animation
-        .add({
-          targets: thing,
-          left: [leftStart, leftEnd],
-          scale: scale,
-          duration: 400,
-          easing: easing,
-          offset: 0
-        })
-        .add({
-          targets: scroller,
-          scrollTop: scrollEnd,
-          duration: 400,
-          easing: easing,
-          offset: 0
-        });
-    // }
-    // else {
-    //   this.animation = anime({
-    //     targets: thing,
-    //     left: [leftStart, leftEnd],
-    //     scale: scale,
-    //     duration: 400,
-    //     easing: easing //,
-    //     // delay: 100
-    //   });
-    // }
+    this.animation
+      .add({
+        targets: thing,
+        left: [leftStart, leftEnd],
+        scale: scale,
+        duration: 400,
+        easing: easing,
+        offset: 0
+      })
+      .add({
+        targets: scroller,
+        scrollTop: scrollEnd,
+        duration: 400,
+        easing: easing,
+        offset: 0
+      });
 
     // this.animation.begin =  function() { console.log('began'); };
 
     this.animation.finished.then(() => {
-      // this.scale = scalexx;
-      // console.log("animation finished with scale " + this.scale);
       setTimeout(() => {
         this.animation = null;
         if (this.moving || (test && test(event))) {

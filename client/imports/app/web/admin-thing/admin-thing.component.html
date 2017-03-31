@@ -1,6 +1,6 @@
 <div *ngFor="let thing of things; let i=index; trackBy: getKey" class="thing" [class.root]="!this.parent._id">
 
-  <md-card [class.vertical]="!thing.view || !thing.view.showContent" [class.reference]="thing.parent && thing.parent.type==='Reference'" (click)="click({ event: $event, thing: thing })"> 
+  <md-card [class.vertical]="!thing.view?.showContent" [class.reference]="thing.parent !== parent._id" (click)="click({ event: $event, thing: thing })"> 
 
     <div *ngIf="thing._id !== 'Root'" class="connector">
       <md-icon class="above">more_vert</md-icon>
@@ -13,6 +13,12 @@
       <span class="top left field-order">
         <input type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.order.index" tabindex="100" title="{{thing._id}}" />
       </span>
+
+      <div class="top alignCenter full-width" [class.left]="thing.view?.showContent">
+        <button *ngIf="thing.session?.showChoose" md-raised-button color="warn" (click)="chooseThing({ event: $event, thing: thing })" title="Choose this item">
+          Choose
+        </button>
+      </div>
 
       <button *ngIf="thing.type==='Web Site'" md-icon-button class="top right" (click)="open(thing)" title="Open in new window">
         <md-icon>call_made</md-icon>
@@ -47,10 +53,20 @@
       </md-select>
 
       <div *ngFor="let prop of props(thing); trackBy: getKey">
-        <md-input-container *ngIf="prop.type!=='image'">
+        <md-input-container *ngIf="prop.type !== 'image' && prop.type !== 'thing'">
           <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
         </md-input-container>
-        <div *ngIf="prop.type==='image'" class="file">
+        <div *ngIf="prop.type === 'thing'" class="thing-reference">
+          <md-input-container>
+            <input type="text" mdInput [disabled]="true" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
+          </md-input-container>
+          <span>
+            <button md-icon-button (click)="lookupThing({ event: $event, thing: thing })" [disabled]="!thing.session || thing.session.disabled">
+              <md-icon>menu</md-icon>
+            </button>
+          </span>
+        </div>
+        <div *ngIf="prop.type === 'image'" class="file">
           <md-input-container>
             <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
           </md-input-container>
@@ -70,7 +86,7 @@
 
     <md-card-actions>
 
-      <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" (onCreate)="create($event)" (onToggle)="toggleContent($event)" [enableCreate]="thing.parent===parent._id && thing.session && thing.session.editable ? 'yes' : 'none'" [enableEdit]="thing.view && thing.view.showContent && thing.parent===parent._id && thing.session && thing.session.editable ? 'yes' : 'none'"></app-admin-action>
+      <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" (onCreate)="create($event)" (onToggle)="toggleContent($event)" [enableCreate]="thing.parent === parent._id && thing.session?.editable ? 'yes' : 'none'" [enableEdit]="thing.view?.showContent && thing.parent === parent._id && thing.session?.editable ? 'yes' : 'none'"></app-admin-action>
 
       <div *ngIf="thing.session?.error?.message">
         <md-chip-list>
@@ -90,10 +106,10 @@
 
       <button md-icon-button class="below" (click)="toggleChildren({ event: $event, thing: thing, force: false })">
         <md-icon *ngIf="!thing.view || !thing.view.showChildren">add_circle</md-icon>
-        <md-icon *ngIf="thing.view && thing.view.showChildren">remove_circle_outline</md-icon>
+        <md-icon *ngIf="thing.view?.showChildren">remove_circle_outline</md-icon>
       </button>
 
-      <button *ngIf="thing.view && thing.view.showChildren && thing.childrenLength > 0" md-icon-button class="below right" (click)="toggleFormat({ event: $event, thing: thing })">
+      <button *ngIf="thing.view?.showChildren && thing.childrenLength > 0" md-icon-button class="below right" (click)="toggleFormat({ event: $event, thing: thing })">
         <md-icon>menu</md-icon>
       </button>
 
@@ -103,9 +119,9 @@
 
   <!-- RECURSIVE -->
   <!-- thing.parent===parent._id ... don't show children if this is a reference -->
-  <div class="alignCenter" *ngIf="thing.view && thing.view.showChildren && thing.parent===parent._id"> 
-    <app-admin-thing *ngIf="!thing.view || !thing.view.format" [parent]="thing" (onResize)="doResize($event)"></app-admin-thing>
-    <app-admin-list *ngIf="thing.view && thing.view.format" [parent]="thing" (onResize)="doResize($event)"></app-admin-list>
+  <div class="alignCenter" *ngIf="thing.view?.showChildren && thing.parent === parent._id"> 
+    <app-admin-thing *ngIf="!thing.view || !thing.view.format" [parent]="thing" [choosing]="choosing" (onResize)="doResize($event)"></app-admin-thing>
+    <app-admin-list *ngIf="thing.view?.format" [parent]="thing" (onResize)="doResize($event)"></app-admin-list>
   </div>
 
 </div>

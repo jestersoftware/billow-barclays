@@ -2,6 +2,8 @@ import { Component, OnInit, Input, Output, EventEmitter, ElementRef, NgZone } fr
 
 import { SchemaService } from './../../schema.service';
 
+import { ViewService } from './../../view.service';
+
 import { ThingService } from './../../thing.service';
 
 import template from "./admin-list.component.html";
@@ -16,12 +18,14 @@ import style from './admin-list.component.scss';
 export class AdminListComponent implements OnInit {
 
   @Input() parent: any;
+  @Input() reference: any = false;
   @Output() onResize = new EventEmitter<any>();
 
   things: any = [];
 
   constructor(
     public elementRef: ElementRef,
+    private viewService: ViewService,
     private schemaService: SchemaService,
     private thingService: ThingService,
     private zone: NgZone) {
@@ -46,6 +50,10 @@ export class AdminListComponent implements OnInit {
     return this.schemaService.getArchetype(thing);
   }
 
+  archetypes(thing) {
+    return this.schemaService.getArchetypes(thing);
+  }
+
   props(thing) {
     return this.schemaService.getProperties(thing);
   }
@@ -57,6 +65,35 @@ export class AdminListComponent implements OnInit {
     while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
 
     this.doResize({ event: el, thing: this.parent, eventType: "focus", lastThing: event.thing });
+  }
+
+  toggleChildren(event) {
+    // event.event.stopPropagation();
+
+    if (!event.thing.view)
+      event.thing.view = {};
+
+    event.thing.view.showChildren = event.force ? true : !event.thing.view.showChildren;
+
+    this.viewService.updateView(event.thing);
+
+    // this.eventElement = this.getParentThingElement(event);
+    // this.eventThing = event.thing;
+
+    // if (!event.thing.view.showChildren) {
+    //   setTimeout(() => {
+    //     this.doResize({ event: this.eventElement, thing: this.eventThing, eventType: "toggleChildren", lastThing: this.eventThing });
+    //     // this.eventElement = null;
+    //   }, 0);
+    // }
+  }
+
+  typeChange(thing) {
+    this.schemaService.fixup([thing], false);
+  }
+
+  typeClick(event) {
+    event.stopPropagation();
   }
 
   edit(event) {
@@ -86,7 +123,7 @@ export class AdminListComponent implements OnInit {
     var param: any = {
       parent: thing._id,
       title: "(enter title)", //event.target.value
-      type: event.event.target.parentElement.parentElement.innerText // TODO
+      type: event.type //.event.target.parentElement.parentElement.innerText // TODO
     }
 
     this.thingService.insert(param);

@@ -26,7 +26,7 @@
 
   <div class="hovernav left" (mouseenter)="onLeftMouseEnter($event)" (mouseleave)="onMouseLeave($event)" (click)="onClickLeft($event)"></div>
 
-  <app-admin-thing [parent]="parent" (onResize)="doResize($event)" style="left: 0; position: relative; transform-origin: 0 0 0;"></app-admin-thing>
+  <app-admin-thing [parent]="parent" [choosing]="choosing" (onResize)="doResize($event)" style="left: 0; position: relative; transform-origin: 0 0 0;"></app-admin-thing>
   <!--left: 50%; transform: translateX(-50%); -->
 
   <div class="hovernav right" (mouseenter)="onRightMouseEnter($event)" (mouseleave)="onMouseLeave($event)" (click)="onClickRight($event)"></div>

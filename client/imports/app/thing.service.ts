@@ -21,13 +21,38 @@ export class ThingService {
   constructor(private schemaService: SchemaService) {
   }
 
+  setPermissions(parentId, things) {
+    let editable = this.security.checkRole(parentId, ["update"], Meteor.userId());
+
+    things.forEach(thing1 => {
+      if (!thing1.session) {
+        thing1.session = { disabled: true }; // TODO: fix up somewhere else
+      }
+
+      // If we can't edit the parent, can we edit the thing itself?
+      if (!editable) {
+        editable = this.security.checkRole(thing1._id, ["update"], Meteor.userId());
+      }
+
+      thing1.session.editable = editable;
+    });
+  }
+
+  ancestorOf(thing, ancestorThing) {
+    if(!ancestorThing)
+      return false;
+    if(thing._id === ancestorThing._id)
+      return true;
+    else
+      return this.ancestorOf(thing, ancestorThing.session.parentThing);
+  }
+
   getThing(thing): Observable<any> {
     let subject = new Subject();
 
     this.thingSubscription = MeteorObservable.subscribe('thing', thing._id).subscribe(() => {
-
       let thing1 = Things.findOne({ _id: thing._id });
-      
+
       subject.next(this.schemaService.fixup([thing1], true));
     });
 
@@ -42,31 +67,23 @@ export class ThingService {
 
     let query: any = { parent: parentId };
 
-    if(thing.reference && thing.reference._id) {
+    if (thing.reference && thing.reference._id) {
       refId = thing.reference._id;
-      query = { $or: [query, { _id: refId }] }; 
+      query = { $or: [query, { _id: refId }] };
     }
 
     this.childrenSubscription = MeteorObservable.subscribe('thing.children', parentId, refId).subscribe(() => {
       this.childrenCursor = Things.find(query, { sort: { "order.index": 1, title: 1 } });
-      
-      let things = this.childrenCursor.fetch();
 
-      let editable = this.security.checkRole(parentId, ["update"], Meteor.userId());
-      things.forEach(thing1 => {
-        if(!thing1.session)
-          thing1.session = {};
+      // let things = this.childrenCursor.fetch();
 
-        if(!editable)
-          editable = this.security.checkRole(thing1._id, ["update"], Meteor.userId());
+      // this.setPermissions(parentId, things)
 
-        thing1.session.editable = editable;
-      });
-
-      subject.next(this.schemaService.fixup(things, true));
+      // subject.next(this.schemaService.fixup(things, true));
 
       this.childrenCursor.subscribe(things => {
-        subject.next(this.schemaService.fixup(things, true));
+        this.setPermissions(parentId, things);
+        subject.next(this.schemaService.fixup(things, true, thing));
       });
     });
 
@@ -83,7 +100,7 @@ export class ThingService {
 
       // thingsSub.subscribe(things => {
 
-        subject.next(this.schemaService.fixup(things, true));
+      subject.next(this.schemaService.fixup(things, true));
 
       // });
 
@@ -96,8 +113,7 @@ export class ThingService {
     let thing = {
       parent: pushParam.parent,
       title: pushParam.title,
-      type: pushParam.type /*,
-      view: pushParam.view*/
+      type: pushParam.type
     };
 
     MeteorObservable.call('things.insert', thing).subscribe({

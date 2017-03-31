@@ -100,7 +100,7 @@ md-card.vertical {
 }
 
 .mat-card-header {
-  margin-bottom: 8px;
+  margin-bottom: 0; //8px;
 }
 
 md-card-footer {
@@ -122,9 +122,9 @@ md-card textarea.mat-input-element[disabled] {
   height: auto;
 }
 
-[md-card-avatar] .material-icons {
-  transform: scale(1.5) translateY(5px);
-}
+// [md-card-avatar] .material-icons {
+//   transform: scale(1.5) translateY(5px);
+// }
 
 .thing {
   display: inline-block; 
@@ -167,11 +167,15 @@ md-card textarea.mat-input-element[disabled] {
 }
 
 .field-order {
-  color: white; 
-  background-color: rgba(0, 0, 0, .1); 
+  background-color: rgba(0, 0, 0, .3); 
   border: 1px solid rgba(0, 0, 0, .1); 
   border-radius: 100%;
   top: -10px;
+}
+
+.field-order input,
+.field-order input:disabled {
+  color: white; 
 }
 
 md-card .left.field-order {

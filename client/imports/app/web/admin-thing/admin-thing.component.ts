@@ -1,6 +1,7 @@
 import {
   Component,
   OnInit,
+  OnChanges,
   Input,
   Output,
   ViewChild,
@@ -30,9 +31,10 @@ import style from './admin-thing.component.scss';
   styles: [style],
   providers: [ThingService]
 })
-export class AdminThingComponent implements OnInit {
+export class AdminThingComponent implements OnInit, OnChanges {
 
   @Input() parent: any;
+  @Input() choosing: any;
   @Output() onResize = new EventEmitter();
 
   things: any = [];
@@ -58,7 +60,7 @@ export class AdminThingComponent implements OnInit {
 
   ngOnInit() {
     if (!this.parent._id) {
-
+      // Run once to update view of User thing
       this.viewService.viewsChanged$.take(1).subscribe(views => {
         // Do NOT use zone.run() here
         this.schemaService.fixup(this.things, true);
@@ -82,14 +84,15 @@ export class AdminThingComponent implements OnInit {
     }
     else {
       this.thingService.getChildren(this.parent).subscribe(things => {
-        let isCountChanged = !this.things || this.things.length !== things.length;
+        // let isCountChanged = !this.things || this.things.length !== things.length;
 
         this.zone.run(() => {
           this.things = things;
           this.parent.childrenLength = this.things.length;
+          this.processChoosing();         
         });
 
-        if (isCountChanged && !this.timeout) {
+        if (/*isCountChanged && */!this.timeout) {
           this.timeout = true;
           setTimeout(() => {
             // console.log("ngInit setTimeout ************************", this.parent);
@@ -100,6 +103,25 @@ export class AdminThingComponent implements OnInit {
         }
       });
     }
+  }
+
+  ngOnChanges(simpleChanges) {
+    this.processChoosing();
+  }
+
+  processChoosing() {
+    if(this.choosing) {
+      this.things.forEach(thing => {
+        if(!this.thingService.ancestorOf(thing, this.choosing.thing)) {
+          thing.session.showChoose = true;
+        }
+      });
+    }
+    else {
+      this.things.forEach(thing => {
+        thing.session.showChoose = false;
+      });
+    }    
   }
 
   archetype(thing) {
@@ -115,18 +137,16 @@ export class AdminThingComponent implements OnInit {
   }
 
   click(event) {
-    let el = event.event.target;
+    let eventTarget = event.event.target;
 
     // TODO: Did they click on "div" or some other input?
-    if (el.localName !== "button"
-      && el.localName !== "input"
-      && el.localName !== "textarea") {
+    if (eventTarget.localName !== "button"
+      && eventTarget.localName !== "input"
+      && eventTarget.localName !== "textarea") {
 
       event.event.stopPropagation();
 
-      while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
-
-      this.eventElement = el;
+      this.eventElement = this.getParentThingElement(event);;
       this.eventThing = event.thing;
 
       this.doResize({ event: this.eventElement, thing: event.thing, eventType: "focus", lastThing: event.thing });
@@ -141,18 +161,9 @@ export class AdminThingComponent implements OnInit {
 
     event.thing.view.showContent = !event.thing.view.showContent;
 
-    // var param: any = {
-    //   _id: event.thing._id,
-    //   view: event.thing.view
-    // }
-
-    // this.thingService.update(param, null);
     this.viewService.updateView(event.thing);
 
-    let el = event.event.target;
-    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
-
-    this.eventElement = el;
+    this.eventElement = this.getParentThingElement(event);
     this.eventThing = event.thing;
   }
 
@@ -164,18 +175,9 @@ export class AdminThingComponent implements OnInit {
 
     event.thing.view.showChildren = event.force ? true : !event.thing.view.showChildren;
 
-    // var param: any = {
-    //   _id: event.thing._id,
-    //   view: event.thing.view
-    // }
-
-    // this.thingService.update(param, null);
     this.viewService.updateView(event.thing);
 
-    let el = event.event.target;
-    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
-
-    this.eventElement = el;
+    this.eventElement = this.getParentThingElement(event);
     this.eventThing = event.thing;
 
     if (!event.thing.view.showChildren) {
@@ -198,19 +200,16 @@ export class AdminThingComponent implements OnInit {
 
     thing.view.showChildren = true;
 
-    // var param: any = {
-    //   _id: thing._id,
-    //   view: thing.view
-    // }
-
-    // this.thingService.update(param, null);
     this.viewService.updateView(event.thing);
 
+    this.eventElement = this.getParentThingElement(event);
+    this.eventThing = event.thing;
+  }
+
+  getParentThingElement(event) {
     let el = event.event.target;
     while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
-
-    this.eventElement = el;
-    this.eventThing = event.thing;
+    return el;
   }
 
   getKey(index: number, item: any): number {
@@ -223,6 +222,16 @@ export class AdminThingComponent implements OnInit {
 
   typeClick(event) {
     event.stopPropagation();
+  }
+
+  lookupThing(event) {
+    event.event.stopPropagation();
+    this.doResize({ event: this.getParentThingElement(event), thing: event.thing, eventType: "lookupThing", lastThing: event.thing });
+  }
+
+  chooseThing(event) {
+    event.event.stopPropagation();
+    this.doResize({ event: this.choosing.event, thing: event.thing, eventType: "chooseThing", lastThing: event.thing });
   }
 
   openFileDialog(event, inputFile) {
@@ -240,9 +249,6 @@ export class AdminThingComponent implements OnInit {
   edit(event) {
     event.event.stopPropagation();
 
-    if (!event.thing.session)
-      event.thing.session = {};
-
     event.thing.session.disabled = !event.value;
   }
 
@@ -250,22 +256,15 @@ export class AdminThingComponent implements OnInit {
     // event.event.stopPropagation();
 
     var param: any = {
-      // userId: this.auth._id,
       parent: event.thing._id,
       title: "(enter title)", //event.target.value
-      type: event.event.target.parentElement.innerText, // TODO!! breaks with angular material changes, obv
+      type: event.type,
       session: { disabled: false }
-    }
-
-    if (event.thing.view) {
-      param.view = event.thing.view;
     }
 
     this.thingService.insert(param);
 
-    // setTimeout(() => {
     this.toggleChildren({ event: event.event, thing: event.thing, force: true });
-    // }, 0);
   }
 
   save(event) {
@@ -284,15 +283,10 @@ export class AdminThingComponent implements OnInit {
       }
     });
 
-    let el = event.event.target;
-    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
-
-    this.eventElement = el;
+    this.eventElement = this.getParentThingElement(event);
     this.eventThing = thing;
 
-    /*
-     Upload images
-    */
+    // Upload images
     this.thingImageService.upload(this.uploader, thing);
   }
 
@@ -303,50 +297,46 @@ export class AdminThingComponent implements OnInit {
       event.event = this.eventElement;
     }
 
-    if (event.event && (event.eventType === "toggleChildren" || event.eventType === "load")) {
+    if (event.event && (event.eventType === "toggleChildren" || event.eventType === "load") && !this.choosing) {
       this.things.forEach(thing => {
         if (thing._id !== event.lastThing._id && thing.view && thing.view.showChildren) {
           thing.view.showChildren = false;
           thing.view.showContent = false;
 
-          // var param: any = {
-          //   _id: thing._id,
-          //   view: thing.view
-          // }
-          // this.thingService.update(param, null);
+          this.viewService.updateView(thing);
         }
       });
     }
 
-    let childrenElements = this.elementRef.nativeElement.children;
+    // let childrenElements = this.elementRef.nativeElement.children;
 
-    // If only one child, don't need to do anything
-    if (childrenElements.length > 1) {
-      // Create an array to make other operations easier
-      // TODO: better way?
-      let thingsArray = [];
-      let index = 0;
-      for (index = 0; index < childrenElements.length; index++) {
-        thingsArray.push(childrenElements[index]);
-      }
+    // // If only one child, don't need to do anything
+    // if (childrenElements.length > 1) {
+    //   // Create an array to make other operations easier
+    //   // TODO: better way?
+    //   let thingsArray = [];
+    //   let index = 0;
+    //   for (index = 0; index < childrenElements.length; index++) {
+    //     thingsArray.push(childrenElements[index]);
+    //   }
 
-      let currentWidths: number[] = thingsArray.map<number>(thing => { return thing.clientWidth });
+    //   let currentWidths: number[] = thingsArray.map<number>(thing => { return thing.clientWidth });
 
-      thingsArray.forEach(thing => { thing.style.minWidth = "auto"; }); // set DOM
+    //   thingsArray.forEach(thing => { thing.style.minWidth = "auto"; }); // set DOM
 
-      let naturalWidths: number[] = thingsArray.map<number>(thing => { return thing.clientWidth });
-      let firstNaturalWidth = naturalWidths[0];
+    //   let naturalWidths: number[] = thingsArray.map<number>(thing => { return thing.clientWidth });
+    //   let firstNaturalWidth = naturalWidths[0];
 
-      // If widths are not all the same, we'll resize to the maximum width
-      if (!naturalWidths.every(val1 => val1 === firstNaturalWidth)) {
+    //   // If widths are not all the same, we'll resize to the maximum width
+    //   if (!naturalWidths.every(val1 => val1 === firstNaturalWidth)) {
 
-        let max = Math.max.apply(null, naturalWidths);
+    //     let max = Math.max.apply(null, naturalWidths);
 
-        // Formula for "relative spacing""
-        // thingsArray.forEach(thing => { thing.style.width = max + "px" /*this.maxWidth*/; });
-        thingsArray.forEach(thing => { thing.style.minWidth = ((thing.clientWidth / max) * (max - thing.clientWidth) + thing.clientWidth) + "px"; });
-      }
-    }
+    //     // Formula for "relative spacing""
+    //     // thingsArray.forEach(thing => { thing.style.width = max + "px" /*this.maxWidth*/; });
+    //     thingsArray.forEach(thing => { thing.style.minWidth = ((thing.clientWidth / max) * (max - thing.clientWidth) + thing.clientWidth) + "px"; });
+    //   }
+    // }
 
     event.lastThing = this.parent;
 

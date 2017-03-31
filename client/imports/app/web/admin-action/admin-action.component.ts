@@ -28,6 +28,7 @@ export class AdminActionComponent implements OnInit {
   @Output() onToggle = new EventEmitter<any>();
 
   isEditing: any = false;
+  addEvent: any;
 
   constructor(
     private schemaService: SchemaService) {
@@ -53,7 +54,7 @@ export class AdminActionComponent implements OnInit {
   }
 
   right2() {
-    return this.enableCreate === "yes" ? "" : "0";
+    return this.enableCreate === "yes" ? "" : "translateX(50px)";
   }
 
   toggle(event) {
@@ -98,13 +99,16 @@ export class AdminActionComponent implements OnInit {
 
   add(event) {
     event.stopPropagation();
+    this.addEvent = event;
   }
 
   create(event) {
     this.onCreate.emit(
       {
-        event: event,
-        thing: this.thing
+        event: this.addEvent,
+        thing: this.thing,
+        type: event.target.parentElement.innerText
       });
+    this.addEvent = null;
   }
 }

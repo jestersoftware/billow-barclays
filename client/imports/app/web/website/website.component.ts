@@ -97,6 +97,7 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
         }
         else if (this.things.length > 0) {
           this.currentThing = this.things[0];
+          this.router.navigate([this.getLink(this.currentThing)]);
         }
       });
     });

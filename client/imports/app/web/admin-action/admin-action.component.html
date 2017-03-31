@@ -14,7 +14,7 @@
   <md-icon>library_add</md-icon>
 </button>
 
-<button *ngIf="isEditing" md-raised-button md-icon-button color='primary' [style.position]="position2()" [style.right]="right2()" [disabled]="!isEditing" (click)="cancel($event)" title="Cancel editing">
+<button *ngIf="isEditing" md-raised-button md-icon-button color='primary' [style.position]="position2()" [style.transform]="right2()" [disabled]="!isEditing" (click)="cancel($event)" title="Cancel editing">
   <md-icon>cancel</md-icon>
 </button>
 

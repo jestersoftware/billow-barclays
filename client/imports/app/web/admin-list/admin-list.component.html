@@ -1,31 +1,61 @@
-<div *ngIf="things && things.length > 0" class="thing-list alignCenter">
+<div class="thing-list alignCenter">
 
-  <md-card (click)="click({ event: $event })">
+  <md-card (click)="click({ event: $event })" [class.reference]="reference" [class.table]="archetype(parent).displaytype === 'table'">
 
-    <md-list>
+    <md-list *ngIf="parent.view?.showChildren || reference">
 
-      <h3 md-subheader>{{parent.title}}</h3>
+      <h3 *ngIf="!reference" style="margin-bottom: 0.5em;">{{parent.title}}</h3>
 
-      <md-list-item *ngFor="let thing of things; let i=index; trackBy: getKey">
-        <md-icon md-list-avatar>{{archetype(thing).icon}}</md-icon>
-        
-        <!--<h4 md-line>{{thing.type}}</h4>-->
-        <!--<p md-line> -->
-        <!--{{thing.title}} -->
+      <div *ngFor="let thing of things; let i=index; trackBy: getKey">
 
-        <md-input-container>
-          <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" title="Id: {{thing._id}}" />
-        </md-input-container>
+        <md-list-item *ngIf="thing.type !== 'Reference'">
 
-        <div *ngFor="let prop of props(thing); trackBy: getKey">
-          <md-input-container *ngIf="prop.type!=='image'">
-            <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" style="width: 100px;" />
+          <button *ngIf="!reference" md-icon-button class="left" (click)="toggleChildren({ event: $event, thing: thing, force: false })">
+            <md-icon *ngIf="!thing.view || !thing.view.showChildren">add_circle</md-icon>
+            <md-icon *ngIf="thing.view?.showChildren">remove_circle_outline</md-icon>
+          </button>
+
+          <md-icon md-list-avatar>{{archetype(thing).icon}}</md-icon>
+          
+          <!--<h4 md-line>{{thing.type}}</h4>-->
+          <!--<p md-line> -->
+          <!--{{thing.title}} -->
+
+          <md-input-container>
+            <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.order.index" placeholder="Order" title="{{thing._id}}" style="width: 50px;" />
           </md-input-container>
+
+          <md-select name="type" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.type" placeholder="Type" (ngModelChange)="typeChange(thing)" (click)="typeClick($event)">  
+            <md-option *ngFor="let archetype of archetypes(parent)" [value]="archetype.key">
+              {{archetype.display}}
+            </md-option>
+          </md-select>
+
+          <md-input-container>
+            <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" title="{{thing.title}}" />
+          </md-input-container>
+
+          <div *ngFor="let prop of props(thing); trackBy: getKey">
+            <md-input-container *ngIf="prop.type !== 'image'">
+              <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" placeholder="{{prop.title}}" title="{{thing[prop.key][prop.name]}}" style="width: 100px;" />
+            </md-input-container>
+          </div>
+
+          <!--</p>-->
+          <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" [enableCreate]="'none'" [enableEdit]="thing.parent === parent._id && thing.session?.editable ? 'yes' : 'none'" [showExpand]="false"></app-admin-action>
+
+        </md-list-item>
+
+        <div *ngIf="thing.type === 'Reference'">
+          <app-admin-list [parent]="thing" [reference]="true"></app-admin-list> <!--*ngIf="thing.view?.format" -->
         </div>
 
-        <!--</p>-->
-        <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" [enableCreate]="'none'" [enableEdit]="thing.parent===parent._id && thing.session && thing.session.editable ? 'yes' : 'none'" [showExpand]="false"></app-admin-action>
-      </md-list-item>
+        <div class="alignCenter" *ngIf="thing.parent === parent._id && thing.type !== 'Reference'">   <!--thing.view?.showChildren && -->
+          <!--<app-admin-thing *ngIf="!thing.view || !thing.view.format" [parent]="thing"></app-admin-thing>-->
+          <app-admin-list [parent]="thing"></app-admin-list> <!--*ngIf="thing.view?.format" -->
+        </div>
+
+      </div>
 
       <!--<md-divider></md-divider>-->
 
@@ -38,8 +68,8 @@
 
     </md-list>
 
-    <div style="text-align: center;">
-      <app-admin-action [thing]="parent" (onCreate)="create($event)" [enableCreate]="parent.session && parent.session.editable ? 'yes' : 'none'" [enableEdit]="'none'" [showExpand]="false"></app-admin-action>
+    <div *ngIf="!reference" class="alignCenter">
+      <app-admin-action [thing]="parent" (onCreate)="create($event)" [enableCreate]="parent.session?.editable ? 'yes' : 'none'" [enableEdit]="'none'" [showExpand]="false"></app-admin-action>
     </div>
 
   </md-card>

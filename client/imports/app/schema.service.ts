@@ -42,19 +42,21 @@ export class SchemaService {
       key: "Collection",
       display: "Collection",
       icon: "list",
-      parent: ["Business", "Department"]
+      defaultFormat: "format",
+      parent: ["Business", "Department", "Reference"]
     },
     {
       key: "Product",
       display: "Product",
       icon: "attach_money",
       displaytype: "table",
-      parent: ["Collection", "Menu", "Section"]
+      parent: ["Collection", "Menu", "Section", "Reference"]
     },
     {
       key: "Menu",
       display: "Menu",
       icon: "restaurant_menu",
+      defaultFormat: "format",
       parent: ["Collection"]
     },
     {
@@ -182,7 +184,7 @@ export class SchemaService {
     return properties;
   }
 
-  fixup(things, flag) {
+  fixup(things, flag, parent = null) {
     let count = 0;
     things.forEach(thing => {
       // Fix up Order Index
@@ -190,18 +192,31 @@ export class SchemaService {
       if (!thing.order) {
         thing.order = { index: count };
       }
-      else if(thing.order.index > 0) {
+      else if (thing.order.index > 0) {
         count = thing.order.index + 1;
       }
       else {
         thing.order.index = count;
       }
-      // Schema migration
-      if(flag) {
-        if(this.viewService.getCurrentView().things && this.viewService.getCurrentView().things[thing._id])
+      // Schema migration - view has moved to User collection
+      if (flag) {
+        if (this.viewService.getCurrentView().things && this.viewService.getCurrentView().things[thing._id])
           thing.view = this.viewService.getCurrentView().things[thing._id].view;
         else
           thing.view = {};
+      }
+      // Session
+      if(!thing.session) {
+        thing.session = {}
+        thing.session.disabled = true;
+      }
+      // Parent
+      if(parent) {
+        thing.session.parentThing = parent;
+      }
+      // Format
+      if(this.getArchetype(thing).defaultFormat && this.getArchetype(thing).defaultFormat === "format") {
+        thing.view.format = true;
       }
       // Fix up all other properties
       for (let property of this.getProperties(thing)) {
