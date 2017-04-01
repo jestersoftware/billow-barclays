@@ -47,6 +47,12 @@ export class ThingService {
       return this.ancestorOf(thing, ancestorThing.session.parentThing);
   }
 
+  getParentThingElement(event) {
+    let el = event.event.target;
+    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
+    return el;
+  }
+
   getThing(thing): Observable<any> {
     let subject = new Subject();
 

@@ -36,7 +36,7 @@ export class SchemaService {
       key: "Department",
       display: "Department",
       icon: "supervisor_account",
-      parent: ["Business"]
+      parent: ["Business", "Reference"]
     },
     {
       key: "Collection",
@@ -57,13 +57,13 @@ export class SchemaService {
       display: "Menu",
       icon: "restaurant_menu",
       defaultFormat: "format",
-      parent: ["Collection"]
+      parent: ["Collection", "Reference"]
     },
     {
       key: "Web Site",
       display: "Web Site",
       icon: "language",
-      parent: ["Business"]
+      parent: ["Business", "Reference"]
     },
     {
       key: "Social Site",
@@ -75,7 +75,7 @@ export class SchemaService {
       key: "Section",
       display: "Section",
       icon: "web",
-      parent: ["Web Site", "Section", "Menu"]
+      parent: ["Web Site", "Section", "Menu", "Reference"]
     },
     {
       key: "Reference",

@@ -4,7 +4,6 @@ import {
   OnChanges,
   Input,
   Output,
-  ViewChild,
   ElementRef,
   EventEmitter,
   NgZone
@@ -69,7 +68,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
       this.userService.getCurrentUser().subscribe(users => {
         this.zone.run(() => {
           this.things = users;
-          this.parent.childrenLength = this.things.length;
+          this.parent.session.childrenLength = this.things.length;
         });
 
         // Needed when top-level user object is only one shown
@@ -88,7 +87,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
         this.zone.run(() => {
           this.things = things;
-          this.parent.childrenLength = this.things.length;
+          this.parent.session.childrenLength = this.things.length;
           this.processChoosing();         
         });
 
@@ -146,7 +145,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
       event.event.stopPropagation();
 
-      this.eventElement = this.getParentThingElement(event);;
+      this.eventElement = this.thingService.getParentThingElement(event);;
       this.eventThing = event.thing;
 
       this.doResize({ event: this.eventElement, thing: event.thing, eventType: "focus", lastThing: event.thing });
@@ -163,7 +162,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
     this.viewService.updateView(event.thing);
 
-    this.eventElement = this.getParentThingElement(event);
+    this.eventElement = this.thingService.getParentThingElement(event);
     this.eventThing = event.thing;
   }
 
@@ -177,7 +176,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
     this.viewService.updateView(event.thing);
 
-    this.eventElement = this.getParentThingElement(event);
+    this.eventElement = this.thingService.getParentThingElement(event);
     this.eventThing = event.thing;
 
     if (!event.thing.view.showChildren) {
@@ -202,14 +201,8 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
     this.viewService.updateView(event.thing);
 
-    this.eventElement = this.getParentThingElement(event);
+    this.eventElement = this.thingService.getParentThingElement(event);
     this.eventThing = event.thing;
-  }
-
-  getParentThingElement(event) {
-    let el = event.event.target;
-    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
-    return el;
   }
 
   getKey(index: number, item: any): number {
@@ -226,7 +219,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
   lookupThing(event) {
     event.event.stopPropagation();
-    this.doResize({ event: this.getParentThingElement(event), thing: event.thing, eventType: "lookupThing", lastThing: event.thing });
+    this.doResize({ event: this.thingService.getParentThingElement(event), thing: event.thing, eventType: "lookupThing", lastThing: event.thing });
   }
 
   chooseThing(event) {
@@ -283,7 +276,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
       }
     });
 
-    this.eventElement = this.getParentThingElement(event);
+    this.eventElement = this.thingService.getParentThingElement(event);
     this.eventThing = thing;
 
     // Upload images

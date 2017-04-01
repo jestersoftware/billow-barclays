@@ -19,9 +19,6 @@ $foreground: map-get($theme, foreground);
 
 body {
   margin: 0; // KEEP: Chrome defaults to having a margin on body
-  // background-image: url(/assets/images/background/carbon_fibre.png);
-  // background-repeat: repeat;
-  // font-family: 'Special Elite';
   font-family: Roboto,"Helvetica Neue",sans-serif;
 }
 
@@ -38,7 +35,6 @@ body {
 .error {
   background: #f1f0ef;
   padding: 1em;
-  // width: 100%;
   display: block;
   margin-bottom: 20px;
 }
@@ -89,12 +85,6 @@ body {
     letter-spacing: 2px;
 }
 
-.mat-select-disabled {
-   .mat-select-value & {
-    color: mat-color($foreground, text);
-  }
-}
-
 md-card.vertical input[disabled] ~ .mat-input-placeholder-wrapper > .mat-input-placeholder, 
 md-card.vertical .mat-select-disabled .mat-select-placeholder {
   visibility: hidden;
@@ -102,21 +92,48 @@ md-card.vertical .mat-select-disabled .mat-select-placeholder {
 
 ////////////////// 
 // TODO: ??? FIXES TO BASE MATERIAL LIBRARY BECAUSE IT'S BETA
+
 // Fix spacing around a SELECT
 .mat-select {
-  padding-top: 12px;
+  padding-top: 4px;
   padding-bottom: 12px;
 }
 
-.mat-select-trigger {
-  // margin-bottom: 8px;
-  // height: 28px;
+// Make font size uniform for inputs / selects
+.mat-select-trigger,
+.mat-input-element,
+.mat-list .mat-list-item .mat-list-item-content, 
+.mat-nav-list .mat-list-item .mat-list-item-content {
   font-size: 14px !important;
 }
 
+// This is a "fix"
 .mat-select-placeholder.mat-floating-placeholder {
-  top: -20px;
+  top: -14px !important;
 }
+
+// This is a "fix"
+.mat-select-value-text {
+  line-height: normal !important;
+}
+
+// Don't dim disabled fields (hard to read)
+.mat-input-element:disabled {
+  color: mat-color($foreground, text);
+}
+
+.mat-select-disabled {
+   .mat-select-value {
+    color: mat-color($foreground, text);
+  }
+}
+
+// Put space between fields when they're in a list
+.mat-list .mat-list-item .mat-input-container,
+.mat-list .mat-list-item .mat-select {
+  margin-right: 10px;
+}
+
 // TODO END
 ////////////////// 
 

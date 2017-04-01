@@ -60,7 +60,7 @@ export class AdminComponent implements OnInit {
       }
     });
 
-    this.parent = { _id: "", title: "Root", type: "Root" };
+    this.parent = { _id: "", title: "Root", type: "Root", session: {} };
   }
 
   login() {

@@ -1,26 +1,22 @@
 <div class="thing-list alignCenter">
 
-  <md-card (click)="click({ event: $event })" [class.reference]="reference" [class.table]="archetype(parent).displaytype === 'table'">
+  <md-card *ngIf="archetype(parent).displaytype !== 'table'" (click)="click({ event: $event })" [class.reference]="parent.type === 'Reference'">
 
-    <md-list *ngIf="parent.view?.showChildren || reference">
+    <md-list *ngIf="parent.view?.showChildren || parent.type === 'Reference'">
 
-      <h3 *ngIf="!reference" style="margin-bottom: 0.5em;">{{parent.title}}</h3>
+      <h3 *ngIf="parent.type !== 'Reference'" style="margin-bottom: 0.5em;">{{parent.title}}</h3>
 
       <div *ngFor="let thing of things; let i=index; trackBy: getKey">
 
-        <md-list-item *ngIf="thing.type !== 'Reference'">
+        <md-list-item *ngIf="thing.type !== 'Reference' || !thing.session.childrenLength || editingReference">
 
-          <button *ngIf="!reference" md-icon-button class="left" (click)="toggleChildren({ event: $event, thing: thing, force: false })">
+          <button *ngIf="thing.type !== 'Reference' && parent.type !== 'Reference' && archetype(thing).displaytype !== 'table'" md-icon-button class="left" (click)="toggleChildren({ event: $event, thing: thing, force: false })">
             <md-icon *ngIf="!thing.view || !thing.view.showChildren">add_circle</md-icon>
             <md-icon *ngIf="thing.view?.showChildren">remove_circle_outline</md-icon>
           </button>
 
           <md-icon md-list-avatar>{{archetype(thing).icon}}</md-icon>
           
-          <!--<h4 md-line>{{thing.type}}</h4>-->
-          <!--<p md-line> -->
-          <!--{{thing.title}} -->
-
           <md-input-container>
             <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.order.index" placeholder="Order" title="{{thing._id}}" style="width: 50px;" />
           </md-input-container>
@@ -41,35 +37,34 @@
             </md-input-container>
           </div>
 
-          <!--</p>-->
-          <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" [enableCreate]="'none'" [enableEdit]="thing.parent === parent._id && thing.session?.editable ? 'yes' : 'none'" [showExpand]="false"></app-admin-action>
+          <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" [isEditing]="thing.session?.editing" [enableCreate]="'none'" [enableEdit]="!editingParent && thing.session?.editable ? 'yes' : 'none'" [enableExpand]="false"></app-admin-action>
 
         </md-list-item>
 
-        <div *ngIf="thing.type === 'Reference'">
-          <app-admin-list [parent]="thing" [reference]="true"></app-admin-list> <!--*ngIf="thing.view?.format" -->
-        </div>
-
-        <div class="alignCenter" *ngIf="thing.parent === parent._id && thing.type !== 'Reference'">   <!--thing.view?.showChildren && -->
-          <!--<app-admin-thing *ngIf="!thing.view || !thing.view.format" [parent]="thing"></app-admin-thing>-->
-          <app-admin-list [parent]="thing"></app-admin-list> <!--*ngIf="thing.view?.format" -->
+        <!--RECURSIVE-->
+        <div class="alignCenter" >
+          <app-admin-list [parent]="thing" (onEdit)="edit($event)" [editingParent]="editingReference"></app-admin-list>
         </div>
 
       </div>
 
-      <!--<md-divider></md-divider>-->
+      <!--
+      <md-divider></md-divider>
+      -->
 
-      <!--<h3 md-subheader>Notes</h3>
+      <!--
+      <h3 md-subheader>Notes</h3>
       <md-list-item *ngFor="let note of notes">
         <md-icon md-list-avatar>note</md-icon>
         <h4 md-line>{{note.name}}</h4>
         <p md-line> {{note.updated | date}} </p>
-      </md-list-item>-->
+      </md-list-item>
+      -->
 
     </md-list>
 
-    <div *ngIf="!reference" class="alignCenter">
-      <app-admin-action [thing]="parent" (onCreate)="create($event)" [enableCreate]="parent.session?.editable ? 'yes' : 'none'" [enableEdit]="'none'" [showExpand]="false"></app-admin-action>
+    <div *ngIf="parent.type !== 'Reference'" class="alignCenter">
+      <app-admin-action [thing]="parent" (onCreate)="create($event)" [enableCreate]="parent.session?.editable ? 'yes' : 'none'" [enableEdit]="'none'" [enableExpand]="false"></app-admin-action>
     </div>
 
   </md-card>

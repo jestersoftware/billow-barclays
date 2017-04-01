@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, ElementRef, NgZone } from '@angular/core';
+import { Component, OnInit,  OnChanges, Input, Output, EventEmitter, ElementRef, NgZone } from '@angular/core';
 
 import { SchemaService } from './../../schema.service';
 
@@ -15,13 +15,16 @@ import style from './admin-list.component.scss';
   styles: [style],
   providers: [ThingService]
 })
-export class AdminListComponent implements OnInit {
+export class AdminListComponent implements OnInit, OnChanges {
 
   @Input() parent: any;
-  @Input() reference: any = false;
+  @Input() editingParent: any = false;
   @Output() onResize = new EventEmitter<any>();
+  @Output() onEdit = new EventEmitter<any>();
 
   things: any = [];
+
+  editingReference: any = false;
 
   constructor(
     public elementRef: ElementRef,
@@ -32,18 +35,33 @@ export class AdminListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.init();
+  }
+
+  ngOnChanges(simpleChanges) {
+    if(simpleChanges.editingParent && simpleChanges.editingParent.previousValue === true && simpleChanges.editingParent.currentValue === false) {
+      this.things = [];
+      this.init();
+    }
+  }
+
+  init() {
     this.thingService.getChildren(this.parent).subscribe(things => {
       this.zone.run(() => {
         this.things = things;
-        this.parent.childrenLength = this.things.length;
+        this.parent.session.childrenLength = this.things.length;
       });
 
       setTimeout(() => {
-        let el = this.elementRef.nativeElement;
-        while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
-        this.doResize({ event: el, thing: this.parent, eventType: "load", lastThing: this.parent });
+        this.doResize(
+          {
+            event: this.thingService.getParentThingElement({ event: { target: this.elementRef.nativeElement } }),
+            thing: this.parent,
+            eventType: "load",
+            lastThing: this.parent
+          });
       }, 0);
-    });
+    });    
   }
 
   archetype(thing) {
@@ -61,31 +79,25 @@ export class AdminListComponent implements OnInit {
   click(event) {
     event.event.stopPropagation();
 
-    let el = event.event.target;
-    while (el.parentElement && (el = el.parentElement) && !el.classList.contains('thing'));
-
-    this.doResize({ event: el, thing: this.parent, eventType: "focus", lastThing: event.thing });
+    this.doResize(
+      {
+        event: this.thingService.getParentThingElement(event),
+        thing: this.parent,
+        eventType: "focus",
+        lastThing: event.thing
+      });
   }
 
   toggleChildren(event) {
-    // event.event.stopPropagation();
+    event.event.stopPropagation();
 
-    if (!event.thing.view)
+    if (!event.thing.view) {
       event.thing.view = {};
+    }
 
     event.thing.view.showChildren = event.force ? true : !event.thing.view.showChildren;
 
     this.viewService.updateView(event.thing);
-
-    // this.eventElement = this.getParentThingElement(event);
-    // this.eventThing = event.thing;
-
-    // if (!event.thing.view.showChildren) {
-    //   setTimeout(() => {
-    //     this.doResize({ event: this.eventElement, thing: this.eventThing, eventType: "toggleChildren", lastThing: this.eventThing });
-    //     // this.eventElement = null;
-    //   }, 0);
-    // }
   }
 
   typeChange(thing) {
@@ -99,31 +111,40 @@ export class AdminListComponent implements OnInit {
   edit(event) {
     event.event.stopPropagation();
 
-    let thing = event.thing;
+    if (this.parent.type === 'Reference') {
+      event.thing.session.editing = false;
+      event.thing = this.parent;
+      this.editingParent = event.value;
+      this.onEdit.emit(event);
+      return;
+    }
 
-    if (!thing.session)
-      thing.session = {};
+    if (event.thing.type === 'Reference') {
+      event.thing.session.editing = event.value;
+      this.editingReference = event.value;
+    }
 
-    thing.session.disabled = !event.value;
+    event.thing.session.disabled = !event.value;
   }
 
   save(event) {
     event.event.stopPropagation();
 
-    let thing = event.thing;
+    if (event.thing.type === 'Reference') {
+      event.thing.session.editing = false;
+      this.editingReference = false;
+    }
 
-    this.thingService.update(thing);
+    this.thingService.update(event.thing);
   }
 
   create(event) {
     event.event.stopPropagation();
 
-    let thing = event.thing;
-
     var param: any = {
-      parent: thing._id,
-      title: "(enter title)", //event.target.value
-      type: event.type //.event.target.parentElement.parentElement.innerText // TODO
+      parent: event.thing._id,
+      title: "(enter title)",
+      type: event.type
     }
 
     this.thingService.insert(param);

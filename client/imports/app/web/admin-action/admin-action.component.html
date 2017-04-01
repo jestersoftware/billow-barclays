@@ -1,4 +1,4 @@
-<div *ngIf="showExpand">
+<div *ngIf="enableExpand">
   <button md-icon-button *ngIf="!thing.view || !thing.view.showContent" (click)="toggle($event)" title="Show details" class="alignCenter">
     <md-icon>expand_more</md-icon>
   </button>
@@ -10,11 +10,11 @@
   </div>
 </div>
 
-<button *ngIf="!isEditing && enableCreate!=='none'" md-icon-button color='primary' [disabled]="isEditing" [md-menu-trigger-for]="menu" title="Add a child thing" (click)="add($event)">
+<button *ngIf="!isEditing && enableCreate!=='none'" md-icon-button color='primary' [disabled]="isEditing" [md-menu-trigger-for]="menu" title="Add a new item to {{thing.title}}" (click)="add($event)">
   <md-icon>library_add</md-icon>
 </button>
 
-<button *ngIf="isEditing" md-raised-button md-icon-button color='primary' [style.position]="position2()" [style.transform]="right2()" [disabled]="!isEditing" (click)="cancel($event)" title="Cancel editing">
+<button *ngIf="enableEdit!=='none' && isEditing" md-raised-button md-icon-button color='primary' [style.position]="position2()" [style.transform]="right2()" [disabled]="!isEditing" (click)="cancel($event)" title="Cancel editing">
   <md-icon>cancel</md-icon>
 </button>
 

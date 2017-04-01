@@ -101,7 +101,7 @@
       <!--<input type="text" *ngIf="auth" placeholder="Add here..." (keyup.enter)="action($event, thing)" />-->
 
       <span style="position: absolute; bottom: 10px; left: 0;">
-        {{thing.childrenLength}}
+        {{thing.session.childrenLength}}
       </span>
 
       <button md-icon-button class="below" (click)="toggleChildren({ event: $event, thing: thing, force: false })">
@@ -109,7 +109,7 @@
         <md-icon *ngIf="thing.view?.showChildren">remove_circle_outline</md-icon>
       </button>
 
-      <button *ngIf="thing.view?.showChildren && thing.childrenLength > 0" md-icon-button class="below right" (click)="toggleFormat({ event: $event, thing: thing })">
+      <button *ngIf="thing.view?.showChildren && thing.session.childrenLength > 0" md-icon-button class="below right" (click)="toggleFormat({ event: $event, thing: thing })">
         <md-icon>menu</md-icon>
       </button>
 

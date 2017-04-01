@@ -22,6 +22,7 @@ Meteor.publish("thing.children", function (parentId: string, refId?: string /*, 
     _parentId = null;
   }
   
+  // TODO??
   // if (_refId) {
   //   check(_refId, String);
 

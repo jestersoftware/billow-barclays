@@ -21,13 +21,14 @@ export class AdminActionComponent implements OnInit {
   @Input() thing: any;
   @Input() enableCreate: string = "yes";
   @Input() enableEdit: string = "yes";
-  @Input() showExpand: boolean = true;
+  @Input() enableExpand: boolean = true;
   @Output() onCreate = new EventEmitter<any>();
   @Output() onEdit = new EventEmitter<any>();
   @Output() onSave = new EventEmitter<any>();
   @Output() onToggle = new EventEmitter<any>();
 
-  isEditing: any = false;
+  @Input() isEditing: any = false;
+  
   addEvent: any;
 
   constructor(
@@ -54,7 +55,7 @@ export class AdminActionComponent implements OnInit {
   }
 
   right2() {
-    return this.enableCreate === "yes" ? "" : "translateX(50px)";
+    return this.enableCreate === "yes" ? "" : "translateX(42px)";
   }
 
   toggle(event) {
