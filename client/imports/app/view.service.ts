@@ -17,12 +17,12 @@ export class ViewService {
   constructor() {
   }
 
-  updateView(thing) {
+  update(thing) {
     MeteorObservable.call('users.update.view', thing).subscribe({
       next: () => {
       },
       error: (e: Error) => {
-        console.log('updateView', e);
+        console.log('ViewService.update() error', e);
       }
     });
   }

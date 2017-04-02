@@ -37,7 +37,7 @@
             </md-input-container>
           </div>
 
-          <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" [isEditing]="thing.session?.editing" [enableCreate]="'none'" [enableEdit]="!editingParent && thing.session?.editable ? 'yes' : 'none'" [enableExpand]="false"></app-admin-action>
+          <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" [editing]="thing.session?.editing" [enableCreate]="'none'" [enableEdit]="!editingParent && thing.session?.editable ? 'yes' : 'none'" [enableExpand]="false"></app-admin-action>
 
         </md-list-item>
 

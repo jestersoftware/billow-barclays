@@ -8,6 +8,9 @@ import { Things, Security } from "./../../../both/collections/things.collection"
 
 import { SchemaService } from './schema.service';
 
+import { UserService } from './user.service';
+import { RoleService } from './role.service';
+
 @Injectable()
 export class ThingService {
 
@@ -18,7 +21,10 @@ export class ThingService {
 
   security = new Security();
 
-  constructor(private schemaService: SchemaService) {
+  constructor(
+    private schemaService: SchemaService,
+    private userService: UserService,
+    private roleService: RoleService) {
   }
 
   setPermissions(parentId, things) {
@@ -38,13 +44,17 @@ export class ThingService {
     });
   }
 
-  ancestorOf(thing, ancestorThing) {
-    if(!ancestorThing)
+  ancestorOf(thing, compareTo) {
+    if(!compareTo)
       return false;
-    if(thing._id === ancestorThing._id)
+    if(thing._id === compareTo._id)
       return true;
     else
-      return this.ancestorOf(thing, ancestorThing.session.parentThing);
+      return this.ancestorOf(thing, compareTo.session.parentThing);
+  }
+
+  parentOf(thing, compareTo) {
+    return thing._id === compareTo.parent;
   }
 
   getParentThingElement(event) {
@@ -74,6 +84,15 @@ export class ThingService {
     let query: any = { parent: parentId };
 
     if (thing.reference && thing.reference._id) {
+      // TODO
+      if(thing.reference._id === "users")
+      {
+        return this.userService.getUsers();
+      }
+      if(thing.reference._id === "roles")
+      {
+        return this.roleService.getRoles();
+      }
       refId = thing.reference._id;
       query = { $or: [query, { _id: refId }] };
     }
@@ -139,10 +158,11 @@ export class ThingService {
 
     let id = copy._id;
 
-    // Don't update _id or session or view properties
+    // TODO: Don't update some properties ... do in method?
     delete copy['_id'];
     delete copy['session'];
     delete copy['view'];
+    delete copy['meta'];
 
     MeteorObservable.call('things.update', id, copy).subscribe({
       next: () => {

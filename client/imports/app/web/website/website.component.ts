@@ -58,7 +58,7 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
-    this.scrollSpyService.getObservable('test').subscribe((e: any) => {
+    this.scrollSpyService.getObservable('scroller').subscribe((e: any) => {
       this.transparent = !(e.target.scrollTop > 400);
     });
   }

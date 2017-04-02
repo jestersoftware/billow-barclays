@@ -4,7 +4,7 @@
 
     <div *ngIf="!thing.reference || !thing.reference._id">
 
-      <div [class.background]="thing.background && thing.background.path" [ngStyle]="{ 'background-image': 'url(' + (thing.background && thing.background.path ? thing.background.path : '') + ')' }">
+      <div [scrollSpyParallax]="{ spyId: 'scroller', ratio: -0.3 }" [class.background]="thing.background && thing.background.path" [ngStyle]="{ 'background-image': 'url(' + (thing.background && thing.background.path ? thing.background.path : '') + ')' }">
 
         <section *ngIf="archetype(thing).displaytype!=='table'" class="container content">
 

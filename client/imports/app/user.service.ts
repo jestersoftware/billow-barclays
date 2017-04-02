@@ -31,9 +31,35 @@ export class UserService {
           view: { showChildren: true }*/
         });
 
-      subject.next(this.schemaService.fixup(userArray, false));
+      subject.next(this.schemaService.fixup(userArray, true));
     });
 
     return subject;
   }
+
+
+  getUsers(): Subject<any> {
+    let subject = new Subject();
+
+    MeteorObservable.subscribe('users').subscribe(() => {
+      let users = Meteor.users.find().fetch();
+
+      let userArray = [];
+
+      users.forEach(user => {
+        userArray.push(
+          {
+            _id: user._id,
+            parent: "",
+            title: this.displayNamePipe.transform(user),
+            type: "User"
+          });
+      });
+
+      subject.next(this.schemaService.fixup(userArray, true));
+    });
+
+    return subject;
+  }
+  
 }

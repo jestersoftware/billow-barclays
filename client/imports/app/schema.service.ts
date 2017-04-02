@@ -11,7 +11,16 @@ export class SchemaService {
       display: "User",
       editable: false,
       icon: "face",
-      parent: ["Root"]
+      displaytype: "table",
+      parent: ["Root", "Reference"]
+    },
+    {
+      key: "Role",
+      display: "Role",
+      editable: false,
+      icon: "face",
+      displaytype: "table",
+      parent: ["User", "Reference"]
     },
     {
       key: "Organization",
@@ -184,7 +193,7 @@ export class SchemaService {
     return properties;
   }
 
-  fixup(things, flag, parent = null) {
+  fixup(things, reset, parent = null) {
     let count = 0;
     things.forEach(thing => {
       // Fix up Order Index
@@ -193,30 +202,33 @@ export class SchemaService {
         thing.order = { index: count };
       }
       else if (thing.order.index > 0) {
-        count = thing.order.index + 1;
+        count = thing.order.index;
       }
       else {
         thing.order.index = count;
       }
+      // View
+      if (reset || !thing.view) {
+        thing.view = {};
+      }
+      // Format - set default, overwrite below if saved - therefore, this needs to go first
+      if (this.getArchetype(thing).defaultFormat && this.getArchetype(thing).defaultFormat === "format") {
+        thing.view.format = true;
+      }
       // Schema migration - view has moved to User collection
-      if (flag) {
-        if (this.viewService.getCurrentView().things && this.viewService.getCurrentView().things[thing._id])
+      if (reset) {
+        if (this.viewService.getCurrentView().things && this.viewService.getCurrentView().things[thing._id]) {
           thing.view = this.viewService.getCurrentView().things[thing._id].view;
-        else
-          thing.view = {};
+        }
       }
       // Session
-      if(!thing.session) {
+      if (!thing.session) {
         thing.session = {}
         thing.session.disabled = true;
       }
       // Parent
-      if(parent) {
+      if (parent) {
         thing.session.parentThing = parent;
-      }
-      // Format
-      if(this.getArchetype(thing).defaultFormat && this.getArchetype(thing).defaultFormat === "format") {
-        thing.view.format = true;
       }
       // Fix up all other properties
       for (let property of this.getProperties(thing)) {

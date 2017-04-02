@@ -22,12 +22,12 @@ export class AdminActionComponent implements OnInit {
   @Input() enableCreate: string = "yes";
   @Input() enableEdit: string = "yes";
   @Input() enableExpand: boolean = true;
+  @Input() editing: any = false;
+  @Input() disabled: any = false;
   @Output() onCreate = new EventEmitter<any>();
   @Output() onEdit = new EventEmitter<any>();
   @Output() onSave = new EventEmitter<any>();
   @Output() onToggle = new EventEmitter<any>();
-
-  @Input() isEditing: any = false;
   
   addEvent: any;
 
@@ -67,24 +67,24 @@ export class AdminActionComponent implements OnInit {
   }
 
   edit(event) {
-    this.isEditing = true;
+    this.editing = true;
 
     this.onEdit.emit(
       {
         event: event,
         thing: this.thing,
-        value: this.isEditing
+        value: this.editing
       });
   }
 
   cancel(event) {
-    this.isEditing = false;
+    this.editing = false;
 
     this.onEdit.emit(
       {
         event: event,
         thing: this.thing,
-        value: this.isEditing
+        value: this.editing
       });
   }
 

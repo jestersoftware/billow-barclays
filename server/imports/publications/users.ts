@@ -1,5 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 
+import { Roles } from "meteor/alanning:roles";
+
 // import { Users } from './../../../both/collections/users.collection';
 
 Meteor.publish('users', function (/*id: string*/) {
@@ -16,8 +18,16 @@ Meteor.publish('users', function (/*id: string*/) {
   //   }
   // });
 
-  return Meteor.users.find({
-    _id: this.userId
-  });
+  let query = {};
 
+  if(Roles.userIsInRole(this.userId, ["view"], "SoSsmkkSJGkoXp8B2")) {
+  }
+  else
+  {
+    query = {
+      _id: this.userId
+    };
+  }  
+
+  return Meteor.users.find(query);
 });

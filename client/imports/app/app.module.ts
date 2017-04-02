@@ -31,6 +31,7 @@ import { WebsiteSectionComponent } from './web/website.section/website.section.c
 
 /*SERVICES*/
 import { UserService } from './user.service';
+import { RoleService } from './role.service';
 import { ViewService } from './view.service';
 import { SchemaService } from './schema.service';
 import { ThingService } from './thing.service';
@@ -38,6 +39,7 @@ import { ThingImageService } from './thing.image.service';
 import { DataService } from './data.service';
 
 import { ScrollSpyModule } from 'ng2-scrollspy';
+import { ScrollSpyParallaxModule } from 'ng2-scrollspy/dist/plugin/parallax'; 
 
 /*IMAGES*/
 import { FileUploadModule } from 'ng2-file-upload';
@@ -69,11 +71,13 @@ import { DisplayNamePipe } from './pipe/display-name.pipe';
     HttpModule,
     FormsModule,
     FileUploadModule,
-  	ScrollSpyModule.forRoot()
+  	ScrollSpyModule.forRoot(),
+    ScrollSpyParallaxModule
   ],
   providers: [
     AuthService,
     UserService,
+    RoleService,
     ViewService,
     SchemaService,
     ThingService,

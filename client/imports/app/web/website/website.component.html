@@ -22,7 +22,7 @@
 
       <span class="fill-remaining-space"></span>
 
-      <button md-icon-button [md-menu-trigger-for]="menu" title="Tools">
+      <button md-icon-button [md-menu-trigger-for]="menu" title="Menu">
         <md-icon>more_vert</md-icon>
       </button>
 
@@ -46,12 +46,12 @@
   </div>
 </div>
 
-<div scrollSpyElement="test" class="scrollable" [ngStyle]="{ 'font-family': font }">
+<div scrollSpyElement="scroller" class="scrollable" [ngStyle]="{ 'font-family': font }">
   <!--class="alignCenter"-->
 
   <div>
 
-    <div class="background" [ngStyle]="{ 'background-image': 'url(' + (currentThing.background && currentThing.background.path ? currentThing.background.path : (thing.background ? thing.background.path : '')) + ')' }">
+    <div [scrollSpyParallax]="{ spyId: 'scroller', ratio: 0.3 }" class="background" [ngStyle]="{ 'background-image': 'url(' + (currentThing.background && currentThing.background.path ? currentThing.background.path : (thing.background ? thing.background.path : '')) + ')' }">
 
       <div class="container">
 

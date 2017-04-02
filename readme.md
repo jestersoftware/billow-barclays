@@ -15,3 +15,10 @@ https://angular-meteor.com/
 Angular Meteor RxJs
 https://github.com/Urigo/meteor-rxjs
 
+ScrollSpy
+https://github.com/JonnyBGod/ng2-scrollspy
+
+Roles
+https://atmospherejs.com/alanning/roles
+Example
+Roles.addUsersToRoles("h7JAbWufkufhm735d", ['view'], 'kPQE6LqfFwxBRBNTK')

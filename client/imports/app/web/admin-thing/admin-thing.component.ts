@@ -1,13 +1,4 @@
-import {
-  Component,
-  OnInit,
-  OnChanges,
-  Input,
-  Output,
-  ElementRef,
-  EventEmitter,
-  NgZone
-} from '@angular/core';
+import { Component, OnInit, OnChanges, Input, Output, ElementRef, EventEmitter, NgZone } from '@angular/core';
 
 import { SchemaService } from './../../schema.service';
 
@@ -75,7 +66,13 @@ export class AdminThingComponent implements OnInit, OnChanges {
         if (!this.timeout) {
           this.timeout = true;
           setTimeout(() => {
-            this.onResize.emit({ event: null, thing: this.parent, eventType: "load", lastThing: this.parent });
+            this.onResize.emit(
+              {
+                event: null,
+                thing: this.parent,
+                eventType: "load",
+                lastThing: this.parent
+              });
             this.timeout = false;
           }, 0);
         }
@@ -88,14 +85,20 @@ export class AdminThingComponent implements OnInit, OnChanges {
         this.zone.run(() => {
           this.things = things;
           this.parent.session.childrenLength = this.things.length;
-          this.processChoosing();         
+          this.processChoosing();
         });
 
         if (/*isCountChanged && */!this.timeout) {
           this.timeout = true;
           setTimeout(() => {
             // console.log("ngInit setTimeout ************************", this.parent);
-            this.doResize({ event: this.eventElement, thing: this.eventThing || this.parent, eventType: "load", lastThing: this.eventThing || this.parent });
+            this.doResize(
+              {
+                event: this.eventElement,
+                thing: this.eventThing || this.parent,
+                eventType: "load",
+                lastThing: this.eventThing || this.parent
+              });
             // this.eventElement = null;
             this.timeout = false;
           }, 0);
@@ -109,9 +112,9 @@ export class AdminThingComponent implements OnInit, OnChanges {
   }
 
   processChoosing() {
-    if(this.choosing) {
+    if (this.choosing) {
       this.things.forEach(thing => {
-        if(!this.thingService.ancestorOf(thing, this.choosing.thing)) {
+        if (this.choosing.test.call(this, { thing: thing, choosing: this.choosing })) {
           thing.session.showChoose = true;
         }
       });
@@ -120,7 +123,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
       this.things.forEach(thing => {
         thing.session.showChoose = false;
       });
-    }    
+    }
   }
 
   archetype(thing) {
@@ -135,6 +138,10 @@ export class AdminThingComponent implements OnInit, OnChanges {
     return this.schemaService.getProperties(thing);
   }
 
+  disabled(event) {
+    return !event.thing.session || event.thing.session.disabled || this.choosing;
+  }
+
   click(event) {
     let eventTarget = event.event.target;
 
@@ -145,7 +152,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
       event.event.stopPropagation();
 
-      this.eventElement = this.thingService.getParentThingElement(event);;
+      this.eventElement = this.thingService.getParentThingElement(event);
       this.eventThing = event.thing;
 
       this.doResize({ event: this.eventElement, thing: event.thing, eventType: "focus", lastThing: event.thing });
@@ -160,46 +167,50 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
     event.thing.view.showContent = !event.thing.view.showContent;
 
-    this.viewService.updateView(event.thing);
+    this.viewService.update(event.thing);
 
     this.eventElement = this.thingService.getParentThingElement(event);
     this.eventThing = event.thing;
   }
 
   toggleChildren(event) {
-    // event.event.stopPropagation();
+    event.event.stopPropagation();
 
     if (!event.thing.view)
       event.thing.view = {};
 
     event.thing.view.showChildren = event.force ? true : !event.thing.view.showChildren;
 
-    this.viewService.updateView(event.thing);
+    this.viewService.update(event.thing);
 
     this.eventElement = this.thingService.getParentThingElement(event);
     this.eventThing = event.thing;
 
     if (!event.thing.view.showChildren) {
       setTimeout(() => {
-        this.doResize({ event: this.eventElement, thing: this.eventThing, eventType: "toggleChildren", lastThing: this.eventThing });
+        this.doResize(
+          { 
+            event: this.eventElement, 
+            thing: this.eventThing, 
+            eventType: "toggleChildren", 
+            lastThing: this.eventThing 
+          });
         // this.eventElement = null;
       }, 0);
     }
   }
 
   toggleFormat(event) {
-    // event.event.stopPropagation();
+    event.event.stopPropagation();
 
-    let thing = event.thing;
+    if (!event.thing.view)
+      event.thing.view = {};
 
-    if (!thing.view)
-      thing.view = {};
+    event.thing.view.format = !event.thing.view.format;
 
-    thing.view.format = !thing.view.format;
+    event.thing.view.showChildren = true;
 
-    thing.view.showChildren = true;
-
-    this.viewService.updateView(event.thing);
+    this.viewService.update(event.thing);
 
     this.eventElement = this.thingService.getParentThingElement(event);
     this.eventThing = event.thing;
@@ -219,12 +230,33 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
   lookupThing(event) {
     event.event.stopPropagation();
-    this.doResize({ event: this.thingService.getParentThingElement(event), thing: event.thing, eventType: "lookupThing", lastThing: event.thing });
+
+    this.doResize(
+      {
+        event: this.thingService.getParentThingElement(event),
+        thing: event.thing,
+        eventType: "lookupThing",
+        lastThing: event.thing,
+        action: event.action,
+        test: event.test
+      });
   }
 
   chooseThing(event) {
     event.event.stopPropagation();
-    this.doResize({ event: this.choosing.event, thing: event.thing, eventType: "chooseThing", lastThing: event.thing });
+
+    this.choosing.action.call(this, event);
+
+    // this.eventElement = this.choosing.event;
+    this.eventThing = event.thing;
+
+    this.doResize(
+      {
+        event: this.eventElement,
+        thing: this.eventThing,
+        eventType: "chooseThing",
+        lastThing: this.eventThing
+      });
   }
 
   openFileDialog(event, inputFile) {
@@ -283,6 +315,36 @@ export class AdminThingComponent implements OnInit, OnChanges {
     this.thingImageService.upload(this.uploader, thing);
   }
 
+  referto(event) {
+    this.eventElement = this.choosing.event;
+
+    this.choosing.thing.reference._id = event.thing._id;
+    this.choosing.thing.title = event.thing.title;
+    // this.choosing.thing.description = "Reference to " + event.thing.title; // TODO?
+  }
+
+  refertoTest(event) {
+    return !this.thingService.ancestorOf(event.choosing.thing, event.thing) && !this.thingService.ancestorOf(event.thing, event.choosing.thing);
+  }
+
+  reparent(event) {
+    this.eventElement = this.thingService.getParentThingElement(event);
+
+    event.thing.view.showChildren = true;
+
+    this.viewService.update(event.thing);
+
+    this.thingService.update(
+      {
+        _id: this.choosing.thing._id,
+        parent: event.thing._id
+      });
+  }
+
+  reparentTest(event) {
+    return !this.thingService.ancestorOf(event.choosing.thing, event.thing) && !this.thingService.parentOf(event.thing, event.choosing.thing);
+  }
+
   doResize(event) {
     // console.log("do resize from " + event.thing.title);
 
@@ -292,11 +354,13 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
     if (event.event && (event.eventType === "toggleChildren" || event.eventType === "load") && !this.choosing) {
       this.things.forEach(thing => {
-        if (thing._id !== event.lastThing._id && thing.view && thing.view.showChildren) {
+        if (thing._id !== event.lastThing._id
+          && thing.view
+          && thing.view.showChildren) {
           thing.view.showChildren = false;
           thing.view.showContent = false;
 
-          this.viewService.updateView(thing);
+          this.viewService.update(thing);
         }
       });
     }
@@ -336,7 +400,9 @@ export class AdminThingComponent implements OnInit, OnChanges {
     this.onResize.emit(event);
   }
 
-  open(thing) {
-    window.open('/' + thing._id);
+  open(event) {
+    event.event.stopPropagation();
+
+    window.open('/' + event.thing._id);
   }
 }

@@ -97,7 +97,7 @@ export class AdminListComponent implements OnInit, OnChanges {
 
     event.thing.view.showChildren = event.force ? true : !event.thing.view.showChildren;
 
-    this.viewService.updateView(event.thing);
+    this.viewService.update(event.thing);
   }
 
   typeChange(thing) {

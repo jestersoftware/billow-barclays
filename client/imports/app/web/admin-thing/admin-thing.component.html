@@ -2,8 +2,10 @@
 
   <md-card [class.vertical]="!thing.view?.showContent" [class.reference]="thing.parent !== parent._id" (click)="click({ event: $event, thing: thing })"> 
 
-    <div *ngIf="thing._id !== 'Root'" class="connector">
-      <md-icon class="above">more_vert</md-icon>
+    <div *ngIf="thing._id !== 'Root'" class="connector above">
+      <button md-icon-button [disabled]="this.choosing" (click)="lookupThing({ event: $event, thing: thing, action: reparent, test: reparentTest })" title="Change parent">
+        <md-icon>more_vert</md-icon>
+      </button>
     </div>
 
     <md-card-header>
@@ -11,22 +13,22 @@
       <div md-card-avatar><md-icon>{{archetype(thing).icon}}</md-icon></div>
 
       <span class="top left field-order">
-        <input type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.order.index" tabindex="100" title="{{thing._id}}" />
+        <input type="text" [disabled]="disabled({ thing: thing })" [(ngModel)]="thing.order.index" tabindex="100" title="{{thing._id}}" />
       </span>
 
-      <div class="top alignCenter full-width" [class.left]="thing.view?.showContent">
+      <div class="choose above alignCenter full-width" [class.left]="thing.view?.showContent">
         <button *ngIf="thing.session?.showChoose" md-raised-button color="warn" (click)="chooseThing({ event: $event, thing: thing })" title="Choose this item">
           Choose
         </button>
       </div>
 
-      <button *ngIf="thing.type==='Web Site'" md-icon-button class="top right" (click)="open(thing)" title="Open in new window">
+      <button *ngIf="thing.type==='Web Site'" md-icon-button class="top right" (click)="open({ event: $event, thing: thing })" title="Open in new window">
         <md-icon>call_made</md-icon>
       </button>
 
       <md-card-title>
         <md-input-container style="padding-top: 2px; padding-bottom: 2px;">
-          <input mdInput type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" title="{{thing.title}}" />
+          <input mdInput type="text" [disabled]="disabled({ thing: thing })" [(ngModel)]="thing.title" placeholder="Title" title="{{thing.title}}" />
         </md-input-container>
       </md-card-title>
 
@@ -42,11 +44,11 @@
 
       <div>
         <md-input-container class="full-width">
-          <textarea mdInput type="text" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.description" placeholder="Description"></textarea>
+          <textarea mdInput type="text" [disabled]="disabled({ thing: thing })" [(ngModel)]="thing.description" placeholder="Description"></textarea>
         </md-input-container>
       </div>
 
-      <md-select name="type" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.type" placeholder="Type" (ngModelChange)="typeChange(thing)" (click)="typeClick($event)">  
+      <md-select name="type" [disabled]="disabled({ thing: thing })" [(ngModel)]="thing.type" placeholder="Type" (ngModelChange)="typeChange(thing)" (click)="typeClick($event)">  
         <md-option *ngFor="let archetype of archetypes(parent)" [value]="archetype.key">
           {{archetype.display}}
         </md-option>
@@ -54,25 +56,25 @@
 
       <div *ngFor="let prop of props(thing); trackBy: getKey">
         <md-input-container *ngIf="prop.type !== 'image' && prop.type !== 'thing'">
-          <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
+          <input type="text" mdInput [disabled]="disabled({ thing: thing })" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
         </md-input-container>
         <div *ngIf="prop.type === 'thing'" class="thing-reference">
           <md-input-container>
             <input type="text" mdInput [disabled]="true" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
           </md-input-container>
           <span>
-            <button md-icon-button (click)="lookupThing({ event: $event, thing: thing })" [disabled]="!thing.session || thing.session.disabled">
+            <button md-icon-button (click)="lookupThing({ event: $event, thing: thing, action: referto, test: refertoTest })" [disabled]="disabled({ thing: thing })">
               <md-icon>menu</md-icon>
             </button>
           </span>
         </div>
         <div *ngIf="prop.type === 'image'" class="file">
           <md-input-container>
-            <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
+            <input type="text" mdInput [disabled]="disabled({ thing: thing })" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
           </md-input-container>
           <span>
-            <input #inputFile type="file" ng2FileSelect class="inputfile" [disabled]="!thing.session || thing.session.disabled" [uploader]="uploader" accept="image/*" (change)="onFile($event, thing, prop)" />
-            <button md-icon-button (click)="openFileDialog($event, inputFile)" [disabled]="!thing.session || thing.session.disabled">
+            <input #inputFile type="file" ng2FileSelect class="inputfile" [disabled]="disabled({ thing: thing })" [uploader]="uploader" accept="image/*" (change)="onFile($event, thing, prop)" />
+            <button md-icon-button (click)="openFileDialog($event, inputFile)" [disabled]="disabled({ thing: thing })">
               <md-icon>menu</md-icon>
             </button>
           </span>
@@ -86,7 +88,7 @@
 
     <md-card-actions>
 
-      <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" (onCreate)="create($event)" (onToggle)="toggleContent($event)" [enableCreate]="thing.parent === parent._id && thing.session?.editable ? 'yes' : 'none'" [enableEdit]="thing.view?.showContent && thing.parent === parent._id && thing.session?.editable ? 'yes' : 'none'"></app-admin-action>
+      <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" (onCreate)="create($event)" (onToggle)="toggleContent($event)" [disabled]="this.choosing" [enableCreate]="thing.parent === parent._id && thing.session?.editable ? 'yes' : 'none'" [enableEdit]="thing.view?.showContent && thing.parent === parent._id && thing.session?.editable ? 'yes' : 'none'"></app-admin-action>
 
       <div *ngIf="thing.session?.error?.message">
         <md-chip-list>
