@@ -19,7 +19,7 @@ Things.allow({
 
 export class Security {
 
-  /// Check all parents and all refs to see if they match roles for the user
+  // Check all parents and all refs to see if they match roles for the user
   checkRole(parentId: string, roles: Array<any>, userId: string, refFlag: boolean = false): boolean {
     let _parentId = parentId, _ref;
 
@@ -35,7 +35,10 @@ export class Security {
       }
       else {
         let thing = Things.findOne(_parentId);
-        if (thing && thing.type === "Web Site") {
+        if (thing 
+            && thing.type === "Web Site" 
+            && roles.length === 1 
+            && roles[0] === "view") {
           return true;
         }
         _parentId = thing ? thing.parent : null;

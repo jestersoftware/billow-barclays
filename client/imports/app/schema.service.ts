@@ -91,6 +91,12 @@ export class SchemaService {
       display: "Reference",
       icon: "tab_unselected",
       parent: ["*"]
+    },
+    {
+      key: "Image",
+      display: "Image",
+      icon: "photo",
+      parent: ["Collection", "Reference"]
     }
   ]
 
@@ -132,7 +138,7 @@ export class SchemaService {
       type: "image",
       hidden: true,
       preview: "previewPath",
-      parent: ["Web Site", "Section", "Menu"]
+      parent: ["Web Site", "Section", "Menu", "Image"]
     },
     {
       key: "site",
@@ -221,6 +227,10 @@ export class SchemaService {
           thing.view = this.viewService.getCurrentView().things[thing._id].view;
         }
       }
+      // Image
+      if (thing.type === "Image") {
+        thing.view.showContent = true;
+      }
       // Session
       if (!thing.session) {
         thing.session = {}
@@ -243,6 +253,6 @@ export class SchemaService {
       }
     });
 
-    return things;
+    // return things;
   }
 }

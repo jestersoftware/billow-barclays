@@ -34,6 +34,7 @@ import { UserService } from './user.service';
 import { RoleService } from './role.service';
 import { ViewService } from './view.service';
 import { SchemaService } from './schema.service';
+import { AdminService } from './admin.service';
 import { ThingService } from './thing.service';
 import { ThingImageService } from './thing.image.service';
 import { DataService } from './data.service';
@@ -80,6 +81,7 @@ import { DisplayNamePipe } from './pipe/display-name.pipe';
     RoleService,
     ViewService,
     SchemaService,
+    AdminService,
     ThingService,
     ThingImageService,
     DataService,

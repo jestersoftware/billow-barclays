@@ -9,6 +9,8 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 
 import { InjectUser } from "angular2-meteor-accounts-ui";
 
+import { AdminService } from './../../admin.service';
+
 import { ThingService } from './../../thing.service';
 
 import { ScrollSpyModule, ScrollSpyService } from 'ng2-scrollspy';
@@ -33,6 +35,7 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
 
   constructor(
     private router: Router,
+    private adminService: AdminService,
     private thingService: ThingService,
     private zone: NgZone,
     private activatedRoute: ActivatedRoute,
@@ -85,7 +88,7 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
   }
 
   getChildren(parent, id) {
-    this.thingService.getChildren(parent).subscribe(things => {
+    this.adminService.getChildren(parent).subscribe(things => {
       this.zone.run(() => {
         this.things = things;
 

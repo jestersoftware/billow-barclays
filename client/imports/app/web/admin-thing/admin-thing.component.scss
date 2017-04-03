@@ -1,5 +1,6 @@
 :host { 
   display: inline-flex;
+  flex-wrap: wrap;
 }  
 
 /*
@@ -27,6 +28,12 @@ md-card-footer {
   text-align: center;
   background-color: transparent;
   bottom: -40px;
+
+  .childrenLength {
+    position: absolute; 
+    left: 0;
+    bottom: 10px; 
+  }
 }
 
 md-card .connector {
@@ -98,6 +105,10 @@ md-card.vertical {
   margin-bottom: 8px;
 }
 
+.mat-card-header-text {
+  flex-grow: 1;
+}
+
 md-card-footer {
   margin-top: 2px;
 }
@@ -123,6 +134,17 @@ md-card textarea.mat-input-element[disabled] {
 
 md-card.reference {
   border: 1px dashed black;
+  width: 70%;
+  height: 80%;
+}
+
+md-card.vertical.reference {
+  width: auto;
+  height: auto;
+}
+
+.thing.reference {
+  width: 33.33%;
 }
 
 .thing {
@@ -137,16 +159,23 @@ md-card.reference {
   text-align: initial;
 }
 
-.thing .thing {
-  border-top: 1px solid; 
-}
+// .thing .thing {
+//   border-top: 1px solid; 
+// }
 
-.thing .thing:first-child {
+// .thing .thing:first-child {
+//   border-top-left-radius: 25px;
+// }
+
+// .thing .thing:last-child {
+//   border-top-right-radius: 25px;
+// }
+
+.fancy-top-border {
+  border-top: 1px solid black;
   border-top-left-radius: 25px;
-}
-
-.thing .thing:last-child {
   border-top-right-radius: 25px;
+  padding-top: 10px;
 }
 
 .thing.root {
@@ -156,9 +185,17 @@ md-card.reference {
   padding-bottom: 250px;
 }
 
-md-card .file .preview {
-  max-width: 256px;
-  max-height: 256px;
+.thing .constrain {
+  max-width: 1024px;
+}
+
+md-card .file div.preview {
+  height: 150px;
+}
+
+md-card .file img.preview {
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .inputfile {

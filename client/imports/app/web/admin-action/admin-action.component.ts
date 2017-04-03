@@ -21,12 +21,14 @@ export class AdminActionComponent implements OnInit {
   @Input() thing: any;
   @Input() enableCreate: string = "yes";
   @Input() enableEdit: string = "yes";
+  @Input() enableDelete: string = "none";
   @Input() enableExpand: boolean = true;
   @Input() editing: any = false;
   @Input() disabled: any = false;
   @Output() onCreate = new EventEmitter<any>();
   @Output() onEdit = new EventEmitter<any>();
   @Output() onSave = new EventEmitter<any>();
+  @Output() onDelete = new EventEmitter<any>();
   @Output() onToggle = new EventEmitter<any>();
   
   addEvent: any;
@@ -42,20 +44,30 @@ export class AdminActionComponent implements OnInit {
     return this.schemaService.getArchetypes(thing);
   }
 
-  position() {
+  positionEdit() {
     return this.enableCreate === "yes" ? "absolute" : "relative";
   }
 
-  right() {
-    return this.enableCreate === "yes" ? "0" : "";
+  rightEdit() {
+    return this.enableCreate === "yes" ? "0" : "-40%";
   }
 
-  position2() {
+  positionCancel() {
     return this.enableCreate === "yes" ? "relative" : "absolute";
   }
 
-  right2() {
-    return this.enableCreate === "yes" ? "" : "translateX(42px)";
+  transformCancel() {
+    return this.enableCreate === "yes" || this.enableDelete === "yes" ? "" : "translateX(62px)";
+    // return "";
+  }
+
+  positionDelete() {
+    // return this.enableCreate === "yes" ? "relative" : "absolute";
+    return "absolute";
+  }
+
+  leftDelete() {
+    return this.enableCreate || this.enableEdit === "yes" ? "0" : "0";
   }
 
   toggle(event) {
@@ -96,6 +108,16 @@ export class AdminActionComponent implements OnInit {
       });
 
     this.cancel(event);
+  }
+
+  delete(event) {
+    this.onDelete.emit(
+      {
+        event: event,
+        thing: this.thing
+      });
+
+    this.editing = false;
   }
 
   add(event) {

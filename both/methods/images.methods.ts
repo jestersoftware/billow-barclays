@@ -1,6 +1,6 @@
 import { UploadFS } from 'meteor/jalik:ufs';
 
-import { ImagesStore } from './../collections/images.collection';
+import { Images, ImagesStore } from './../collections/images.collection';
 
 export function upload(data: File): Promise<any> {
   return new Promise((resolve, reject) => {
@@ -21,3 +21,11 @@ export function upload(data: File): Promise<any> {
     upload.start();
   });
 }
+
+Meteor.methods({
+  'images.remove': function (id: any) {
+    check(id, String); // TODO
+
+    Images.collection.remove(id);
+  }
+});

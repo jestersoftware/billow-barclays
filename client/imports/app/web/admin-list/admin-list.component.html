@@ -1,10 +1,10 @@
 <div class="thing-list alignCenter">
 
-  <md-card *ngIf="archetype(parent).displaytype !== 'table'" (click)="click({ event: $event })" [class.reference]="parent.type === 'Reference'">
+  <md-card *ngIf="archetype(parent).displaytype !== 'table'" (click)="click({ event: $event })" [class.reference]="parent.type === 'Reference' || (!parent.view?.showChildren && !parent.session?.editable)">
 
     <md-list *ngIf="parent.view?.showChildren || parent.type === 'Reference'">
 
-      <h3 *ngIf="parent.type !== 'Reference'" style="margin-bottom: 0.5em;">{{parent.title}}</h3>
+      <h3 *ngIf="parent.type !== 'Reference' && things.length > 0" style="margin-bottom: 0.5em;">{{parent.title}}</h3>
 
       <div *ngFor="let thing of things; let i=index; trackBy: getKey">
 

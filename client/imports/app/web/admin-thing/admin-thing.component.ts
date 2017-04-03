@@ -8,6 +8,8 @@ import { ViewService } from './../../view.service';
 
 import { ThingService } from './../../thing.service';
 
+import { AdminService } from './../../admin.service';
+
 import { ThingImageService } from './../../thing.image.service';
 
 import { FileUploader } from 'ng2-file-upload';
@@ -43,6 +45,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
     private userService: UserService,
     private viewService: ViewService,
     private schemaService: SchemaService,
+    private adminService: AdminService,
     private thingService: ThingService,
     private thingImageService: ThingImageService,
     private zone: NgZone) {
@@ -79,7 +82,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
       });
     }
     else {
-      this.thingService.getChildren(this.parent).subscribe(things => {
+      this.adminService.getChildren(this.parent).subscribe(things => {
         // let isCountChanged = !this.things || this.things.length !== things.length;
 
         this.zone.run(() => {
@@ -313,6 +316,18 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
     // Upload images
     this.thingImageService.upload(this.uploader, thing);
+  }
+
+  delete(event) {
+    event.event.stopPropagation();
+
+    // var param: any = {
+    //   _id: event.thing._id
+    // }
+
+    this.adminService.delete(event.thing);
+
+    // this.toggleChildren({ event: event.event, thing: event.thing, force: true });
   }
 
   referto(event) {

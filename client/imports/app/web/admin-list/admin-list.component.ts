@@ -4,6 +4,8 @@ import { SchemaService } from './../../schema.service';
 
 import { ViewService } from './../../view.service';
 
+import { AdminService } from './../../admin.service';
+
 import { ThingService } from './../../thing.service';
 
 import template from "./admin-list.component.html";
@@ -30,6 +32,7 @@ export class AdminListComponent implements OnInit, OnChanges {
     public elementRef: ElementRef,
     private viewService: ViewService,
     private schemaService: SchemaService,
+    private adminService: AdminService,
     private thingService: ThingService,
     private zone: NgZone) {
   }
@@ -46,7 +49,7 @@ export class AdminListComponent implements OnInit, OnChanges {
   }
 
   init() {
-    this.thingService.getChildren(this.parent).subscribe(things => {
+    this.adminService.getChildren(this.parent).subscribe(things => {
       this.zone.run(() => {
         this.things = things;
         this.parent.session.childrenLength = this.things.length;

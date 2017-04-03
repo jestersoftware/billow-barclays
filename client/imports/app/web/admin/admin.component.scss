@@ -1,14 +1,11 @@
-md-toolbar {
+.mat-toolbar {
   position: fixed;
   z-index: 20;
   background-color: rgba(0, 0, 0, 0);
-}
-
-md-toolbar:hover {
-  position: fixed;
-  z-index: 20;
-  background-color: rgba(0, 0, 0, 0.3);
-  color: white !important;
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+    color: white !important;
+  }
 }
 
 .scrollable {
@@ -31,18 +28,18 @@ md-toolbar:hover {
   height: 80%;
 
   background-color: rgba(128, 128, 128, 0.05);
-}
 
-.hovernav:hover {
-  background-color: rgba(128, 128, 128, 0.2);
-}
+  &:hover {
+    background-color: rgba(128, 128, 128, 0.2);
+  }
 
-.hovernav.left {
-  left: 16px;
-}
+  &.left {
+    left: 16px;
+  }
 
-.hovernav.right {
-  right: 16px;
+  &.right {
+    right: 16px;
+  }
 }
 
 .footer {

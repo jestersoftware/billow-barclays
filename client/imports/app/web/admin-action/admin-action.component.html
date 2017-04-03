@@ -10,15 +10,19 @@
   </div>
 </div>
 
-<button *ngIf="!editing && enableCreate!=='none'" md-icon-button color='primary' [disabled]="editing || disabled" [md-menu-trigger-for]="menu" title="Add a new item to {{thing.title}}" (click)="add($event)">
+<button *ngIf="enableDelete!=='none' && editing" md-raised-button md-icon-button color='warn' [style.position]="positionDelete()" [style.left]="leftDelete()" [disabled]="!editing || disabled" (click)="delete($event)" title="Delete this item">
+  <md-icon>delete</md-icon>
+</button>
+
+<button *ngIf="enableCreate!=='none' && !editing" md-icon-button color='primary' [disabled]="editing || disabled" [md-menu-trigger-for]="menu" title="Add a new item to {{thing.title}}" (click)="add($event)">
   <md-icon>library_add</md-icon>
 </button>
 
-<button *ngIf="enableEdit!=='none' && editing" md-raised-button md-icon-button color='primary' [style.position]="position2()" [style.transform]="right2()" [disabled]="!editing || disabled" (click)="cancel($event)" title="Cancel editing">
+<button *ngIf="enableEdit!=='none' && editing" md-raised-button md-icon-button color='primary' [style.position]="positionCancel()" [style.transform]="transformCancel()" [disabled]="!editing || disabled" (click)="cancel($event)" title="Cancel editing">
   <md-icon>cancel</md-icon>
 </button>
 
-<span *ngIf="enableEdit!=='none'" [style.position]="position()" [style.right]="right()">
+<span *ngIf="enableEdit!=='none'" [style.position]="positionEdit()" [style.right]="rightEdit()">
   <button *ngIf="!editing" md-icon-button color='primary' [disabled]="editing || disabled" (click)="edit($event)" title="Edit this item">
     <md-icon>edit</md-icon>
   </button>

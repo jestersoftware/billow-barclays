@@ -12,12 +12,31 @@ import { Thumbs, Images } from './../../../both/collections/images.collection';
 
 import { upload } from './../../../both/methods/images.methods';
 
+import { Things, Security } from "./../../../both/collections/things.collection";
+
 @Injectable()
 export class ThingImageService {
 
   constructor(
     private schemaService: SchemaService,
     private thingService: ThingService) {
+  }
+
+  security = new Security();
+
+  setPermissions(things, parentId) {
+    let isParentEditable = this.security.checkRole(parentId, ["update"], Meteor.userId());
+
+    things.forEach(thing1 => {
+      let isThingEditable = false;
+
+      // If we can't edit the parent, can we edit the thing itself?
+      if (!isParentEditable) {
+        isThingEditable = this.security.checkRole(thing1._id, ["update"], Meteor.userId());
+      }
+
+      thing1.session.editable = isParentEditable || isThingEditable;
+    });
   }
 
   uploadFile(file): Promise<any> {
@@ -32,6 +51,16 @@ export class ThingImageService {
     });
 
     return promise;
+  }
+
+  removeFile(id) {
+    MeteorObservable.call('images.remove', id).subscribe({
+      next: () => {
+      },
+      error: (e: Error) => {
+        console.log(e);
+      }
+    });
   }
 
   getFileByKey(getParam): Subject<any> {
@@ -53,6 +82,61 @@ export class ThingImageService {
     MeteorObservable.subscribe('thumbs', [getParam._id]).subscribe(() => {
       let thumb = Thumbs.findOne({ originalId: getParam._id });
       subject.next(thumb);
+    });
+
+    return subject;
+  }
+
+  getImages(thing): Subject<any> {
+    let subject = new Subject();
+
+    MeteorObservable.subscribe('images').subscribe(() => {
+      // let images: any = Images.find().fetch(); // TODO Limit
+      let imagesCursor = Images.find();
+
+      // let imagesArray = [];
+
+      // images.forEach(image => {
+      //   imagesArray.push(
+      //     {
+      //       _id: image._id,
+      //       parent: "images",
+      //       title: image.name,
+      //       type: "Image",
+      //       background: { path: image.path, previewPath: image.path }
+      //     });
+      // });
+
+      // this.schemaService.fixup(imagesArray, true);
+      // this.setPermissions(imagesArray, thing._id);
+
+      // subject.next(imagesArray);
+
+      imagesCursor.subscribe(images => {
+
+        // TODO fixup
+        images.forEach(image => {
+
+          if(!image.parent)
+            image.parent = "images";
+
+          if(!image.title)
+            image.title = image.name;
+
+          image.type = "Image";
+
+          if(!image.background)
+            image.background = { path: image.path, previewPath: image.path };
+
+        });
+
+        this.schemaService.fixup(images, true, thing);
+
+        this.setPermissions(images, thing._id);
+
+        subject.next(images);
+      });
+
     });
 
     return subject;
@@ -106,8 +190,13 @@ export class ThingImageService {
           if (!thing[propKey])
             thing[propKey] = {};
 
-          // thing[alias].url = result.url;
-          thing[propKey] = result; // TODO: pass all the data like this, or just some?
+          // TODO: pass all the data, or just some?
+          thing[propKey]._id = result._id;
+          thing[propKey].store = result.store;
+          thing[propKey].name = result.name;
+          thing[propKey].type = result.type;
+          thing[propKey].path = result.path;
+          // thing[propKey] = result; 
 
           let param: any = {
             _id: thing._id
@@ -115,11 +204,11 @@ export class ThingImageService {
 
           param[propKey] = thing[propKey];
 
-          this.thingService.update(param/*, null*/);
+          this.thingService.update(param);
 
           this.getThumb({ _id: result._id }).subscribe((thumb) => {
             param[propKey].previewPath = thumb.path;
-            this.thingService.update(param/*, null*/);
+            this.thingService.update(param);
           });
 
           if (count >= queueLength) {

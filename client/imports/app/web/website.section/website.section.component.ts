@@ -9,6 +9,8 @@ import {
 
 import { SchemaService } from './../../schema.service';
 
+import { AdminService } from './../../admin.service';
+
 import { ThingService } from './../../thing.service';
 
 import template from "./website.section.component.html";
@@ -31,16 +33,15 @@ export class WebsiteSectionComponent implements OnInit {
 
   constructor(
     private schemaService: SchemaService,
+    private adminService: AdminService,
     private thingService: ThingService,
     private zone: NgZone) {
   }
 
   ngOnInit() {
-    this.thingService.getChildren(this.parent).subscribe(things => {
+    this.adminService.getChildren(this.parent).subscribe(things => {
       this.zone.run(() => {
         this.things = things;
-
-        // console.log(this.parent.title, this.parent._id, this.things);
       });
     });
 

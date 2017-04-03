@@ -1,4 +1,4 @@
-<div *ngFor="let thing of things; let i=index; trackBy: getKey" class="thing" [class.root]="!this.parent._id">
+<div *ngFor="let thing of things; let i=index; trackBy: getKey" class="thing" [class.root]="!this.parent._id" [class.reference]="thing.parent !== parent._id && things.length > 3">
 
   <md-card [class.vertical]="!thing.view?.showContent" [class.reference]="thing.parent !== parent._id" (click)="click({ event: $event, thing: thing })"> 
 
@@ -27,7 +27,7 @@
       </button>
 
       <md-card-title>
-        <md-input-container style="padding-top: 2px; padding-bottom: 2px;">
+        <md-input-container class="full-width">
           <input mdInput type="text" [disabled]="disabled({ thing: thing })" [(ngModel)]="thing.title" placeholder="Title" title="{{thing.title}}" />
         </md-input-container>
       </md-card-title>
@@ -78,7 +78,7 @@
               <md-icon>menu</md-icon>
             </button>
           </span>
-          <div>
+          <div class="preview">
             <img *ngIf="thing[prop.key] && thing[prop.key][prop.preview]" class="preview" [src]="thing[prop.key][prop.preview]" />
           </div>
         </div>
@@ -88,7 +88,17 @@
 
     <md-card-actions>
 
-      <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" (onCreate)="create($event)" (onToggle)="toggleContent($event)" [disabled]="this.choosing" [enableCreate]="thing.parent === parent._id && thing.session?.editable ? 'yes' : 'none'" [enableEdit]="thing.view?.showContent && thing.parent === parent._id && thing.session?.editable ? 'yes' : 'none'"></app-admin-action>
+      <app-admin-action
+        [thing]="thing" 
+        (onSave)="save($event)" 
+        (onEdit)="edit($event)" 
+        (onCreate)="create($event)" 
+        (onDelete)="delete($event)" 
+        (onToggle)="toggleContent($event)" 
+        [disabled]="this.choosing" 
+        [enableCreate]="thing.parent === parent._id && thing.session?.editable ? 'yes' : 'none'" 
+        [enableEdit]="thing.view?.showContent && (thing.parent === parent._id || thing.type === 'Image') && thing.session?.editable ? 'yes' : 'none'"
+        [enableDelete]="thing.view?.showContent && (thing.parent === parent._id || thing.type === 'Image') && thing.session?.editable ? 'yes' : 'none'"></app-admin-action>
 
       <div *ngIf="thing.session?.error?.message">
         <md-chip-list>
@@ -102,11 +112,11 @@
 
       <!--<input type="text" *ngIf="auth" placeholder="Add here..." (keyup.enter)="action($event, thing)" />-->
 
-      <span style="position: absolute; bottom: 10px; left: 0;">
+      <span class="childrenLength">
         {{thing.session.childrenLength}}
       </span>
 
-      <button md-icon-button class="below" (click)="toggleChildren({ event: $event, thing: thing, force: false })">
+      <button *ngIf="thing.parent === parent._id" md-icon-button class="below" (click)="toggleChildren({ event: $event, thing: thing, force: false })">
         <md-icon *ngIf="!thing.view || !thing.view.showChildren">add_circle</md-icon>
         <md-icon *ngIf="thing.view?.showChildren">remove_circle_outline</md-icon>
       </button>
@@ -121,7 +131,7 @@
 
   <!-- RECURSIVE -->
   <!-- thing.parent===parent._id ... don't show children if this is a reference -->
-  <div class="alignCenter" *ngIf="thing.view?.showChildren && thing.parent === parent._id"> 
+  <div *ngIf="thing.view?.showChildren && thing.parent === parent._id" class="alignCenter fancy-top-border" [class.constrain]="thing.type === 'Reference'"> 
     <app-admin-thing *ngIf="!thing.view || !thing.view.format" [parent]="thing" [choosing]="choosing" (onResize)="doResize($event)"></app-admin-thing>
     <app-admin-list *ngIf="thing.view?.format" [parent]="thing" (onResize)="doResize($event)"></app-admin-list>
   </div>

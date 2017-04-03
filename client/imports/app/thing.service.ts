@@ -8,9 +8,6 @@ import { Things, Security } from "./../../../both/collections/things.collection"
 
 import { SchemaService } from './schema.service';
 
-import { UserService } from './user.service';
-import { RoleService } from './role.service';
-
 @Injectable()
 export class ThingService {
 
@@ -22,25 +19,21 @@ export class ThingService {
   security = new Security();
 
   constructor(
-    private schemaService: SchemaService,
-    private userService: UserService,
-    private roleService: RoleService) {
+    private schemaService: SchemaService) {
   }
 
-  setPermissions(parentId, things) {
-    let editable = this.security.checkRole(parentId, ["update"], Meteor.userId());
+  setPermissions(things, parentId) {
+    let isParentEditable = this.security.checkRole(parentId, ["update"], Meteor.userId());
 
     things.forEach(thing1 => {
-      if (!thing1.session) {
-        thing1.session = { disabled: true }; // TODO: fix up somewhere else
-      }
+      let isThingEditable = false;
 
       // If we can't edit the parent, can we edit the thing itself?
-      if (!editable) {
-        editable = this.security.checkRole(thing1._id, ["update"], Meteor.userId());
+      if (!isParentEditable) {
+        isThingEditable = this.security.checkRole(thing1._id, ["update"], Meteor.userId());
       }
 
-      thing1.session.editable = editable;
+      thing1.session.editable = isParentEditable || isThingEditable;
     });
   }
 
@@ -69,7 +62,9 @@ export class ThingService {
     this.thingSubscription = MeteorObservable.subscribe('thing', thing._id).subscribe(() => {
       let thing1 = Things.findOne({ _id: thing._id });
 
-      subject.next(this.schemaService.fixup([thing1], true));
+      this.schemaService.fixup([thing1], true);
+
+      subject.next([thing1]);
     });
 
     return subject;
@@ -78,37 +73,31 @@ export class ThingService {
   getChildren(thing): Subject<any> {
     let subject = new Subject();
 
-    let parentId = thing._id;
+    // let parentId = thing._id;
     let refId;
 
-    let query: any = { parent: parentId };
+    let query: any = { parent: thing._id };
 
     if (thing.reference && thing.reference._id) {
-      // TODO
-      if(thing.reference._id === "users")
-      {
-        return this.userService.getUsers();
-      }
-      if(thing.reference._id === "roles")
-      {
-        return this.roleService.getRoles();
-      }
       refId = thing.reference._id;
       query = { $or: [query, { _id: refId }] };
     }
 
-    this.childrenSubscription = MeteorObservable.subscribe('thing.children', parentId, refId).subscribe(() => {
+    this.childrenSubscription = MeteorObservable.subscribe('thing.children', thing._id, refId).subscribe(() => {
       this.childrenCursor = Things.find(query, { sort: { "order.index": 1, title: 1 } });
 
       // let things = this.childrenCursor.fetch();
 
-      // this.setPermissions(parentId, things)
+      // this.setPermissions(things, parentId);
 
       // subject.next(this.schemaService.fixup(things, true));
 
       this.childrenCursor.subscribe(things => {
-        this.setPermissions(parentId, things);
-        subject.next(this.schemaService.fixup(things, true, thing));
+        this.schemaService.fixup(things, true, thing);
+
+        this.setPermissions(things, thing._id);
+
+        subject.next(things);
       });
     });
 
@@ -125,7 +114,9 @@ export class ThingService {
 
       // thingsSub.subscribe(things => {
 
-      subject.next(this.schemaService.fixup(things, true));
+      this.schemaService.fixup(things, true);
+
+      subject.next(things);
 
       // });
 
@@ -143,7 +134,6 @@ export class ThingService {
 
     MeteorObservable.call('things.insert', thing).subscribe({
       next: () => {
-        // console.log('insert success ' + thing.title);
       },
       error: (e: Error) => {
         console.log(e);
@@ -166,7 +156,6 @@ export class ThingService {
 
     MeteorObservable.call('things.update', id, copy).subscribe({
       next: () => {
-        // subject.next("Success");
       },
       error: (e: Error) => {
         // console.log(e);

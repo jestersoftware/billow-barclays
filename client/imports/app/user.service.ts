@@ -31,14 +31,16 @@ export class UserService {
           view: { showChildren: true }*/
         });
 
-      subject.next(this.schemaService.fixup(userArray, true));
+      this.schemaService.fixup(userArray, true);
+
+      subject.next(userArray);
     });
 
     return subject;
   }
 
 
-  getUsers(): Subject<any> {
+  getUsers(thing): Subject<any> {
     let subject = new Subject();
 
     MeteorObservable.subscribe('users').subscribe(() => {
@@ -50,13 +52,15 @@ export class UserService {
         userArray.push(
           {
             _id: user._id,
-            parent: "",
+            parent: "users",
             title: this.displayNamePipe.transform(user),
             type: "User"
           });
       });
 
-      subject.next(this.schemaService.fixup(userArray, true));
+      this.schemaService.fixup(userArray, true);
+
+      subject.next(userArray);
     });
 
     return subject;
