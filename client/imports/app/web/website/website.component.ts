@@ -1,9 +1,4 @@
-import {
-  Component,
-  OnInit,
-  AfterViewInit,
-  NgZone
-} from '@angular/core';
+import { Component, OnInit, AfterViewInit, NgZone } from '@angular/core';
 
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
@@ -30,8 +25,10 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
   thing: any = { logo: { url: "" } };
   things: any = [];
   currentThing: any = { title: "" };
+
   font: any = "Roboto";
   transparent = true;
+  params: any = {};
 
   constructor(
     private router: Router,
@@ -44,16 +41,16 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.activatedRoute.params.subscribe((params: Params) => {
-      let thing = {
-        _id: params["id"]
-      };
-      this.thingService.getThing(thing).subscribe(things => {
+      // console.log('website', params);
+      this.params = params;
+
+      this.thingService.getThing({_id: this.params["id"]}).subscribe(things => {
         this.zone.run(() => {
           if (things.length > 0) {
             this.thing = things[0];
             this.currentThing = { title: "" };
             this.setFont();
-            this.getChildren(this.thing, params["id2"]);
+            this.getChildren(/*this.thing, params["id2"], params["mode"]*/);
           }
         });
       });
@@ -87,13 +84,16 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/login']);
   }
 
-  getChildren(parent, id) {
-    this.adminService.getChildren(parent).subscribe(things => {
+  getChildren(/*parent, id, mode*/) {
+    this.adminService.getChildren(this.thing).subscribe(things => {
       this.zone.run(() => {
         this.things = things;
 
-        if (id) {
-          let subthing = this.things.find(thing => thing._id === id);
+        if(this.params["mode"]) {
+          this.currentThing = this.thing;
+        }
+        else if (this.params["id2"]) {
+          let subthing = this.things.find(thing => thing._id === this.params["id2"]);
           if (subthing) {
             this.currentThing = subthing;
           }

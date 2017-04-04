@@ -1,4 +1,4 @@
-<div class="page-header fixed" [class.transparent]="transparent" [ngStyle]="{ 'font-family': font }">
+<div *ngIf="!params.mode" class="page-header fixed" [class.transparent]="transparent" [ngStyle]="{ 'font-family': font }">
   <div class="container">
     <md-toolbar>
 
@@ -45,7 +45,7 @@
 
   <div>
 
-    <div [scrollSpyParallax]="{ spyId: 'scroller', ratio: 0.3 }" class="background" [ngStyle]="{ 'background-image': 'url(' + (currentThing.background && currentThing.background.path ? currentThing.background.path : (thing.background ? thing.background.path : '')) + ')' }">
+    <div [scrollSpyParallax]="{ spyId: 'scroller', ratio: 0.3 }" [class.background]="!params.mode" [ngStyle]="{ 'background-image': 'url(' + (!params.mode && currentThing.background?.path ? currentThing.background.path : (!params.mode && thing.background?.path ? thing.background.path : '')) + ')' }">
 
       <div class="container">
 
@@ -82,7 +82,7 @@
 
     </div>
 
-    <app-website-section *ngIf="currentThing && currentThing._id" [parent]="currentThing" (onResize)="routeChanged()"></app-website-section>
+    <app-website-section *ngIf="currentThing && currentThing._id" [parent]="currentThing" [params]="params" (onResize)="routeChanged()"></app-website-section>
 
   </div>
 

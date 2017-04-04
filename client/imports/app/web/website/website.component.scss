@@ -57,6 +57,16 @@ md-toolbar-row {
     background-size: cover;
     background-color: rgba(0,0,0,1);
     color: white;
+
+    .header {
+        min-height: 100px;
+        padding-top: 100px;
+        padding-bottom: 100px;
+    }
+
+    .content {
+        padding: 50px 50px;
+    }
 }
 
 .tab-overlay {
@@ -69,10 +79,6 @@ md-toolbar-row {
     margin: 0 auto;
 }
 
-.content {
-    padding: 50px 50px;
-}
-
 .fixed {
     position: fixed !important;
 }
@@ -81,11 +87,8 @@ md-toolbar-row {
     background-color: transparent;
 }
 
-.container .header {
-    min-height: 100px;
+.header {
     text-align: center;
-    padding-top: 100px;
-    padding-bottom: 100px;
     text-transform: uppercase;
     letter-spacing: 5px;
 }

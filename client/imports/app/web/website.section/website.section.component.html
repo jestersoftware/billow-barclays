@@ -2,11 +2,17 @@
 
   <div *ngFor="let thing of things; let i=index; trackBy: getId" [class.flex-column]="getArchetype(thing).displaytype === 'flex-column'">
 
-    <div *ngIf="!thing.reference || !thing.reference._id">
+    <div *ngIf="!thing.reference || !thing.reference._id" style="position: relative;">
 
-      <div [scrollSpyParallax]="{ spyId: 'scroller', ratio: -0.3 }" [class.background]="thing.background && thing.background.path && getArchetype(thing).displaytype !== 'two-column'" [ngStyle]="{ 'background-image': 'url(' + (thing.background && thing.background.path && getArchetype(thing).displaytype !== 'two-column' ? thing.background.path : '') + ')' }">
+      <div *ngIf="getArchetype(thing).displaytype !== 'two-column'" [scrollSpyParallax]="{ spyId: 'scroller', ratio: -0.3 }" [class.background]="thing.background?.path" [ngStyle]="{ 'background-image': 'url(' + (thing.background?.path ? thing.background.path : '') + ')' }">
 
-        <section *ngIf="getArchetype(thing).displaytype !== 'table' && getArchetype(thing).displaytype !== 'two-column'" class="container content">
+        <section *ngIf="getArchetype(thing).displaytype !== 'table'" class="container content">
+
+          <div *ngIf="!params.mode && thing.background?.path" class="print-button">
+            <a md-mini-fab [routerLink]="getLink({thing: thing, type: 'print'})" target="_blank">
+              <md-icon>print</md-icon>
+            </a>
+          </div>
 
           <div [ngSwitch]="level">
             <template ngSwitchCase="1">
@@ -51,7 +57,7 @@
             </div>
           </div>
 
-          <div *ngIf="thing.type==='Social Site' && thing.site && thing.site.url">
+          <div *ngIf="thing.type==='Social Site' && thing.site?.url">
             <div *ngIf="thing.site.url.indexOf('facebook') > -1">
               <div 
                 class="fb-page" 
@@ -92,27 +98,27 @@
 
         </div>
 
-        <div *ngIf="getArchetype(thing).displaytype === 'two-column'" class="container">
+      </div>
 
-          <div class="two-column">
-            
-            <div class="image" [ngStyle]="{ 'background-image': 'url(' + (thing.background && thing.background.path ? thing.background.path : '') + ')' }">
+      <div *ngIf="getArchetype(thing).displaytype === 'two-column'" class="container">
+
+        <div class="two-column">
+          
+          <div class="image" [ngStyle]="{ 'background-image': 'url(' + (thing.background?.path ? thing.background.path : '') + ')' }">
+          </div>
+
+          <div class="text">
+            <h3>
+              {{thing.title}}
+            </h3>
+
+            <p>
+              {{thing.description}}
+            </p>
+
+            <div *ngFor="let prop of getProperties(thing); trackBy: getId" class="item">
+              {{thing[prop.key] ? thing[prop.key][prop.name] : ''}}
             </div>
-
-            <div class="text">
-              <h3>
-                {{thing.title}}
-              </h3>
-
-              <p>
-                {{thing.description}}
-              </p>
-
-              <div *ngFor="let prop of getProperties(thing); trackBy: getId" class="item">
-                {{thing[prop.key] ? thing[prop.key][prop.name] : ''}}
-              </div>
-            </div>
-
           </div>
 
         </div>
@@ -121,7 +127,7 @@
 
     </div>
     
-    <app-website-section [parent]="thing" [level]="thing.type === 'Reference' ? level : level + 1"></app-website-section>
+    <app-website-section [parent]="thing" [params]="params" [level]="thing.type === 'Reference' ? level : level + 1"></app-website-section>
 
   </div>
 
