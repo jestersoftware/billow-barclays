@@ -2,10 +2,9 @@
   <div class="container">
     <md-toolbar>
 
-      <!--<div class="container">-->
-      <!--<md-toolbar-row>-->
-
-      <img *ngIf="thing.logo && thing.logo.path" [src]="thing.logo.path" class="logo" />
+      <a class="logo" [routerLink]="getLink(this.things.length > 0 ? this.things[0] : thing)">
+        <img *ngIf="thing.logo && thing.logo.path" class="logo" [src]="thing.logo.path" />
+      </a>
 
       <h3 class="title">
         {{thing.title}}
@@ -15,7 +14,7 @@
       <span class="fill-remaining-space"></span>
 
       <nav md-tab-nav-bar>
-        <a md-tab-link *ngFor="let thing of things; let i=index; trackBy: getKey" [routerLink]="getLink(thing)" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
+        <a md-tab-link *ngFor="let thing of things; let i=index; trackBy: getId" [routerLink]="getLink(thing)" routerLinkActive #rla="routerLinkActive" [active]="rla.isActive">
           {{thing.title}}
         </a>
       </nav>
@@ -38,16 +37,11 @@
         </button>
       </md-menu>
 
-      <!--</md-toolbar-row>-->
-
-      <!--</div>-->
-
     </md-toolbar>
   </div>
 </div>
 
 <div scrollSpyElement="scroller" class="scrollable" [ngStyle]="{ 'font-family': font }">
-  <!--class="alignCenter"-->
 
   <div>
 
@@ -66,31 +60,29 @@
 
       </div>
 
-      <!--<div class="tab-overlay">
+      <!--
+      <div class="tab-overlay">
 
-      <md-tab-group>
+        <md-tab-group>
 
-        <md-tab *ngFor="let thing of things; let i=index; trackBy: getKey" [label]="thing.title">
+          <md-tab *ngFor="let thing of things; let i=index; trackBy: getId" [label]="thing.title">
 
-          <h1>{{thing.title}}</h1>
+            <h1>{{thing.title}}</h1>
 
-          <p>{{thing.description}}</p>
+            <p>{{thing.description}}</p>
 
-          <app-website-section [parent]="thing"></app-website-section>
+            <app-website-section [parent]="thing"></app-website-section>
 
-        </md-tab>
+          </md-tab>
 
-      </md-tab-group>
+        </md-tab-group>
 
-    </div>-->
+      </div>
+      -->
 
     </div>
 
-    <!--<div class="section">
-      <div class="container content">-->
-        <app-website-section *ngIf="currentThing && currentThing._id" [parent]="currentThing" (onResize)="routeChanged()"></app-website-section>
-      <!--</div>
-    </div>-->
+    <app-website-section *ngIf="currentThing && currentThing._id" [parent]="currentThing" (onResize)="routeChanged()"></app-website-section>
 
   </div>
 

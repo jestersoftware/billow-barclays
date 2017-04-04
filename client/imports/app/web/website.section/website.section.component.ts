@@ -48,15 +48,17 @@ export class WebsiteSectionComponent implements OnInit {
     this.onResize.emit();
   }
 
-  getKey(index: number, item: any): number {
+  getId(index: number, item: any): number {
     return item._id;
   }
 
-  archetype(thing) {
+  getArchetype(thing) {
     return this.schemaService.getArchetype(thing);
   }
 
-  props(thing) {
-    return this.schemaService.getProperties(thing);
+  getProperties(thing) {
+    return this.schemaService.getProperties(thing).filter(property => {
+      return !(property.hidden === true);
+    });
   }
 }

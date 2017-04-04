@@ -67,15 +67,15 @@ export class AdminListComponent implements OnInit, OnChanges {
     });    
   }
 
-  archetype(thing) {
+  getArchetype(thing) {
     return this.schemaService.getArchetype(thing);
   }
 
-  archetypes(thing) {
+  getArchetypes(thing) {
     return this.schemaService.getArchetypes(thing);
   }
 
-  props(thing) {
+  getProperties(thing) {
     return this.schemaService.getProperties(thing);
   }
 
@@ -153,7 +153,7 @@ export class AdminListComponent implements OnInit, OnChanges {
     this.thingService.insert(param);
   }
 
-  getKey(index: number, item: any): number {
+  getId(index: number, item: any): number {
     return item._id;
   }
 

@@ -40,8 +40,12 @@ export class AdminActionComponent implements OnInit {
   ngOnInit() {
   }
 
-  archetypes(thing) {
+  getArchetypes(thing) {
     return this.schemaService.getArchetypes(thing);
+  }
+
+  getId(index: number, item: any): number {
+    return item._id;
   }
 
   positionEdit() {
@@ -58,7 +62,6 @@ export class AdminActionComponent implements OnInit {
 
   transformCancel() {
     return this.enableCreate === "yes" || this.enableDelete === "yes" ? "" : "translateX(62px)";
-    // return "";
   }
 
   positionDelete() {

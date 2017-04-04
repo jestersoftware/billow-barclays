@@ -1,4 +1,4 @@
-<div *ngFor="let thing of things; let i=index; trackBy: getKey" class="thing" [class.root]="!this.parent._id" [class.reference]="thing.parent !== parent._id && things.length > 3">
+<div *ngFor="let thing of things; let i=index; trackBy: getId" class="thing" [class.root]="!this.parent._id" [class.reference]="thing.parent !== parent._id && things.length > 3">
 
   <md-card [class.vertical]="!thing.view?.showContent" [class.reference]="thing.parent !== parent._id" (click)="click({ event: $event, thing: thing })"> 
 
@@ -10,7 +10,7 @@
 
     <md-card-header>
 
-      <div md-card-avatar><md-icon>{{archetype(thing).icon}}</md-icon></div>
+      <div md-card-avatar><md-icon>{{getArchetype(thing).icon}}</md-icon></div>
 
       <span class="top left field-order">
         <input type="text" [disabled]="disabled({ thing: thing })" [(ngModel)]="thing.order.index" tabindex="100" title="{{thing._id}}" />
@@ -27,7 +27,10 @@
       </button>
 
       <md-card-title>
-        <md-input-container class="full-width">
+        <h3 *ngIf="!thing.view?.showContent" class="alignCenter mat-input-element" style="overflow: hidden;">
+          {{thing.title}}
+        </h3>
+        <md-input-container *ngIf="thing.view?.showContent" class="full-width">
           <input mdInput type="text" [disabled]="disabled({ thing: thing })" [(ngModel)]="thing.title" placeholder="Title" title="{{thing.title}}" />
         </md-input-container>
       </md-card-title>
@@ -49,12 +52,12 @@
       </div>
 
       <md-select name="type" [disabled]="disabled({ thing: thing })" [(ngModel)]="thing.type" placeholder="Type" (ngModelChange)="typeChange(thing)" (click)="typeClick($event)">  
-        <md-option *ngFor="let archetype of archetypes(parent)" [value]="archetype.key">
+        <md-option *ngFor="let archetype of getArchetypes(parent); trackBy: getId" [value]="archetype.key">
           {{archetype.display}}
         </md-option>
       </md-select>
 
-      <div *ngFor="let prop of props(thing); trackBy: getKey">
+      <div *ngFor="let prop of getProperties(thing); trackBy: getId">
         <md-input-container *ngIf="prop.type !== 'image' && prop.type !== 'thing'">
           <input type="text" mdInput [disabled]="disabled({ thing: thing })" [(ngModel)]="thing[prop.key][prop.name]" [placeholder]="prop.title" />
         </md-input-container>
@@ -78,8 +81,8 @@
               <md-icon>menu</md-icon>
             </button>
           </span>
-          <div class="preview">
-            <img *ngIf="thing[prop.key] && thing[prop.key][prop.preview]" class="preview" [src]="thing[prop.key][prop.preview]" />
+          <div *ngIf="thing[prop.key] && thing[prop.key][prop.preview]" class="preview">
+            <img class="preview" [src]="thing[prop.key][prop.preview]" />
           </div>
         </div>
       </div>

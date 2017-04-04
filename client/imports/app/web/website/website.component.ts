@@ -106,7 +106,7 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
     });
   }
 
-  getKey(index: number, item: any): number {
+  getId(index: number, item: any): number {
     return item._id;
   }
 

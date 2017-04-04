@@ -7,13 +7,9 @@ export function loadThings() {
         entity: {
           "description": "Barclay's",
           "parent": "Root",
-          "title": "Barclay's 1",
+          "title": "Barclay's Organization",
           "type": "Organization",
-          "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-          "view": {
-            "showChildren": true,
-            "showContent": false
-          }
+          "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
         },
         children: [
           {
@@ -21,11 +17,7 @@ export function loadThings() {
               "description": "Beer supplier for Barclay's",
               "title": "Beer Supplier",
               "type": "Business",
-              "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-              "view": {
-                "showChildren": true,
-                "showContent": false
-              }
+              "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
             },
             children: [
             ]
@@ -35,67 +27,42 @@ export function loadThings() {
               "description": "Barclay's restaurant CA",
               "title": "Barclay's Restaurant",
               "type": "Business",
-              "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-              "view": {
-                "format": false,
-                "showChildren": true,
-                "showContent": false
-              }
+              "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
             },
             children: [
               {
                 entity: {
                   "description": "www.barclayspub.com",
                   "logo": {
-                    "url": "http://www.barclayspub.com/v3/images/logo/barclays_gr_logo_header.png"
+                    "path": "/ufs/images/zXrAiS9LWuNrLh9aH/barclays-logo-transparent-white.png"
                   },
-                  "price": {
-                    "dollar": "5.00"
-                  },
-                  "title": "Barclay's Pub 123",
+                  "title": "Barclay's Pub",
                   "type": "Web Site",
-                  "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-                  "view": {
-                    "format": false,
-                    "showChildren": true,
-                    "showContent": false
-                  }
+                  "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
                 },
                 children: [
                   {
                     entity: {
                       "description": "Opened in 1999 by local restaurateur Rick Webb, Zelo offers creative, contemporary Italian cuisine and unparalleled service. Our passion and commitment is to bring you handcrafted food, created with fresh, seasonal, organic and local ingredients. Every meal. Every day.",
                       "title": "Welcome",
-                      "type": "Department",
-                      "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-                      "view": {
-                        "showChildren": false,
-                        "showContent": true
-                      }
+                      "type": "Section",
+                      "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
                     }
                   },
                   {
                     entity: {
                       "description": "It’s simple. The best ingredients make the best food.  We bring you a variety of the freshest in-season, local produce. We serve the highest grade, 100% natural, vegetarian-fed, hormone and antibiotic-free beef and poultry. Our fish is flown in daily, fresh from its source. Our pastries and desserts are handmade with certified organic dairy products. Our Wines are chosen by the most notable wineries. By the glass or bottle, salut.  We look forward to serving you.",
                       "title": "Menu",
-                      "type": "Department",
-                      "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-                      "view": {
-                        "showChildren": true,
-                        "showContent": false
-                      }
+                      "type": "Section",
+                      "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
                     }
                   },
                   {
                     entity: {
                       "description": "Thank you for your interest in Zelo. Please feel free to email us any questions or comments and we’ll try to respond promptly, as your inquiry is very important to us.",
                       "title": "Contact Us",
-                      "type": "Department",
-                      "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-                      "view": {
-                        "showChildren": true,
-                        "showContent": false
-                      }
+                      "type": "Section",
+                      "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
                     }
                   }
                 ]
@@ -104,76 +71,54 @@ export function loadThings() {
                 entity: {
                   "title": "Beer Club",
                   "type": "Department",
-                  "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-                  "view": {
-                    "showChildren": false,
-                    "showContent": false
-                  }
+                  "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
                 }
               },
               {
                 entity: {
                   "title": "Menus",
-                  "type": "Department",
-                  "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-                  "view": {
-                    "format": false,
-                    "showChildren": true,
-                    "showContent": false
-                  }
+                  "type": "Collection",
+                  "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
                 },
                 children: [
                   {
                     entity: {
                       "description": "January 22, 2017",
                       "title": "Beer Menu",
-                      "type": "Menu",
-                      "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-                      "view": {
-                        "format": true,
-                        "showChildren": true,
-                        "showContent": false
-                      }
+                      "type": "Section",
+                      "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
                     },
                     children: [
                       {
                         entity: {
                           "description": "Modern Brewing",
                           "price": {
-                            "dollar": "5.56"
+                            "dollar": "5.50"
                           },
                           "title": "Sunnyvale Ale 1",
                           "type": "Product",
-                          "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-                          "view": {
-                            "showChildren": true,
-                            "showContent": false
-                          }
+                          "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
                         }
                       },
                       {
                         entity: {
                           "description": "Summit",
+                          "price": {
+                            "dollar": "6.50"
+                          },
                           "title": "Extra Pale Ale",
                           "type": "Product",
-                          "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-                          "view": {
-                            "format": true,
-                            "showChildren": true,
-                            "showContent": true
-                          }
+                          "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
                         }
                       },
                       {
                         entity: {
+                          "price": {
+                            "dollar": "4.25"
+                          },
                           "title": "Budweiser",
                           "type": "Product",
-                          "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-                          "view": {
-                            "format": true,
-                            "showChildren": true,
-                            "showContent": false
-                          }
+                          "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
                         }
                       }
                     ]
@@ -190,49 +135,33 @@ export function loadThings() {
           "parent": "Root",
           "title": "System",
           "type": "Organization",
-          "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-          "view": {
-            "format": false,
-            "showChildren": true,
-            "showContent": false
-          }
+          "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
         },
         children: [
           {
             entity: {
-              "description": "System archetypes",
+              "description": "System types",
               "title": "Archetypes",
               "type": "Department",
-              "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-              "view": {
-                "showChildren": true,
-                "showContent": false
-              }
+              "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
             }
           },
           {
             entity: {
               "description": "System users",
               "title": "Users",
-              "type": "Department",
-              "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-              "view": {
-                "showChildren": true,
-                "showContent": false
-              }
+              "type": "Reference",
+              "reference": { "_id": "users" },
+              "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
             }
           },
           {
             entity: {
               "description": "System roles",
               "title": "Roles",
-              "type": "Department",
-              "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-              "view": {
-                "format": true,
-                "showChildren": true,
-                "showContent": false
-              }
+              "type": "Reference",
+              "reference": { "_id": "roles" },
+              "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
             }
           }
         ]
@@ -241,15 +170,9 @@ export function loadThings() {
         entity: {
           "parent": "Root",
           "title": "Facebook",
-          "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-          "view": {
-            "format": false,
-            "showChildren": false,
-            "showContent": false
-          }
-        },
-        children: [
-        ]
+          "type": "Social Site",
+          "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
+        }
       },
       {
         entity: {
@@ -258,22 +181,13 @@ export function loadThings() {
           "title": "Another Restaurant",
           "type": "Organization",
           "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-          "view": {
-            "format": true,
-            "showChildren": true,
-            "showContent": false
-          },
           children: [
             {
               entity: {
                 "description": "Another Restaurant description",
                 "title": "Another Restaurant Web Site",
                 "type": "Web Site",
-                "meta": { creator: "D6gr2ZMJtwv2jqpuD" },
-                "view": {
-                  "showChildren": false,
-                  "showContent": true
-                }
+                "meta": { creator: "D6gr2ZMJtwv2jqpuD" }
               }
             }
           ]

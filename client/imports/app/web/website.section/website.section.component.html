@@ -1,18 +1,18 @@
 <div *ngIf="things.length > 0" [class.section-container]="parent.type!=='Reference'">
 
-  <div *ngFor="let thing of things; let i=index; trackBy: getKey">
+  <div *ngFor="let thing of things; let i=index; trackBy: getId">
 
     <div *ngIf="!thing.reference || !thing.reference._id">
 
       <div [scrollSpyParallax]="{ spyId: 'scroller', ratio: -0.3 }" [class.background]="thing.background && thing.background.path" [ngStyle]="{ 'background-image': 'url(' + (thing.background && thing.background.path ? thing.background.path : '') + ')' }">
 
-        <section *ngIf="archetype(thing).displaytype!=='table'" class="container content">
+        <section *ngIf="getArchetype(thing).displaytype!=='table'" class="container content">
 
           <h1 class="header" style="text-align: center;">{{thing.title}}</h1>
 
           <p class="subheader" style="text-align: center; line-height: 2;">{{thing.description}}</p>
 
-          <div *ngFor="let prop of props(thing); trackBy: getKey">
+          <div *ngFor="let prop of getProperties(thing); trackBy: getId">
             <div *ngIf="!prop.hidden && thing[prop.key] && thing[prop.key][prop.name]">
               {{ thing[prop.key][prop.name] }}
             </div>
@@ -43,7 +43,7 @@
 
         </section>
 
-        <div *ngIf="archetype(thing).displaytype==='table'" class="container">
+        <div *ngIf="getArchetype(thing).displaytype==='table'" class="container">
 
           <div class="table-row">
 
@@ -51,7 +51,7 @@
 
             <div class="text">{{thing.description}}</div>
 
-            <div *ngFor="let prop of props(thing); trackBy: getKey" class="text" [class.num]="prop.type==='number' || prop.type==='currency'">
+            <div *ngFor="let prop of getProperties(thing); trackBy: getId" class="text" [class.num]="prop.type==='number' || prop.type==='currency'">
               {{thing[prop.key] ? thing[prop.key][prop.name] : ''}}
             </div>
 

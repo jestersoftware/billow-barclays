@@ -33,7 +33,7 @@
 </span>
 
 <md-menu #menu="mdMenu">
-  <button md-menu-item *ngFor="let archetype of archetypes(thing)" (click)="create($event)">
+  <button md-menu-item *ngFor="let archetype of getArchetypes(thing); trackBy: getId" (click)="create($event)">
     {{archetype.display}}
   </button>
 </md-menu>

@@ -1,28 +1,28 @@
 <div class="thing-list alignCenter">
 
-  <md-card *ngIf="archetype(parent).displaytype !== 'table'" (click)="click({ event: $event })" [class.reference]="parent.type === 'Reference' || (!parent.view?.showChildren && !parent.session?.editable)">
+  <md-card *ngIf="getArchetype(parent).displaytype !== 'table'" (click)="click({ event: $event })" [class.reference]="parent.type === 'Reference' || (!parent.view?.showChildren && !parent.session?.editable)">
 
     <md-list *ngIf="parent.view?.showChildren || parent.type === 'Reference'">
 
       <h3 *ngIf="parent.type !== 'Reference' && things.length > 0" style="margin-bottom: 0.5em;">{{parent.title}}</h3>
 
-      <div *ngFor="let thing of things; let i=index; trackBy: getKey">
+      <div *ngFor="let thing of things; let i=index; trackBy: getId">
 
         <md-list-item *ngIf="thing.type !== 'Reference' || !thing.session.childrenLength || editingReference">
 
-          <button *ngIf="thing.type !== 'Reference' && parent.type !== 'Reference' && archetype(thing).displaytype !== 'table'" md-icon-button class="left" (click)="toggleChildren({ event: $event, thing: thing, force: false })">
+          <button *ngIf="thing.type !== 'Reference' && parent.type !== 'Reference' && getArchetype(thing).displaytype !== 'table'" md-icon-button class="left" (click)="toggleChildren({ event: $event, thing: thing, force: false })">
             <md-icon *ngIf="!thing.view || !thing.view.showChildren">add_circle</md-icon>
             <md-icon *ngIf="thing.view?.showChildren">remove_circle_outline</md-icon>
           </button>
 
-          <md-icon md-list-avatar>{{archetype(thing).icon}}</md-icon>
+          <md-icon md-list-avatar>{{getArchetype(thing).icon}}</md-icon>
           
           <md-input-container>
             <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.order.index" placeholder="Order" title="{{thing._id}}" style="width: 50px;" />
           </md-input-container>
 
           <md-select name="type" [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.type" placeholder="Type" (ngModelChange)="typeChange(thing)" (click)="typeClick($event)">  
-            <md-option *ngFor="let archetype of archetypes(parent)" [value]="archetype.key">
+            <md-option *ngFor="let archetype of getArchetypes(parent); trackBy: getId" [value]="archetype.key">
               {{archetype.display}}
             </md-option>
           </md-select>
@@ -31,7 +31,7 @@
             <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" title="{{thing.title}}" />
           </md-input-container>
 
-          <div *ngFor="let prop of props(thing); trackBy: getKey">
+          <div *ngFor="let prop of getProperties(thing); trackBy: getId">
             <md-input-container *ngIf="prop.type !== 'image'">
               <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" placeholder="{{prop.title}}" title="{{thing[prop.key][prop.name]}}" style="width: 100px;" />
             </md-input-container>

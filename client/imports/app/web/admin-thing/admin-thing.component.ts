@@ -129,15 +129,15 @@ export class AdminThingComponent implements OnInit, OnChanges {
     }
   }
 
-  archetype(thing) {
+  getArchetype(thing) {
     return this.schemaService.getArchetype(thing);
   }
 
-  archetypes(thing) {
+  getArchetypes(thing) {
     return this.schemaService.getArchetypes(thing);
   }
 
-  props(thing) {
+  getProperties(thing) {
     return this.schemaService.getProperties(thing);
   }
 
@@ -149,9 +149,9 @@ export class AdminThingComponent implements OnInit, OnChanges {
     let eventTarget = event.event.target;
 
     // TODO: Did they click on "div" or some other input?
-    if (eventTarget.localName !== "button"
-      && eventTarget.localName !== "input"
-      && eventTarget.localName !== "textarea") {
+    if ((eventTarget.localName !== "button" || eventTarget.disabled)
+        && (eventTarget.localName !== "input" || eventTarget.disabled)
+        && (eventTarget.localName !== "textarea" || eventTarget.disabled)) {
 
       event.event.stopPropagation();
 
@@ -189,7 +189,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
     this.eventElement = this.thingService.getParentThingElement(event);
     this.eventThing = event.thing;
 
-    if (!event.thing.view.showChildren) {
+    // if (!event.thing.view.showChildren) {
       setTimeout(() => {
         this.doResize(
           { 
@@ -200,7 +200,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
           });
         // this.eventElement = null;
       }, 0);
-    }
+    // }
   }
 
   toggleFormat(event) {
@@ -219,7 +219,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
     this.eventThing = event.thing;
   }
 
-  getKey(index: number, item: any): number {
+  getId(index: number, item: any): number {
     return item._id;
   }
 
@@ -321,13 +321,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
   delete(event) {
     event.event.stopPropagation();
 
-    // var param: any = {
-    //   _id: event.thing._id
-    // }
-
     this.adminService.delete(event.thing);
-
-    // this.toggleChildren({ event: event.event, thing: event.thing, force: true });
   }
 
   referto(event) {
@@ -367,7 +361,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
       event.event = this.eventElement;
     }
 
-    if (event.event && (event.eventType === "toggleChildren" || event.eventType === "load") && !this.choosing) {
+    if (event.event && event.thing && event.thing.view && event.thing.view.showChildren && (event.eventType === "toggleChildren" || event.eventType === "load") && !this.choosing) {
       this.things.forEach(thing => {
         if (thing._id !== event.lastThing._id
           && thing.view

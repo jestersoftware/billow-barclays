@@ -7,6 +7,7 @@ export class SchemaService {
 
   private archetypes: any = [
     {
+      _id: "archetype1",
       key: "User",
       display: "User",
       editable: false,
@@ -15,6 +16,7 @@ export class SchemaService {
       parent: ["Root", "Reference"]
     },
     {
+      _id: "archetype2",
       key: "Role",
       display: "Role",
       editable: false,
@@ -23,18 +25,21 @@ export class SchemaService {
       parent: ["User", "Reference"]
     },
     {
+      _id: "archetype3",
       key: "Organization",
       display: "Organization",
       icon: "device_hub",
       parent: ["User"]
     },
     {
+      _id: "archetype4",
       key: "Business",
       display: "Business",
       icon: "business",
       parent: ["Organization"]
     },
     {
+      _id: "archetype5",
       key: "Employee",
       display: "Employee",
       icon: "person_outline",
@@ -42,12 +47,14 @@ export class SchemaService {
       parent: ["Business", "Department"]
     },
     {
+      _id: "archetype6",
       key: "Department",
       display: "Department",
       icon: "supervisor_account",
-      parent: ["Business", "Reference"]
+      parent: ["Organization", "Business", "Reference"]
     },
     {
+      _id: "archetype7",
       key: "Collection",
       display: "Collection",
       icon: "list",
@@ -55,44 +62,50 @@ export class SchemaService {
       parent: ["Business", "Department", "Reference"]
     },
     {
+      _id: "archetype8",
       key: "Product",
       display: "Product",
       icon: "attach_money",
       displaytype: "table",
-      parent: ["Collection", "Menu", "Section", "Reference"]
-    },
+      parent: ["Collection", /*"Menu",*/ "Section", "Reference"]
+    }/*,
     {
       key: "Menu",
       display: "Menu",
       icon: "restaurant_menu",
       defaultFormat: "format",
       parent: ["Collection", "Reference"]
-    },
+    }*/,
     {
+      _id: "archetype9",
       key: "Web Site",
       display: "Web Site",
       icon: "language",
       parent: ["Business", "Reference"]
     },
     {
+      _id: "archetype10",
       key: "Social Site",
       display: "Social Site",
       icon: "share",
       parent: ["User", "Business", "Department", "Collection"]
     },
     {
+      _id: "archetype11",
       key: "Section",
       display: "Section",
       icon: "web",
-      parent: ["Web Site", "Section", "Menu", "Reference"]
+      parent: ["Web Site", "Collection", "Section", /*"Menu",*/ "Reference"]
     },
     {
+      _id: "archetype12",
       key: "Reference",
       display: "Reference",
       icon: "tab_unselected",
       parent: ["*"]
     },
     {
+      _id: "archetype13",
       key: "Image",
       display: "Image",
       icon: "photo",
@@ -102,6 +115,7 @@ export class SchemaService {
 
   private properties: any = [
     {
+      _id: "property1",
       key: "price",
       name: "dollar",
       title: "Price",
@@ -109,13 +123,16 @@ export class SchemaService {
       parent: ["Product"]
     },
     {
+      _id: "property2",
       key: "category",
       name: "name",
       title: "Category",
       type: "string",
+      hidden: true,
       parent: ["Product"]
     },
     {
+      _id: "property3",
       key: "supplier",
       name: "name",
       title: "Supplier",
@@ -123,6 +140,7 @@ export class SchemaService {
       parent: ["Product"]
     },
     {
+      _id: "property4",
       key: "logo",
       name: "path",
       title: "Logo",
@@ -132,15 +150,17 @@ export class SchemaService {
       parent: ["Organization", "Business", "Web Site"]
     },
     {
+      _id: "property5",
       key: "background",
       name: "path",
       title: "Background",
       type: "image",
       hidden: true,
       preview: "previewPath",
-      parent: ["Web Site", "Section", "Menu", "Image"]
+      parent: ["Web Site", "Section", /*"Menu",*/ "Image"]
     },
     {
+      _id: "property6",
       key: "site",
       name: "url",
       title: "Site",
@@ -149,6 +169,7 @@ export class SchemaService {
       parent: ["Social Site"]
     },
     {
+      _id: "property7",
       key: "font",
       name: "url",
       title: "Font Url",
@@ -157,6 +178,7 @@ export class SchemaService {
       parent: ["Web Site"]
     },
     {
+      _id: "property8",
       key: "font",
       name: "name",
       title: "Font Name",
@@ -165,6 +187,7 @@ export class SchemaService {
       parent: ["Web Site"]
     },
     {
+      _id: "property9",
       key: "reference",
       name: "_id",
       title: "Refers To",
@@ -190,13 +213,11 @@ export class SchemaService {
   }
 
   getArchetypes(thing) {
-    let archetypes = this.archetypes.filter(archetype => archetype.parent.find(parent => parent === thing.type || parent === "*"));
-    return archetypes;
+    return this.archetypes.filter(archetype => archetype.parent.find(parent => parent === thing.type || parent === "*"));
   }
 
   getProperties(thing) {
-    let properties = this.properties.filter(property => property.parent.find(parent => parent === thing.type || parent === "*"));
-    return properties;
+    return this.properties.filter(property => property.parent.find(parent => parent === thing.type || parent === "*"));
   }
 
   fixup(things, reset, parent = null) {

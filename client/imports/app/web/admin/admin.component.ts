@@ -75,13 +75,13 @@ export class AdminComponent implements OnInit {
   onClickLeft(event) {
     this.cancelMovement();
 
-    this.setPosition({ event: null, thing: this.parent }, this.moveLeft, 0, null, /*0,*/ 'easeInQuad', 0.6 /*, 300*/);
+    this.setPosition({ event: null, thing: this.parent }, this.moveLeft, 0, 0.6);
   }
 
   onClickRight(event) {
     this.cancelMovement();
 
-    this.setPosition({ event: null, thing: this.parent }, this.moveRight, 0, null, /*0,*/ 'easeInQuad', 0.6 /*, 300*/);
+    this.setPosition({ event: null, thing: this.parent }, this.moveRight, 0, 0.6);
   }
 
   onLeftMouseEnter(event) {
@@ -89,7 +89,7 @@ export class AdminComponent implements OnInit {
 
     setTimeout(() => {
       if (this.moving)
-        this.setPosition({ event: null, thing: this.parent }, this.moveLeft, 300, null, /*0,*/ 'easeInQuad', 0.6 /*, 700*/);
+        this.setPosition({ event: null, thing: this.parent }, this.moveLeft, 300, 0.6);
     }, 250);
   }
 
@@ -98,7 +98,7 @@ export class AdminComponent implements OnInit {
 
     setTimeout(() => {
       if (this.moving)
-        this.setPosition({ event: null, thing: this.parent }, this.moveRight, 300, null, /*0,*/ 'easeInQuad', 0.6 /*, 700*/);
+        this.setPosition({ event: null, thing: this.parent }, this.moveRight, 300, 0.6);
     }, 250);
   }
 
@@ -127,7 +127,13 @@ export class AdminComponent implements OnInit {
     let timeout = 500;
     let scale = 1;
 
-    if (event.eventType === "focus") {
+    // // TEMP?
+    // if (event.eventType === "load") {
+    //   return;
+    // }
+
+    // if (event.eventType === "focus") {
+    if (event.eventType !== "load") {
       timeout = 0;
     }
 
@@ -137,7 +143,7 @@ export class AdminComponent implements OnInit {
       const snackBarRef = this.snackBar.open('Choose a thing to refer to', 'Cancel');
       snackBarRef.onAction().subscribe(() => {
         // Choosing was canceled
-        this.setPosition(this.choosing, this.moveCenter, 0, null, /*0,*/ 'easeInQuad', 1);
+        this.setPosition(this.choosing, this.moveCenter, 0);
         this.choosing = null;
       });
     }
@@ -149,24 +155,24 @@ export class AdminComponent implements OnInit {
 
     setTimeout((length) => {
       if (this.requests.length <= length) {
-        this.setPosition(this.requests[this.requests.length - 1], this.moveCenter, 0, null, /*0,*/ 'easeInQuad', scale /*[1.0, 0.6, 1.0]*/ /*, 300*/);
+        this.setPosition(this.requests[this.requests.length - 1], this.moveCenter, 0, scale /*[1.0, 0.6, 1.0]*/ /*, 300*/);
         this.requests = [];
       }
     }, timeout, this.requests.length);
   }
 
-  moveCenter(positionNumberStart, /*count,*/ widthOfThing, widthOfContainer, scale) {
+  moveCenter(positionNumberStart, widthOfThing, widthOfContainer, scale) {
     let positionEnd = (widthOfContainer / 2) + (widthOfThing / -2);
     return positionEnd;
   }
 
-  moveLeft(positionNumberStart, /*count,*/ widthOfThing, widthOfContainer, scale) {
-    let factor = positionNumberStart + 500;
+  moveLeft(positionNumberStart, widthOfThing, widthOfContainer, scale) {
+    let factor = positionNumberStart + (500 * (1 + scale));
     if (factor >= 0) return 0;
     return factor;
   }
 
-  moveRight(positionNumberStart, /*count,*/ widthOfThing, widthOfContainer, scale) {
+  moveRight(positionNumberStart, widthOfThing, widthOfContainer, scale) {
     let factor = positionNumberStart - 500;
     let min = (widthOfContainer - widthOfThing) + (widthOfThing - (widthOfThing * scale));
     if (factor <= min) return min;
@@ -189,7 +195,7 @@ export class AdminComponent implements OnInit {
     }
   }
 
-  setPosition(event, calc, timeout, test, /*count,*/ easing, scale /*, duration*/) {
+  setPosition(event: any, calc: Function, timeout: number, scale: number = 1, test: Function = null, easing: String = 'easeOutSine') {
 
     // console.log('setPosition');
 
@@ -209,7 +215,7 @@ export class AdminComponent implements OnInit {
 
     let positionNumberEnd = 0;
 
-    let scrollEnd = scroller.scrollTop < 100 ? 0 : scroller.scrollTop * scale;
+    let scrollEnd = scroller.scrollTop < 100 ? 0 : scroller.scrollTop * scale; // TODO based on if mouse is near top or near bottom, go up/down respectively
 
     let scaleX = !scale[0] ? scale : 1;
 
@@ -224,7 +230,7 @@ export class AdminComponent implements OnInit {
       // console.log('Original end: ' + positionNumberEnd);
 
       if (event.event) {
-        console.log("thingElement", event.event);
+        // console.log("thingElement", event.event);
 
         let thingElement = event.event;
         positionNumberEnd = (widthOfContainer / 2) - (thingElement.offsetLeft + (thingElement.clientWidth / 2));
@@ -232,13 +238,14 @@ export class AdminComponent implements OnInit {
         // console.log('Offset: ' + thingElement.offsetLeft, thingElement);
         // console.log('Width: ' + thingElement.clientWidth);
 
-        scrollEnd = Math.max(0, thingElement.offsetTop - 200);
+        scrollEnd = Math.max(0, (thingElement.offsetTop * scaleX) - 200);
       }
     }
 
     positionNumberEnd = Math.floor(positionNumberEnd);
 
-    if (positionNumberStart === positionNumberEnd && scroller.scrollTop === scrollEnd) return;
+    if (positionNumberStart === positionNumberEnd && scroller.scrollTop === scrollEnd) 
+      return;
 
     if (this.animation) this.animation.pause();
 
@@ -264,6 +271,7 @@ export class AdminComponent implements OnInit {
       scale: scale,
       duration: 400,
       easing: easing,
+      elasticity: 600,
       offset: 0
     };
 
@@ -279,15 +287,15 @@ export class AdminComponent implements OnInit {
       .add(positionAnimation)
       .add(scrollAnimation);
 
-    // this.animation.begin = function () {
-    //   console.log('Animation beginning', positionAnimation, scrollAnimation);
-    // };
+    this.animation.begin = function () {
+      console.log('Animation beginning', positionAnimation, scrollAnimation);
+    };
 
     this.animation.finished.then(() => {
       setTimeout(() => {
         this.animation = null;
         if (this.moving || (test && test(event))) {
-          this.setPosition(event, calc, timeout, test, /*count,*/ 'linear', scale /*, 300*/);
+          this.setPosition(event, calc, timeout, scale, test, 'linear');
         }
       }, 0);
     });
