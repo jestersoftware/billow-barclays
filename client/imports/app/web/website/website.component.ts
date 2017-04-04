@@ -41,7 +41,6 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
 
   ngOnInit() {
     this.activatedRoute.params.subscribe((params: Params) => {
-      // console.log('website', params);
       this.params = params;
 
       this.thingService.getThing({_id: this.params["id"]}).subscribe(things => {
@@ -50,7 +49,7 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
             this.thing = things[0];
             this.currentThing = { title: "" };
             this.setFont();
-            this.getChildren(/*this.thing, params["id2"], params["mode"]*/);
+            this.getChildren();
           }
         });
       });
@@ -84,7 +83,7 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
     this.router.navigate(['/login']);
   }
 
-  getChildren(/*parent, id, mode*/) {
+  getChildren() {
     this.adminService.getChildren(this.thing).subscribe(things => {
       this.zone.run(() => {
         this.things = things;

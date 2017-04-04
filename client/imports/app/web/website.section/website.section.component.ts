@@ -1,7 +1,5 @@
 import { Component, OnInit, NgZone, Input, Output, EventEmitter } from '@angular/core';
 
-// import { Router, ActivatedRoute, Params } from '@angular/router';
-
 import { SchemaService } from './../../schema.service';
 
 import { AdminService } from './../../admin.service';
@@ -29,7 +27,6 @@ export class WebsiteSectionComponent implements OnInit {
   private timeout = false;
 
   constructor(
-    // private activatedRoute: ActivatedRoute,
     private schemaService: SchemaService,
     private adminService: AdminService,
     private thingService: ThingService,
@@ -37,17 +34,11 @@ export class WebsiteSectionComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('params', this.params);
-
     this.adminService.getChildren(this.parent).subscribe(things => {
       this.zone.run(() => {
         this.things = things;
       });
     });
-
-    // this.activatedRoute.params.subscribe((params: Params) => {
-    //   console.log('section', params);
-    // });
 
     this.onResize.emit();
   }
