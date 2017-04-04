@@ -1,90 +1,108 @@
-
 $text-width: 180px;
 $num-width: 80px;
 
 :host > .section-container {
-    padding-top: 35px;
-    padding-bottom: 35px;
+  padding-top: 35px;
+  padding-bottom: 35px;
 }
 
 :host > .section-container .section-container {
-    padding-top: 15px;
-    padding-bottom: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
 }
 
 .background {
-    padding-top: 100px;
-    padding-bottom: 100px;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-color: rgba(0,0,0,1);
-    color: white;
+  padding-top: 100px;
+  padding-bottom: 100px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-color: rgba(0,0,0,1);
+  color: white;
+
+  .container .header {
+    text-transform: uppercase;
+    letter-spacing: 5px;
+  }
+
+  h3, h4 {
+    font-size: 1.5em;
+  }
 }
 
 section {
-    // min-height: 300px;
-    text-align: center;
+  text-align: center;
 }
-
-// .background section {
-//     min-height: auto;
-// }
 
 .container {
-    max-width: 1250px;
-    margin: 0 auto;
-}
-
-.background .container .header {
-    text-transform: uppercase;
-    letter-spacing: 5px;
+  max-width: 1250px;
+  margin: 0 auto;
 }
 
 .content {
-    padding: 10px 50px 10px 50px;
+  padding: 10px 50px 10px 50px;
+}
+
+.item {
+  padding-top: 10px;
+  padding-bottom: 20px;
 }
 
 .table-row {
-    border-bottom: 1px dotted #e0e0e0;
-    border-collapse: collapse;
-    padding-top: 20px;
-    padding-bottom: 20px;
-}
+  border-bottom: 1px dotted #e0e0e0;
+  border-collapse: collapse;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  display: flex;
+  flex-direction: row;
+  flex-grow: 0;
+  flex-wrap: wrap;
+  width: 100%;
 
-.table-row {
-    display: flex;
-    display: -webkit-flex;
-    flex-direction: row;
-    -webkit-flex-direction: row;
-    flex-grow: 0;
-    -webkit-flex-grow: 0;
-    flex-wrap: wrap;
-    -webkit-flex-wrap: wrap;
-    width: 100%;
-    // padding-left: 15px;
-    // padding-right: 15px;
-}
-
-// .table-row:last-child {
-//     margin-bottom: 50px;
-// }
-
-.text {
+  .text {
     flex-grow: 1;
-    -webkit-flex-grow: 1;
     // overflow: hidden;
     // white-space: nowrap;
     // text-overflow: ellipsis;
+    // Fix the minimum width of the leaf level cells
+    width: $text-width;
     padding-right: 20px;
+  }
+
+  .num {
+    width: $num-width;
+    text-align: right;
+  }
 }
 
-// Fix the minimum width of the leaf level cells
-.text {
-  width: $text-width;
+.two-column {
+  display: flex;
+  border: 1px solid gray;
+  padding: 20px;
+
+  .image {
+    flex-grow: 1;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+  }
+  .text {
+    flex-grow: 1;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    text-align: center;
+  }
 }
 
-.num {
-  width: $num-width;
-  text-align: right;
+.flex {
+  display: flex;
+  justify-content: space-around;
+
+  .flex-column {
+    flex-grow: 1;
+    flex-shrink: 0;
+  }
 }
 
+.fb-page {
+  width: 500px;
+}

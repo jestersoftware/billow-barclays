@@ -1,20 +1,53 @@
-<div *ngIf="things.length > 0" [class.section-container]="parent.type!=='Reference'">
+<div *ngIf="things.length > 0" [class.section-container]="parent.type !== 'Reference'" [class.flex]="getArchetype(this.things[0]).displaytype === 'flex-column'">
 
-  <div *ngFor="let thing of things; let i=index; trackBy: getId">
+  <div *ngFor="let thing of things; let i=index; trackBy: getId" [class.flex-column]="getArchetype(thing).displaytype === 'flex-column'">
 
     <div *ngIf="!thing.reference || !thing.reference._id">
 
-      <div [scrollSpyParallax]="{ spyId: 'scroller', ratio: -0.3 }" [class.background]="thing.background && thing.background.path" [ngStyle]="{ 'background-image': 'url(' + (thing.background && thing.background.path ? thing.background.path : '') + ')' }">
+      <div [scrollSpyParallax]="{ spyId: 'scroller', ratio: -0.3 }" [class.background]="thing.background && thing.background.path && getArchetype(thing).displaytype !== 'two-column'" [ngStyle]="{ 'background-image': 'url(' + (thing.background && thing.background.path && getArchetype(thing).displaytype !== 'two-column' ? thing.background.path : '') + ')' }">
 
-        <section *ngIf="getArchetype(thing).displaytype!=='table'" class="container content">
+        <section *ngIf="getArchetype(thing).displaytype !== 'table' && getArchetype(thing).displaytype !== 'two-column'" class="container content">
 
-          <h1 class="header" style="text-align: center;">{{thing.title}}</h1>
+          <div [ngSwitch]="level">
+            <template ngSwitchCase="1">
+              <h2 class="header alignCenter">
+                {{thing.title}}
+              </h2>
+            </template>
+            <template ngSwitchCase="2">
+              <h3 class="header alignCenter">
+                {{thing.title}}
+              </h3>
+            </template>
+            <template ngSwitchCase="3">
+              <h4 class="header alignCenter">
+                {{thing.title}}
+              </h4>
+            </template>
+            <template ngSwitchDefault>
+              <p class="header alignCenter">
+                {{thing.title}}
+              </p>
+            </template>
+          </div>
 
-          <p class="subheader" style="text-align: center; line-height: 2;">{{thing.description}}</p>
+          <div *ngIf="!(thing.type==='Social Site' && thing.site && thing.site.url)" class="subheader" class="alignCenter" style="line-height: 2;">
+            {{thing.description}}
+          </div>
 
           <div *ngFor="let prop of getProperties(thing); trackBy: getId">
             <div *ngIf="!prop.hidden && thing[prop.key] && thing[prop.key][prop.name]">
-              {{ thing[prop.key][prop.name] }}
+              <div [ngSwitch]="prop.type" class="item">
+                <template ngSwitchCase="email">
+                  <a md-raised-button href="mailto:{{thing[prop.key][prop.name]}}">{{ thing[prop.key][prop.name] }}</a>                
+                </template>
+                <template ngSwitchCase="phone">
+                  <a md-raised-button href="tel:{{thing[prop.key][prop.name]}}">{{ thing[prop.key][prop.name] }}</a>                
+                </template>
+                <template ngSwitchDefault>
+                  {{ thing[prop.key][prop.name] }}
+                </template>
+              </div>
             </div>
           </div>
 
@@ -43,7 +76,7 @@
 
         </section>
 
-        <div *ngIf="getArchetype(thing).displaytype==='table'" class="container">
+        <div *ngIf="getArchetype(thing).displaytype === 'table'" class="container">
 
           <div class="table-row">
 
@@ -51,8 +84,33 @@
 
             <div class="text">{{thing.description}}</div>
 
-            <div *ngFor="let prop of getProperties(thing); trackBy: getId" class="text" [class.num]="prop.type==='number' || prop.type==='currency'">
+            <div *ngFor="let prop of getProperties(thing); trackBy: getId" class="text" [class.num]="prop.type === 'number' || prop.type === 'currency'">
               {{thing[prop.key] ? thing[prop.key][prop.name] : ''}}
+            </div>
+
+          </div>
+
+        </div>
+
+        <div *ngIf="getArchetype(thing).displaytype === 'two-column'" class="container">
+
+          <div class="two-column">
+            
+            <div class="image" [ngStyle]="{ 'background-image': 'url(' + (thing.background && thing.background.path ? thing.background.path : '') + ')' }">
+            </div>
+
+            <div class="text">
+              <h3>
+                {{thing.title}}
+              </h3>
+
+              <p>
+                {{thing.description}}
+              </p>
+
+              <div *ngFor="let prop of getProperties(thing); trackBy: getId" class="item">
+                {{thing[prop.key] ? thing[prop.key][prop.name] : ''}}
+              </div>
             </div>
 
           </div>
@@ -63,7 +121,7 @@
 
     </div>
     
-    <app-website-section [parent]="thing"></app-website-section>
+    <app-website-section [parent]="thing" [level]="thing.type === 'Reference' ? level : level + 1"></app-website-section>
 
   </div>
 

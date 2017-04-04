@@ -25,6 +25,7 @@ import style from './website.section.component.scss';
 export class WebsiteSectionComponent implements OnInit {
 
   @Input() parent: any;
+  @Input() level: number = 1;
   @Output() onResize = new EventEmitter();
 
   things: any = [];

@@ -265,7 +265,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
   openFileDialog(event, inputFile) {
     inputFile.dispatchEvent(new MouseEvent('click', {
       'view': window,
-      'bubbles': true,
+      'bubbles': false,
       'cancelable': true
     }));
   }

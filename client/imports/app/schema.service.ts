@@ -59,7 +59,7 @@ export class SchemaService {
       display: "Collection",
       icon: "list",
       defaultFormat: "format",
-      parent: ["Business", "Department", "Reference"]
+      parent: ["Business", "Department", "Reference", "Section"]
     },
     {
       _id: "archetype8",
@@ -88,6 +88,7 @@ export class SchemaService {
       key: "Social Site",
       display: "Social Site",
       icon: "share",
+      displaytype: "flex-column",
       parent: ["User", "Business", "Department", "Collection"]
     },
     {
@@ -109,6 +110,22 @@ export class SchemaService {
       key: "Image",
       display: "Image",
       icon: "photo",
+      parent: ["Collection", "Reference"]
+    },
+    {
+      _id: "archetype14",
+      key: "Contact",
+      display: "Contact",
+      icon: "phone",
+      // displaytype: "table",
+      parent: ["Collection", "Reference"]
+    },
+    {
+      _id: "archetype15",
+      key: "Event",
+      display: "Event",
+      icon: "event",
+      displaytype: "two-column",
       parent: ["Collection", "Reference"]
     }
   ]
@@ -157,7 +174,7 @@ export class SchemaService {
       type: "image",
       hidden: true,
       preview: "previewPath",
-      parent: ["Web Site", "Section", /*"Menu",*/ "Image"]
+      parent: ["Web Site", "Section", /*"Menu",*/ "Image", "Event"]
     },
     {
       _id: "property6",
@@ -194,6 +211,38 @@ export class SchemaService {
       type: "thing",
       hidden: true,
       parent: ["Reference"]
+    },
+    {
+      _id: "property10",
+      key: "email",
+      name: "address",
+      title: "Email",
+      type: "email",
+      parent: ["Contact"]
+    },
+    {
+      _id: "property11",
+      key: "phone",
+      name: "number",
+      title: "Phone",
+      type: "phone",
+      parent: ["Contact"]
+    },
+    {
+      _id: "property12",
+      key: "start",
+      name: "time",
+      title: "Start Time",
+      type: "time",
+      parent: ["Event"]
+    },
+    {
+      _id: "property12",
+      key: "stop",
+      name: "time",
+      title: "Stop Time",
+      type: "time",
+      parent: ["Event"]
     }
   ];
 

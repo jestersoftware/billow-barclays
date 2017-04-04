@@ -154,8 +154,11 @@ export class AdminComponent implements OnInit {
     }
 
     setTimeout((length) => {
-      if (this.requests.length <= length) {
-        this.setPosition(this.requests[this.requests.length - 1], this.moveCenter, 0, scale /*[1.0, 0.6, 1.0]*/ /*, 300*/);
+      if (this.requests.length > 0 && this.requests.length <= length) {
+        let ev = this.requests[this.requests.length - 1];
+        // if(!ev)
+        //   debugger;
+        this.setPosition(ev, this.moveCenter, 0, scale /*[1.0, 0.6, 1.0]*/ /*, 300*/);
         this.requests = [];
       }
     }, timeout, this.requests.length);
