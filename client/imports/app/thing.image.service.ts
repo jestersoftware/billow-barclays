@@ -24,6 +24,7 @@ export class ThingImageService {
 
   security = new Security();
 
+  // TODO duplicated
   setPermissions(things, parentId) {
     let isParentEditable = this.security.checkRole(parentId, ["update"], Meteor.userId());
 
@@ -63,11 +64,11 @@ export class ThingImageService {
     });
   }
 
-  getFileByKey(getParam): Subject<any> {
+  getImage(imageThing): Subject<any> {
     let subject = new Subject();
 
     MeteorObservable.subscribe('images').subscribe(() => {
-      let thingsSub = Images.find({ _id: getParam._id });
+      let thingsSub = Images.find({ _id: imageThing._id });
       thingsSub.subscribe(things => {
         subject.next(things);
       });
@@ -76,12 +77,13 @@ export class ThingImageService {
     return subject;
   }
 
-  getThumb(getParam): Subject<any> {
+  getThumb(imageThing): Subject<any> {
     let subject = new Subject();
 
-    MeteorObservable.subscribe('thumbs', [getParam._id]).subscribe(() => {
-      let thumb = Thumbs.findOne({ originalId: getParam._id });
-      subject.next(thumb);
+    MeteorObservable.subscribe('thumbs').subscribe(() => {
+      let thumb = Thumbs.findOne({ originalId: imageThing._id });
+      if (thumb)
+        subject.next(thumb);
     });
 
     return subject;
@@ -91,55 +93,49 @@ export class ThingImageService {
     let subject = new Subject();
 
     MeteorObservable.subscribe('images').subscribe(() => {
-      // let images: any = Images.find().fetch(); // TODO Limit
-      let imagesCursor = Images.find();
-
-      // let imagesArray = [];
-
-      // images.forEach(image => {
-      //   imagesArray.push(
-      //     {
-      //       _id: image._id,
-      //       parent: "images",
-      //       title: image.name,
-      //       type: "Image",
-      //       background: { path: image.path, previewPath: image.path }
-      //     });
-      // });
-
-      // this.schemaService.fixup(imagesArray, true);
-      // this.setPermissions(imagesArray, thing._id);
-
-      // subject.next(imagesArray);
+      let imagesCursor = Images.find(); // TODO Limit
 
       imagesCursor.subscribe(images => {
+        let uninitialized = [];
 
-        // TODO fixup
         images.forEach(image => {
-
-          if(!image.parent)
-            image.parent = "images";
-
-          if(!image.title)
-            image.title = image.name;
-
-          image.type = "Image";
-
-          if(!image.background)
-            image.background = { path: image.path, previewPath: image.path };
-
+          if (!image.session || !image.session.initialized)
+            uninitialized.push(image);
         });
 
-        this.schemaService.fixup(images, true, thing);
+        if (uninitialized.length > 0) {
+          this.fixup(uninitialized);
 
-        this.setPermissions(images, thing._id);
+          this.schemaService.fixup(uninitialized, true, thing);
 
-        subject.next(images);
+          this.setPermissions(uninitialized, thing._id);
+
+          subject.next(images);
+        }
       });
 
     });
 
     return subject;
+  }
+
+  fixup(images) {
+    images.forEach(image => {
+      if (!image.parent)
+        image.parent = "images";
+
+      if (!image.title)
+        image.title = image.name;
+
+      image.type = "Image";
+
+      if (!image.background) {
+        image.background = { path: image.path, previewPath: '' };
+        this.getThumb(image).subscribe(thumb => {
+          image.background.previewPath = thumb.path;
+        });
+      }
+    });
   }
 
   onFile($event, thing, prop, uploader) {
@@ -183,20 +179,16 @@ export class ThingImageService {
 
           count++;
 
-          // console.log("Success uploading file", result);
-
           let propKey = item.alias.split(":")[1];
 
           if (!thing[propKey])
             thing[propKey] = {};
 
-          // TODO: pass all the data, or just some?
           thing[propKey]._id = result._id;
           thing[propKey].store = result.store;
           thing[propKey].name = result.name;
           thing[propKey].type = result.type;
           thing[propKey].path = result.path;
-          // thing[propKey] = result; 
 
           let param: any = {
             _id: thing._id

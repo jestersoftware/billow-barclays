@@ -86,12 +86,6 @@ export class ThingService {
     this.childrenSubscription = MeteorObservable.subscribe('thing.children', thing._id, refId).subscribe(() => {
       this.childrenCursor = Things.find(query, { sort: { "order.index": 1, title: 1 } });
 
-      // let things = this.childrenCursor.fetch();
-
-      // this.setPermissions(things, parentId);
-
-      // subject.next(this.schemaService.fixup(things, true));
-
       this.childrenCursor.subscribe(things => {
         this.schemaService.fixup(things, true, thing);
 
@@ -109,6 +103,7 @@ export class ThingService {
 
     MeteorObservable.subscribe('thing.query', query).subscribe(() => {
 
+      // TODO - use subscribe on cursor?
       // let thingsSub = Things.find(query, { sort: { "order.index": 1, title: 1 } });
       let things = Things.find(query, { sort: { "order.index": 1, title: 1 } }).fetch();
 

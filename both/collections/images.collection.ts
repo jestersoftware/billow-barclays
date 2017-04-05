@@ -4,9 +4,6 @@ import { MongoObservable } from 'meteor-rxjs';
 
 import { UploadFS } from 'meteor/jalik:ufs';
 
-// import { Thumb, Image } from "../models/image.model";
-// import { Jimp } from '../../node_modules/jimp';
-
 export const Images = new MongoObservable.Collection<any>('images');
 export const Thumbs = new MongoObservable.Collection<any>('thumbs');
 

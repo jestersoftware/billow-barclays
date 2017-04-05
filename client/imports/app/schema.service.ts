@@ -305,6 +305,7 @@ export class SchemaService {
       if (!thing.session) {
         thing.session = {}
         thing.session.disabled = true;
+        thing.session.initialized = true;
       }
       // Parent
       if (parent) {

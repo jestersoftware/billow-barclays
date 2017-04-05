@@ -35,8 +35,10 @@ export class AdminComponent implements OnInit {
   userId: string;
   parent: Object;
 
+  mouseY = 0;
   moving = false;
   animation: any;
+  timeout = false;
 
   choosing: any;
 
@@ -84,22 +86,54 @@ export class AdminComponent implements OnInit {
     this.setPosition({ event: null, thing: this.parent }, this.moveRight, 0, 0.6);
   }
 
-  onLeftMouseEnter(event) {
-    this.moving = true;
+  onLeftMouseMove(event) {
+    this.mouseY = event.y;
 
-    setTimeout(() => {
-      if (this.moving)
-        this.setPosition({ event: null, thing: this.parent }, this.moveLeft, 300, 0.6);
-    }, 250);
+    if (!this.timeout) {
+      this.timeout = true;
+      this.moving = true;
+
+      setTimeout(() => {
+        if (this.moving)
+          this.setPosition({ e: event, event: null, thing: this.parent }, this.moveLeft, 300, 0.6);
+        else
+          this.timeout = false;
+      }, 250);
+    }
+  }
+
+  onRightMouseMove(event) {
+    this.mouseY = event.y;
+
+    if (!this.timeout) {
+      this.timeout = true;
+      this.moving = true;
+
+      setTimeout(() => {
+        if (this.moving)
+          this.setPosition({ e: event, event: null, thing: this.parent }, this.moveRight, 300, 0.6);
+        else
+          this.timeout = false;
+      }, 250);
+    }
+  }
+
+  onLeftMouseEnter(event) {
+    // this.moving = true;
+
+    // setTimeout(() => {
+    //   if (this.moving)
+    //     this.setPosition({ e: event, event: null, thing: this.parent }, this.moveLeft, 300, 0.6);
+    // }, 250);
   }
 
   onRightMouseEnter(event) {
-    this.moving = true;
+    // this.moving = true;
 
-    setTimeout(() => {
-      if (this.moving)
-        this.setPosition({ event: null, thing: this.parent }, this.moveRight, 300, 0.6);
-    }, 250);
+    // setTimeout(() => {
+    //   if (this.moving)
+    //     this.setPosition({ e: event, event: null, thing: this.parent }, this.moveRight, 300, 0.6);
+    // }, 250);
   }
 
   onMouseLeave(event) {
@@ -192,36 +226,35 @@ export class AdminComponent implements OnInit {
 
   cancelMovement() {
     this.moving = false;
+    this.timeout = false;
     if (this.animation) {
       this.animation.pause();
       this.animation = null;
     }
   }
 
-  setPosition(event: any, calc: Function, timeout: number, scale: number = 1, test: Function = null, easing: String = 'easeOutSine') {
-
-    // console.log('setPosition');
+  setPosition(event: any, calc: Function, timeout: number, scale: number = 1, test: Function = null, easing: String = 'easeOutQuad') {
 
     let scroller = this.elementRef.nativeElement.querySelector('.scrollable');
 
     let thing = this.elementRef.nativeElement.querySelector('app-admin-thing');
 
-    let container = this.elementRef.nativeElement.querySelector('div');
-    let widthOfContainer = container.clientWidth;
+    let widthOfContainer = scroller.clientWidth;
+    let heightOfContainer = scroller.clientHeight;
 
     let div = this.elementRef.nativeElement.querySelector('app-admin-thing > div');
     let widthOfThing = div.clientWidth;
-
-    // console.log('widthOfThing', widthOfThing);
+    let heightOfThing = div.clientHeight;
 
     let positionNumberStart = parseInt(thing.style.left.substr(0, thing.style.left.length - 1));
-
     let positionNumberEnd = 0;
 
-    let scrollEnd = scroller.scrollTop < 100 ? 0 : scroller.scrollTop * scale; // TODO based on if mouse is near top or near bottom, go up/down respectively
+    let upOrDown = event.e ? ((this.mouseY - (heightOfContainer / 2)) / (heightOfContainer / 4)) * 400 : 0;
+
+    let scrollEnd = Math.min(heightOfThing, Math.max(0, scroller.scrollTop + upOrDown));
+    // console.log('scrollEnd', scrollEnd);
 
     let scaleX = !scale[0] ? scale : 1;
-
     // console.log('scaleX', scaleX);
 
     if (!event.event && event.eventType !== "focus" && widthOfThing * scaleX <= widthOfContainer) {
@@ -230,27 +263,24 @@ export class AdminComponent implements OnInit {
     else {
       positionNumberEnd = calc(positionNumberStart, /*count,*/ widthOfThing, widthOfContainer, scaleX);
 
-      // console.log('Original end: ' + positionNumberEnd);
-
       if (event.event) {
-        // console.log("thingElement", event.event);
-
         let thingElement = event.event;
         positionNumberEnd = (widthOfContainer / 2) - (thingElement.offsetLeft + (thingElement.clientWidth / 2));
-
-        // console.log('Offset: ' + thingElement.offsetLeft, thingElement);
-        // console.log('Width: ' + thingElement.clientWidth);
-
         scrollEnd = Math.max(0, (thingElement.offsetTop * scaleX) - 200);
       }
     }
 
     positionNumberEnd = Math.floor(positionNumberEnd);
 
-    if (positionNumberStart === positionNumberEnd && scroller.scrollTop === scrollEnd) 
+    if (positionNumberStart === positionNumberEnd && scroller.scrollTop === scrollEnd) {
+      this.timeout = false;
       return;
+    }
 
-    if (this.animation) this.animation.pause();
+    if (this.animation) {
+      this.animation.pause();
+      console.log('animation paused');
+    }
 
     console.log('Set Position due to Thing: ', event.thing.title, event);
 
@@ -264,24 +294,23 @@ export class AdminComponent implements OnInit {
     let leftStart = positionStart + "px";
     let leftEnd = positionEnd + "px";
 
-    // count = count + 1;
-
     this.animation = anime.timeline();
 
     let positionAnimation = {
       targets: thing,
-      left: [leftStart, leftEnd],
+      // left: [leftStart, leftEnd],
+      left: leftEnd,
       scale: scale,
-      duration: 400,
+      duration: 500,
       easing: easing,
-      elasticity: 600,
+      // elasticity: 600,
       offset: 0
     };
 
     let scrollAnimation = {
       targets: scroller,
       scrollTop: scrollEnd,
-      duration: 400,
+      duration: 250,
       easing: easing,
       offset: 0
     };
@@ -290,16 +319,17 @@ export class AdminComponent implements OnInit {
       .add(positionAnimation)
       .add(scrollAnimation);
 
-    this.animation.begin = function () {
-      console.log('Animation beginning', positionAnimation, scrollAnimation);
-    };
+    // this.animation.begin = function () {
+    //   console.log('Animation beginning', positionAnimation, scrollAnimation);
+    // };
 
     this.animation.finished.then(() => {
       setTimeout(() => {
-        this.animation = null;
+        this.animation = null; // ???
         if (this.moving || (test && test(event))) {
-          this.setPosition(event, calc, timeout, scale, test, 'linear');
+          this.setPosition(event, calc, timeout, scale, test, easing /*'linear'*/);
         }
+        this.timeout = false;
       }, 0);
     });
   }

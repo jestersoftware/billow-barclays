@@ -119,6 +119,10 @@ md-card textarea.mat-input-element[disabled] {
   overflow: hidden;
 }
 
+md-card textarea.mat-input-element {
+  height: 15px;
+}
+
 [md-card-avatar] {
   text-align: center;
   width: auto;
@@ -156,18 +160,6 @@ md-card.vertical.reference {
   text-align: initial;
 }
 
-// .thing .thing {
-//   border-top: 1px solid; 
-// }
-
-// .thing .thing:first-child {
-//   border-top-left-radius: 25px;
-// }
-
-// .thing .thing:last-child {
-//   border-top-right-radius: 25px;
-// }
-
 .fancy-top-border {
   border-top: 1px solid black;
   border-top-left-radius: 25px;
@@ -179,7 +171,7 @@ md-card.vertical.reference {
   padding-top: 100px;
   padding-left: 250px;
   padding-right: 250px;
-  padding-bottom: 250px;
+  padding-bottom: 150px;
 }
 
 .thing .constrain {
@@ -188,6 +180,8 @@ md-card.vertical.reference {
 
 md-card .file div.preview {
   height: 150px;
+  overflow: hidden;  
+  text-align: center;
 }
 
 md-card .file img.preview {
