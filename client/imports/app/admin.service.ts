@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Subject } from "rxjs/Rx";
+import { Observable, Subscription, Subject } from "rxjs/Rx";
 
 import { UserService } from './user.service';
 
@@ -20,7 +20,7 @@ export class AdminService {
     private thingImageService: ThingImageService) {
   }
 
-  getChildren(thing): Subject<any> {
+  getChildren(thing): Observable<any> {
 
     if (thing.reference && thing.reference._id) {
       // TODO

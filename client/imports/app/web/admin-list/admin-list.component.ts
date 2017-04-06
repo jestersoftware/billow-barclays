@@ -1,4 +1,4 @@
-import { Component, OnInit,  OnChanges, Input, Output, EventEmitter, ElementRef, NgZone } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, Output, EventEmitter, ElementRef, NgZone } from '@angular/core';
 
 import { SchemaService } from './../../schema.service';
 
@@ -14,8 +14,7 @@ import style from './admin-list.component.scss';
 @Component({
   selector: 'app-admin-list',
   template,
-  styles: [style],
-  providers: [ThingService]
+  styles: [style]
 })
 export class AdminListComponent implements OnInit, OnChanges {
 
@@ -23,6 +22,7 @@ export class AdminListComponent implements OnInit, OnChanges {
   @Input() editingParent: any = false;
   @Output() onResize = new EventEmitter<any>();
   @Output() onEdit = new EventEmitter<any>();
+  @Output() onCount = new EventEmitter();
 
   things: any = [];
 
@@ -42,7 +42,7 @@ export class AdminListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(simpleChanges) {
-    if(simpleChanges.editingParent && simpleChanges.editingParent.previousValue === true && simpleChanges.editingParent.currentValue === false) {
+    if (simpleChanges.editingParent && simpleChanges.editingParent.previousValue === true && simpleChanges.editingParent.currentValue === false) {
       this.things = [];
       this.init();
     }
@@ -50,10 +50,8 @@ export class AdminListComponent implements OnInit, OnChanges {
 
   init() {
     this.adminService.getChildren(this.parent).subscribe(things => {
-      this.zone.run(() => {
-        this.things = things;
-        this.parent.session.childrenLength = this.things.length;
-      });
+      this.things = things;
+      this.onCount.emit({ thing: this.parent, count: this.things.length });
 
       setTimeout(() => {
         this.doResize(
@@ -64,7 +62,18 @@ export class AdminListComponent implements OnInit, OnChanges {
             lastThing: this.parent
           });
       }, 0);
-    });    
+    });
+  }
+
+  doCount(event) {
+    this.things.forEach(thing => {
+      if (thing._id === event.thing._id) {
+        // Use timeout, Otherwise there's an error - "Expression has changed after it was checked"
+        setTimeout(() => {
+          thing.session.childrenLength = event.count;
+        }, 0);
+      }
+    });
   }
 
   getArchetype(thing) {

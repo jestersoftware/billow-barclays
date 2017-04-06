@@ -43,7 +43,7 @@
 
         <!--RECURSIVE-->
         <div class="alignCenter" >
-          <app-admin-list [parent]="thing" (onEdit)="edit($event)" [editingParent]="editingReference"></app-admin-list>
+          <app-admin-list [parent]="thing" (onEdit)="edit($event)" [editingParent]="editingReference" (onCount)="doCount($event)"></app-admin-list>
         </div>
 
       </div>

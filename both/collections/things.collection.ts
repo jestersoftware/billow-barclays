@@ -50,4 +50,20 @@ export class Security {
     else
       return false;
   }
+
+  setPermissions(things, parentId) {
+    let isParentEditable = this.checkRole(parentId, ["update"], Meteor.userId());
+
+    things.forEach(thing1 => {
+      let isThingEditable = false;
+
+      // If we can't edit the parent, can we edit the thing itself?
+      if (!isParentEditable) {
+        isThingEditable = this.checkRole(thing1._id, ["update"], Meteor.userId());
+      }
+
+      thing1.session.editable = isParentEditable || isThingEditable;
+    });
+  }
+  
 }

@@ -282,7 +282,7 @@ export class AdminComponent implements OnInit {
       console.log('animation paused');
     }
 
-    console.log('Set Position due to Thing: ', event.thing.title, event);
+    // console.log('Set Position due to Thing: ', event.thing.title, event);
 
     // let duration = Math.min(1000, 1000 - ((widthOfContainer / widthOfThing) * 1000));
     // let duration = 500;

@@ -207,9 +207,5 @@ export function insertThings(things, id) {
         insertThings(thing.children, id1);
       }
     });
-    // let newId = Things.insert(thing.entity);
-    // if (thing.children && thing.children.length > 0) {
-    //   insertThings(thing.children, newId);
-    // }
   });
 }

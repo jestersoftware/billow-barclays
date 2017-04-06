@@ -20,14 +20,14 @@ import style from './admin-thing.component.scss';
 @Component({
   selector: 'app-admin-thing',
   template,
-  styles: [style],
-  providers: [ThingService]
+  styles: [style]
 })
 export class AdminThingComponent implements OnInit, OnChanges {
 
   @Input() parent: any;
   @Input() choosing: any;
   @Output() onResize = new EventEmitter();
+  @Output() onCount = new EventEmitter();
 
   things: any = [];
 
@@ -52,6 +52,19 @@ export class AdminThingComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+
+  }
+
+  ngOnChanges(simpleChanges) {
+    if (simpleChanges["parent"])
+      this.loadData();
+
+    if (simpleChanges["choosing"])
+      this.processChoosing();
+  }
+
+  loadData() {
+
     if (!this.parent._id) {
       // Run once to update view of User thing
       this.viewService.viewsChanged$.take(1).subscribe(views => {
@@ -60,10 +73,8 @@ export class AdminThingComponent implements OnInit, OnChanges {
       });
 
       this.userService.getCurrentUser().subscribe(users => {
-        this.zone.run(() => {
-          this.things = users;
-          this.parent.session.childrenLength = this.things.length;
-        });
+        this.things = users;
+        this.onCount.emit({ thing: this.parent, count: this.things.length });
 
         // Needed when top-level user object is only one shown
         if (!this.timeout) {
@@ -83,15 +94,13 @@ export class AdminThingComponent implements OnInit, OnChanges {
     }
     else {
       this.adminService.getChildren(this.parent).subscribe(things => {
-        // let isCountChanged = !this.things || this.things.length !== things.length;
+        let isCountChanged = !this.things || this.things.length !== things.length;
 
-        this.zone.run(() => {
-          this.things = things;
-          this.parent.session.childrenLength = this.things.length;
-          this.processChoosing();
-        });
+        this.things = things;
+        this.onCount.emit({ thing: this.parent, count: this.things.length });
+        this.processChoosing();
 
-        if (/*isCountChanged && */!this.timeout) {
+        if (isCountChanged && !this.timeout) {
           this.timeout = true;
           setTimeout(() => {
             // console.log("ngInit setTimeout ************************", this.parent);
@@ -110,8 +119,14 @@ export class AdminThingComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges(simpleChanges) {
-    this.processChoosing();
+  doCount(event) {
+    this.things.forEach(thing => {
+      if (thing._id === event.thing._id) {
+        setTimeout(() => {
+          thing.session.childrenLength = event.count;
+        }, 100);
+      }
+    });
   }
 
   processChoosing() {
@@ -150,8 +165,8 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
     // TODO: Did they click on "div" or some other input?
     if ((eventTarget.localName !== "button" || eventTarget.disabled)
-        && (eventTarget.localName !== "input" || eventTarget.disabled)
-        && (eventTarget.localName !== "textarea" || eventTarget.disabled)) {
+      && (eventTarget.localName !== "input" || eventTarget.disabled)
+      && (eventTarget.localName !== "textarea" || eventTarget.disabled)) {
 
       event.event.stopPropagation();
 
@@ -189,18 +204,15 @@ export class AdminThingComponent implements OnInit, OnChanges {
     this.eventElement = this.thingService.getParentThingElement(event);
     this.eventThing = event.thing;
 
-    // if (!event.thing.view.showChildren) {
-      setTimeout(() => {
-        this.doResize(
-          { 
-            event: this.eventElement, 
-            thing: this.eventThing, 
-            eventType: "toggleChildren", 
-            lastThing: this.eventThing 
-          });
-        // this.eventElement = null;
-      }, 0);
-    // }
+    setTimeout(() => {
+      this.doResize(
+        {
+          event: this.eventElement,
+          thing: this.eventThing,
+          eventType: "toggleChildren",
+          lastThing: this.eventThing
+        });
+    }, 0);
   }
 
   toggleFormat(event) {
@@ -250,7 +262,6 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
     this.choosing.action.call(this, event);
 
-    // this.eventElement = this.choosing.event;
     this.eventThing = event.thing;
 
     this.doResize(

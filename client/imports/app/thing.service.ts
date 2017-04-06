@@ -11,36 +11,23 @@ import { SchemaService } from './schema.service';
 @Injectable()
 export class ThingService {
 
-  thingSubscription: Subscription;
-
-  childrenSubscription: Subscription;
-  childrenCursor: ObservableCursor<any>;
-
-  security = new Security();
+  security: Security;
+  thingsSubscription: Subscription;
 
   constructor(
     private schemaService: SchemaService) {
+    this.security = new Security();
   }
 
-  setPermissions(things, parentId) {
-    let isParentEditable = this.security.checkRole(parentId, ["update"], Meteor.userId());
-
-    things.forEach(thing1 => {
-      let isThingEditable = false;
-
-      // If we can't edit the parent, can we edit the thing itself?
-      if (!isParentEditable) {
-        isThingEditable = this.security.checkRole(thing1._id, ["update"], Meteor.userId());
-      }
-
-      thing1.session.editable = isParentEditable || isThingEditable;
-    });
+  ngOnDestroy() {
+    if (this.thingsSubscription)
+      this.thingsSubscription.unsubscribe();
   }
 
   ancestorOf(thing, compareTo) {
-    if(!compareTo)
+    if (!compareTo)
       return false;
-    if(thing._id === compareTo._id)
+    if (thing._id === compareTo._id)
       return true;
     else
       return this.ancestorOf(thing, compareTo.session.parentThing);
@@ -57,67 +44,62 @@ export class ThingService {
   }
 
   getThing(thing): Observable<any> {
-    let subject = new Subject();
+    if (!this.thingsSubscription)
+      this.thingsSubscription = MeteorObservable.subscribe('thing.all').subscribe();
 
-    this.thingSubscription = MeteorObservable.subscribe('thing', thing._id).subscribe(() => {
-      let thing1 = Things.findOne({ _id: thing._id });
+    return Observable.create(observer => {
+      Things.find({ _id: thing._id }).subscribe(things => {
+        this.schemaService.fixup(things, true);
 
-      this.schemaService.fixup([thing1], true);
-
-      subject.next([thing1]);
-    });
-
-    return subject;
-  }
-
-  getChildren(thing): Subject<any> {
-    let subject = new Subject();
-
-    // let parentId = thing._id;
-    let refId;
-
-    let query: any = { parent: thing._id };
-
-    if (thing.reference && thing.reference._id) {
-      refId = thing.reference._id;
-      query = { $or: [query, { _id: refId }] };
-    }
-
-    this.childrenSubscription = MeteorObservable.subscribe('thing.children', thing._id, refId).subscribe(() => {
-      this.childrenCursor = Things.find(query, { sort: { "order.index": 1, title: 1 } });
-
-      this.childrenCursor.subscribe(things => {
-        this.schemaService.fixup(things, true, thing);
-
-        this.setPermissions(things, thing._id);
-
-        subject.next(things);
+        observer.next(things);
       });
     });
-
-    return subject;
   }
 
-  getThingsByQuery(query): Subject<any> {
-    let subject = new Subject();
+  getChildren(thing): Observable<any> {
+    if (!this.thingsSubscription)
+      this.thingsSubscription = MeteorObservable.subscribe('thing.all').subscribe();
 
-    MeteorObservable.subscribe('thing.query', query).subscribe(() => {
+    return Observable.create(observer => {
+      let refId;
+      let query: any = { parent: thing._id };
 
-      // TODO - use subscribe on cursor?
-      // let thingsSub = Things.find(query, { sort: { "order.index": 1, title: 1 } });
+      if (thing.reference && thing.reference._id) {
+        refId = thing.reference._id;
+        query = { $or: [query, { _id: refId }] };
+      }
+
+      Things.find(query, { sort: { "order.index": 1, title: 1 } }).subscribe(things => {
+        // console.log('childrenCursor subscribe', things.length, things);
+        let uninitialized = [];
+
+        things.forEach(thing => {
+          if (!thing.session || !thing.session.initialized)
+            uninitialized.push(thing);
+        });
+
+        if (uninitialized.length > 0) {
+          this.schemaService.fixup(uninitialized, true, thing);
+
+          this.security.setPermissions(uninitialized, thing._id);
+
+          observer.next(things);
+        }
+      });
+    });
+  }
+
+  getThingsByQuery(query): Observable<any> {
+    if (!this.thingsSubscription)
+      this.thingsSubscription = MeteorObservable.subscribe('thing.all').subscribe();
+
+    return Observable.create(observer => {
       let things = Things.find(query, { sort: { "order.index": 1, title: 1 } }).fetch();
-
-      // thingsSub.subscribe(things => {
 
       this.schemaService.fixup(things, true);
 
-      subject.next(things);
-
-      // });
-
+      observer.next(things);
     });
-
-    return subject;
   }
 
   insert(pushParam) {

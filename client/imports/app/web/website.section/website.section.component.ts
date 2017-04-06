@@ -12,8 +12,7 @@ import style from './website.section.component.scss';
 @Component({
   selector: 'app-website-section',
   template,
-  styles: [style],
-  providers: [ThingService]
+  styles: [style]
 })
 export class WebsiteSectionComponent implements OnInit {
 
@@ -34,13 +33,16 @@ export class WebsiteSectionComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.adminService.getChildren(this.parent).subscribe(things => {
-      this.zone.run(() => {
+  }
+
+  ngOnChanges(simpleChanges) {
+    if (simpleChanges["parent"]) {
+      this.adminService.getChildren(this.parent).subscribe(things => {
         this.things = things;
       });
-    });
 
-    this.onResize.emit();
+      this.onResize.emit();
+    }
   }
 
   getId(index: number, item: any): number {
@@ -48,7 +50,7 @@ export class WebsiteSectionComponent implements OnInit {
   }
 
   getLink(event) {
-    return ['/' + event.thing._id, { mode: event.type} ];
+    return ['/' + event.thing._id, { mode: event.type }];
   }
 
   getArchetype(thing) {

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { Observable, Subject } from "rxjs/Rx";
+import { Observable, Subscription, Subject } from "rxjs/Rx";
 
 import { MeteorObservable } from "meteor-rxjs";
 
@@ -17,27 +17,12 @@ import { Things, Security } from "./../../../both/collections/things.collection"
 @Injectable()
 export class ThingImageService {
 
+  security = new Security();
+  thingsSubscription: Subscription;
+
   constructor(
     private schemaService: SchemaService,
     private thingService: ThingService) {
-  }
-
-  security = new Security();
-
-  // TODO duplicated
-  setPermissions(things, parentId) {
-    let isParentEditable = this.security.checkRole(parentId, ["update"], Meteor.userId());
-
-    things.forEach(thing1 => {
-      let isThingEditable = false;
-
-      // If we can't edit the parent, can we edit the thing itself?
-      if (!isParentEditable) {
-        isThingEditable = this.security.checkRole(thing1._id, ["update"], Meteor.userId());
-      }
-
-      thing1.session.editable = isParentEditable || isThingEditable;
-    });
   }
 
   uploadFile(file): Promise<any> {
@@ -90,12 +75,12 @@ export class ThingImageService {
   }
 
   getImages(thing): Subject<any> {
-    let subject = new Subject();
+    if (!this.thingsSubscription)
+      this.thingsSubscription = MeteorObservable.subscribe('images').subscribe();
 
-    MeteorObservable.subscribe('images').subscribe(() => {
-      let imagesCursor = Images.find(); // TODO Limit
+    return Observable.create(observer => {
 
-      imagesCursor.subscribe(images => {
+      Images.find().subscribe(images => {
         let uninitialized = [];
 
         images.forEach(image => {
@@ -108,15 +93,12 @@ export class ThingImageService {
 
           this.schemaService.fixup(uninitialized, true, thing);
 
-          this.setPermissions(uninitialized, thing._id);
+          this.security.setPermissions(uninitialized, thing._id);
 
-          subject.next(images);
+          observer.next(images);
         }
       });
-
     });
-
-    return subject;
   }
 
   fixup(images) {

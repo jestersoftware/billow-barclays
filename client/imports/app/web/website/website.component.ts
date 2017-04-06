@@ -16,8 +16,8 @@ import style from './website.component.scss';
 @Component({
   selector: 'app-website',
   template,
-  styles: [style],
-  providers: [ThingService]
+  styles: [style]/*,
+  providers: [ThingService]*/
 })
 @InjectUser('user')
 export class WebsiteComponent implements OnInit, AfterViewInit {
@@ -44,14 +44,14 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
       this.params = params;
 
       this.thingService.getThing({_id: this.params["id"]}).subscribe(things => {
-        this.zone.run(() => {
+        // this.zone.run(() => {
           if (things.length > 0) {
             this.thing = things[0];
-            this.currentThing = { title: "" };
+            // this.currentThing = { title: "" };
             this.setFont();
             this.getChildren();
           }
-        });
+        // });
       });
     });
   }
@@ -85,7 +85,7 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
 
   getChildren() {
     this.adminService.getChildren(this.thing).subscribe(things => {
-      this.zone.run(() => {
+      // this.zone.run(() => {
         this.things = things;
 
         if(this.params["mode"]) {
@@ -101,7 +101,7 @@ export class WebsiteComponent implements OnInit, AfterViewInit {
           this.currentThing = this.things[0];
           this.router.navigate([this.getLink(this.currentThing)]);
         }
-      });
+      // });
     });
   }
 

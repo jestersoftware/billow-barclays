@@ -10,5 +10,5 @@ import './imports/publications/roles.publications';
 import './../both/methods/things.methods';
 
 Meteor.startup(() => {
-  loadThings();
+  // loadThings();
 });

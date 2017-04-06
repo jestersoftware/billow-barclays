@@ -135,8 +135,8 @@
   <!-- RECURSIVE -->
   <!-- thing.parent===parent._id ... don't show children if this is a reference -->
   <div *ngIf="thing.view?.showChildren && thing.parent === parent._id" class="alignCenter fancy-top-border" [class.constrain]="thing.type === 'Reference'"> 
-    <app-admin-thing *ngIf="!thing.view || !thing.view.format" [parent]="thing" [choosing]="choosing" (onResize)="doResize($event)"></app-admin-thing>
-    <app-admin-list *ngIf="thing.view?.format" [parent]="thing" (onResize)="doResize($event)"></app-admin-list>
+    <app-admin-thing *ngIf="!thing.view || !thing.view.format" [parent]="thing" [choosing]="choosing" (onResize)="doResize($event)" (onCount)="doCount($event)"></app-admin-thing>
+    <app-admin-list *ngIf="thing.view?.format" [parent]="thing" (onResize)="doResize($event)" (onCount)="doCount($event)"></app-admin-list>
   </div>
 
 </div>
