@@ -1,6 +1,6 @@
 import { Meteor } from 'meteor/meteor';
 
-import { loadThings } from './imports/fixtures/things.fixtures';
+// import { loadThings } from './imports/fixtures/things.fixtures';
 
 import './imports/publications/users.publications';
 import './imports/publications/things.publications';

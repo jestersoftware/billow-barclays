@@ -2,12 +2,13 @@ import { UploadFS } from 'meteor/jalik:ufs';
 
 import { Images, ImagesStore } from './../collections/images.collection';
 
-export function upload(data: File): Promise<any> {
+export function upload(thing: any, data: File): Promise<any> {
   return new Promise((resolve, reject) => {
     const file = {
       name: data.name,
       type: data.type,
-      size: data.size
+      size: data.size,
+      parent: thing._id
     };
 
     const upload = new UploadFS.Uploader({

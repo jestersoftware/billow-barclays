@@ -4,7 +4,6 @@ import { Subject } from 'rxjs/Subject';
 
 import { MeteorObservable } from "meteor-rxjs";
 
-
 @Injectable()
 export class ViewService {
 

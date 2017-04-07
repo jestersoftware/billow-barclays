@@ -35,17 +35,17 @@ export class Security {
       }
       else {
         let thing = Things.findOne(_parentId);
-        if (thing 
-            && thing.type === "Web Site" 
-            && roles.length === 1 
-            && roles[0] === "view") {
+        if (thing
+          && thing.type === "Web Site"
+          && roles.length === 1
+          && roles[0] === "view") {
           return true;
         }
         _parentId = thing ? thing.parent : null;
       }
     }
 
-    if(!refFlag)
+    if (!refFlag)
       return this.checkRole(parentId, roles, userId, true);
     else
       return false;
@@ -65,5 +65,46 @@ export class Security {
       thing1.session.editable = isParentEditable || isThingEditable;
     });
   }
-  
+
+  getChildrenIdArray(thing) {
+    // TODO refactor to share with Things pub
+    let _ids = [ thing.parent ];
+
+    function addChildren(parentIds, parentRefIds, parentQuery) {
+      const selector =
+        {
+          $or:
+          [
+            {
+              parent: { $in: parentIds }
+            },
+            {
+              _id: { $in: parentRefIds }
+            }
+          ]
+        };
+
+      let cursor = Things.find(selector).cursor;
+
+      let ids_map = cursor.map(thing => {
+        return {
+          _id: thing._id,
+          ref_id: thing.reference && thing.reference._id ? thing.reference._id : ''
+        };
+      });
+
+      let ids = ids_map.map(thing => { return thing._id });
+      let ref_ids = ids_map.map(thing => { return thing.ref_id });
+
+      if (ids.length || ref_ids.length) {
+        Array.prototype.push.apply(parentQuery, ids);
+
+        addChildren(ids, ref_ids, parentQuery);
+      }
+    }
+
+    addChildren(_ids, [], _ids);
+
+    return _ids;
+  }
 }

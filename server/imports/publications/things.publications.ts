@@ -1,11 +1,14 @@
 import { Meteor } from "meteor/meteor";
-// import { Counts } from "meteor/tmeasday:publish-counts";
 
-import { publishComposite } from 'meteor/reywood:publish-composite';
+// import { Counts } from "meteor/tmeasday:publish-counts";
 
 import { Roles } from "meteor/alanning:roles";
 
+import { publishComposite } from 'meteor/reywood:publish-composite';
+
 import { Things, Security } from "./../../../both/collections/things.collection";
+
+// import * as _ from 'underscore';
 
 // interface Options {
 //   [key: string]: any;
@@ -97,14 +100,6 @@ publishComposite('thing.all', function () {
 
     let cursor = Things.find(selector).cursor;
 
-    let query = {
-      find: function () {
-        return cursor;
-      }
-    };
-
-    parentQuery.children.push(query);
-
     let ids_map = cursor.map(thing => { 
       return { 
         _id: thing._id, 
@@ -115,12 +110,21 @@ publishComposite('thing.all', function () {
     let ids = ids_map.map(thing => { return thing._id });
     let ref_ids = ids_map.map(thing => { return thing.ref_id });
 
-    if (ids.length) {
+    if (ids.length || ref_ids.length) {
+
+      let query = {
+        find: function () {
+          return cursor;
+        }
+      };
+
+      parentQuery.push(query);
+
       addChildren(ids, ref_ids, parentQuery);
     }
   }
 
-  addChildren(_ids, [], _query);
+  addChildren(_ids, [], _query.children);
 
   return _query;
 });

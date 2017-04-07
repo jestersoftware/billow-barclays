@@ -6,6 +6,8 @@ import { MeteorObservable, ObservableCursor } from "meteor-rxjs";
 
 import { Things, Security } from "./../../../both/collections/things.collection";
 
+import { ThingImageService } from './thing.image.service';
+
 import { SchemaService } from './schema.service';
 
 @Injectable()
@@ -15,7 +17,8 @@ export class ThingService {
   thingsSubscription: Subscription;
 
   constructor(
-    private schemaService: SchemaService) {
+    private schemaService: SchemaService,
+    private thingImageService: ThingImageService) {
     this.security = new Security();
   }
 
@@ -61,12 +64,10 @@ export class ThingService {
       this.thingsSubscription = MeteorObservable.subscribe('thing.all').subscribe();
 
     return Observable.create(observer => {
-      let refId;
       let query: any = { parent: thing._id };
 
       if (thing.reference && thing.reference._id) {
-        refId = thing.reference._id;
-        query = { $or: [query, { _id: refId }] };
+        query = { $or: [query, { _id: thing.reference._id }] };
       }
 
       Things.find(query, { sort: { "order.index": 1, title: 1 } }).subscribe(things => {
@@ -79,6 +80,8 @@ export class ThingService {
         });
 
         if (uninitialized.length > 0) {
+          this.fixup(uninitialized);
+
           this.schemaService.fixup(uninitialized, true, thing);
 
           this.security.setPermissions(uninitialized, thing._id);
@@ -86,6 +89,20 @@ export class ThingService {
           observer.next(things);
         }
       });
+    });
+  }
+
+  fixup(things) {
+    things.forEach(thing => {
+      if (thing.background && thing.background._id) {
+        this.thingImageService.getImage({ _id: thing.background._id }).subscribe(image => {
+          thing.background.path = image.path + "?token=" + image.token;
+        });
+
+        this.thingImageService.getThumb({ _id: thing.background._id }).subscribe(thumb => {
+          thing.background.previewPath = thumb.path + "?token=" + thumb.token;
+        });
+      }
     });
   }
 

@@ -270,18 +270,18 @@ export class SchemaService {
   }
 
   fixup(things, reset, parent = null) {
-    let count = 0;
+    // let max_count = 0;
+
     things.forEach(thing => {
+      // TODO: Doesn't work here because of initialization, move initialization here??
+      // // Get max count
+      // if (thing.order && thing.order.index > 0) {
+      //   max_count = Math.max(max_count, thing.order.index);
+      // }
+
       // Fix up Order Index
-      count++;
-      if (!thing.order) {
-        thing.order = { index: count };
-      }
-      else if (thing.order.index > 0) {
-        count = thing.order.index;
-      }
-      else {
-        thing.order.index = count;
+      if (!thing.order || !thing.order.index) {
+        thing.order = { index: "" };
       }
       // View
       if (reset || !thing.view) {
@@ -323,6 +323,14 @@ export class SchemaService {
         }
       }
     });
+
+    // things.forEach(thing => {
+    //   // Fix up Order Index
+    //   max_count++;
+    //   if (!thing.order || !thing.order.index) {
+    //     thing.order = { index: max_count };
+    //   }
+    // });
 
     // return things;
   }

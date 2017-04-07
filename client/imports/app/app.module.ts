@@ -37,6 +37,7 @@ import { SchemaService } from './schema.service';
 import { AdminService } from './admin.service';
 import { ThingService } from './thing.service';
 import { ThingImageService } from './thing.image.service';
+import { UploadService } from './upload.service';
 import { DataService } from './data.service';
 
 import { ScrollSpyModule } from 'ng2-scrollspy';
@@ -84,6 +85,7 @@ import { DisplayNamePipe } from './pipe/display-name.pipe';
     AdminService,
     ThingService,
     ThingImageService,
+    UploadService,
     DataService,
     DisplayNamePipe
   ],

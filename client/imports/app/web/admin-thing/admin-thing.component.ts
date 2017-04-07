@@ -12,6 +12,8 @@ import { AdminService } from './../../admin.service';
 
 import { ThingImageService } from './../../thing.image.service';
 
+import { UploadService } from './../../upload.service';
+
 import { FileUploader } from 'ng2-file-upload';
 
 import template from "./admin-thing.component.html";
@@ -48,6 +50,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
     private adminService: AdminService,
     private thingService: ThingService,
     private thingImageService: ThingImageService,
+    private uploadService: UploadService,
     private zone: NgZone) {
   }
 
@@ -282,7 +285,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
   }
 
   onFile($event, thing, prop) {
-    this.thingImageService.onFile($event, thing, prop, this.uploader);
+    this.uploadService.onFile($event, thing, prop, this.uploader);
   }
 
   edit(event) {
@@ -326,7 +329,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
     this.eventThing = thing;
 
     // Upload images
-    this.thingImageService.upload(this.uploader, thing);
+    this.uploadService.upload(this.uploader, thing);
   }
 
   delete(event) {

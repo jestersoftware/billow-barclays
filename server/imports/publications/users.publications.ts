@@ -20,10 +20,7 @@ Meteor.publish('users', function (/*id: string*/) {
 
   let query = {};
 
-  if(Roles.userIsInRole(this.userId, ["view"], "SoSsmkkSJGkoXp8B2")) {
-  }
-  else
-  {
+  if(!Roles.userIsInRole(this.userId, ["view"], "SoSsmkkSJGkoXp8B2")) { // "System"
     query = {
       _id: this.userId
     };

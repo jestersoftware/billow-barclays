@@ -4,6 +4,10 @@ import { MongoObservable } from 'meteor-rxjs';
 
 import { UploadFS } from 'meteor/jalik:ufs';
 
+import { Roles } from "meteor/alanning:roles";
+
+import { Security } from './../collections/things.collection';
+
 export const Images = new MongoObservable.Collection<any>('images');
 export const Thumbs = new MongoObservable.Collection<any>('thumbs');
 
@@ -51,6 +55,16 @@ export const ThumbsStore = new UploadFS.store.GridFS({
       });
 
     // console.log('transform write ended', fileId);
+  },
+  onRead(fileId, file, request, response) {
+    // Same as below
+    if (request.query.token === file.token) {
+      return true;
+    }
+    else {
+      response.writeHead(403);
+      return false;
+    }
   }
 });
 
@@ -70,5 +84,20 @@ export const ImagesStore = new UploadFS.store.GridFS({
     insert: loggedIn,
     update: loggedIn,
     remove: loggedIn
-  })
+  }),
+  onRead(fileId, file, request, response) {
+    // Allow file access if not private or if token is correct
+    if (/*file.isPublic || */ request.query.token === file.token) {
+      return true;
+    }
+    else {
+      // userId not available!! Arg!! https://github.com/jalik/jalik-ufs/issues/81
+      // const security = new Security();
+      // if(!Roles.userIsInRole(this.userId, ["view"], "SoSsmkkSJGkoXp8B2")) {
+      //   if (!security.checkRole(file.parent, ["view"], this.userId)) {
+      response.writeHead(403);
+      return false;
+      // }
+    }
+  }
 });

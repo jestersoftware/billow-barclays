@@ -22,3 +22,6 @@ Roles
 https://atmospherejs.com/alanning/roles
 Example
 Roles.addUsersToRoles("h7JAbWufkufhm735d", ['view'], 'kPQE6LqfFwxBRBNTK')
+
+Publish Composite
+https://atmospherejs.com/reywood/publish-composite
