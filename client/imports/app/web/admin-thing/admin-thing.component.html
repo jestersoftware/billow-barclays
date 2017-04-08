@@ -1,9 +1,9 @@
-<div *ngFor="let thing of things; let i=index; trackBy: getId" class="thing" [class.root]="!this.parent._id" [class.reference]="thing.parent !== parent._id && things.length > 3">
+<div *ngFor="let thing of things; let i=index; trackBy: getId" class="thing" [class.root]="isRoot()" [class.reference]="isReference(thing) && things.length > 3">
 
-  <md-card [class.vertical]="!thing.view?.showContent" [class.reference]="thing.parent !== parent._id" (click)="click({ event: $event, thing: thing })"> 
+  <md-card [class.vertical]="!thing.view?.showContent" [class.reference]="isReference(thing)" (click)="click({ event: $event, thing: thing })"> 
 
-    <div *ngIf="thing._id !== 'Root'" class="connector above">
-      <button md-icon-button [disabled]="this.choosing" (click)="lookupThing({ event: $event, thing: thing, action: reparent, test: reparentTest })" title="Change parent">
+    <div *ngIf="!isRoot()" class="connector above">
+      <button md-icon-button [disabled]="choosing" (click)="lookupThing({ event: $event, thing: thing, action: reparent, test: reparentTest })" title="Change parent">
         <md-icon>more_vert</md-icon>
       </button>
     </div>
@@ -98,7 +98,7 @@
         (onCreate)="create($event)" 
         (onDelete)="delete($event)" 
         (onToggle)="toggleContent($event)" 
-        [disabled]="this.choosing" 
+        [disabled]="choosing" 
         [enableCreate]="thing.parent === parent._id && thing.session?.editable ? 'yes' : 'none'" 
         [enableEdit]="thing.view?.showContent && (thing.parent === parent._id || thing.type === 'Image') && thing.session?.editable ? 'yes' : 'none'"
         [enableDelete]="thing.view?.showContent && (thing.parent === parent._id || thing.type === 'Image') && thing.session?.editable ? 'yes' : 'none'"></app-admin-action>

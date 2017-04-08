@@ -68,7 +68,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
   loadData() {
 
-    if (!this.parent._id) {
+    if (this.isRoot()) {
       // Run once to update view of User thing
       this.viewService.viewsChanged$.take(1).subscribe(views => {
         // Do NOT use zone.run() here
@@ -161,6 +161,14 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
   disabled(event) {
     return !event.thing.session || event.thing.session.disabled || this.choosing;
+  }
+
+  isRoot() {
+    return !this.parent._id;
+  }
+
+  isReference(thing) {
+    return this.parent._id !== thing.parent;
   }
 
   click(event) {

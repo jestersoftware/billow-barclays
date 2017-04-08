@@ -1,17 +1,7 @@
 import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 
-import {
-  Component,
-  OnInit,
-  Input,
-  ElementRef,
-  trigger,
-  state,
-  style,
-  transition,
-  animate
-} from '@angular/core';
+import { Component, OnInit, Input, ElementRef /*, trigger, state, style, transition, animate*/ } from '@angular/core';
 
 import { Router } from '@angular/router';
 
@@ -23,6 +13,7 @@ import template from "./admin.component.html";
 import style1 from './admin.component.scss';
 
 import * as anime from "animejs";
+import * as interact from "interactjs";
 
 @Component({
   selector: 'app-admin',
@@ -35,12 +26,18 @@ export class AdminComponent implements OnInit {
   userId: string;
   parent: Object;
 
-  mouseY = 0;
   moving = false;
+  dragging: any;
   animation: any;
   timeout = false;
 
   choosing: any;
+
+  requests: any = [];
+
+  scroller: any;
+
+  rootThingElement: any;
 
   constructor(
     private elementRef: ElementRef,
@@ -55,6 +52,10 @@ export class AdminComponent implements OnInit {
     if (!this.userId)
       this.router.navigate(['/login']);
 
+    this.scroller = this.elementRef.nativeElement.querySelector('.scrollable');
+
+    this.parent = { _id: "", title: "Root", type: "Root", session: {} };
+
     Tracker.autorun(() => {
       this.user = Meteor.user();
       if (this.user && this.user.views) {
@@ -62,7 +63,7 @@ export class AdminComponent implements OnInit {
       }
     });
 
-    this.parent = { _id: "", title: "Root", type: "Root", session: {} };
+    
   }
 
   login() {
@@ -72,6 +73,48 @@ export class AdminComponent implements OnInit {
   logout() {
     Meteor.logout();
     this.router.navigate(['/login']);
+  }
+
+  onMouseDownDesktop(event) {
+    console.log('mousedown', event);
+
+    if (event.srcElement.className.indexOf("thing") < 0)
+      return;
+
+    // event.stopPropagation();
+
+    this.dragging = event;
+  }
+
+  onMouseUpDesktop(event) {
+    console.log('mouseup');
+
+    // event.stopPropagation();
+
+    this.dragging = null;
+  }
+
+  onMouseMoveDesktop(event) {
+    // event.stopPropagation();
+
+    if (this.dragging && !this.timeout) {
+
+      this.timeout = true;
+
+      let amountMoved = event.x - this.dragging.x;
+
+      console.log('mousemove', amountMoved);
+
+      // if (amountMoved >= 0)
+      this.setPosition({ event: null, thing: this.parent, eventType: 'drag' }, amountMoved /*this.dragLeft*/, 0, 1);
+      // else
+      // this.setPosition({ event: null, thing: this.parent, eventType: 'drag' }, amountMoved/*this.dragRight*/, 0, 1);
+
+      this.dragging = event;
+    }
+    else {
+      console.log('mousemove skipped');
+    }
   }
 
   onClickLeft(event) {
@@ -86,61 +129,82 @@ export class AdminComponent implements OnInit {
     this.setPosition({ event: null, thing: this.parent }, this.moveRight, 0, 0.6);
   }
 
-  onLeftMouseMove(event) {
-    this.mouseY = event.y;
-
+  onMouseMoveLeft(event) {
     if (!this.timeout) {
       this.timeout = true;
       this.moving = true;
 
       setTimeout(() => {
         if (this.moving)
-          this.setPosition({ e: event, event: null, thing: this.parent }, this.moveLeft, 300, 0.6);
+          this.setPosition({ mouseY: event.y, event: null, thing: this.parent }, this.moveLeft, 300, 0.6);
         else
           this.timeout = false;
       }, 250);
     }
   }
 
-  onRightMouseMove(event) {
-    this.mouseY = event.y;
-
+  onMouseMoveRight(event) {
     if (!this.timeout) {
       this.timeout = true;
       this.moving = true;
 
       setTimeout(() => {
         if (this.moving)
-          this.setPosition({ e: event, event: null, thing: this.parent }, this.moveRight, 300, 0.6);
+          this.setPosition({ mouseY: event.y, event: null, thing: this.parent }, this.moveRight, 300, 0.6);
         else
           this.timeout = false;
       }, 250);
     }
-  }
-
-  onLeftMouseEnter(event) {
-    // this.moving = true;
-
-    // setTimeout(() => {
-    //   if (this.moving)
-    //     this.setPosition({ e: event, event: null, thing: this.parent }, this.moveLeft, 300, 0.6);
-    // }, 250);
-  }
-
-  onRightMouseEnter(event) {
-    // this.moving = true;
-
-    // setTimeout(() => {
-    //   if (this.moving)
-    //     this.setPosition({ e: event, event: null, thing: this.parent }, this.moveRight, 300, 0.6);
-    // }, 250);
   }
 
   onMouseLeave(event) {
     this.cancelMovement();
   }
 
-  requests: any = [];
+  moveCenter(positionNumberStart, widthOfThing, widthOfContainer, scale) {
+    let positionEnd = (widthOfContainer / 2) + (widthOfThing / -2);
+    return positionEnd;
+  }
+
+  // dragLeft(positionNumberStart, widthOfThing, widthOfContainer, scale) {
+  //   let factor = positionNumberStart + 100;
+  //   return factor;
+  // }
+
+  // dragRight(positionNumberStart, widthOfThing, widthOfContainer, scale) {
+  //   let factor = positionNumberStart - 100;
+  //   return factor;
+  // }
+
+  moveLeft(positionNumberStart, widthOfThing, widthOfContainer, scale) {
+    let factor = positionNumberStart + (500 * (1 + scale));
+    if (factor >= 0) return 0;
+    return factor;
+  }
+
+  moveRight(positionNumberStart, widthOfThing, widthOfContainer, scale) {
+    let factor = positionNumberStart - 500;
+    let min = (widthOfContainer - widthOfThing) + (widthOfThing - (widthOfThing * scale));
+    if (factor <= min) return min;
+    return factor;
+  }
+
+  // movingTestLeft(event) {
+  //   return event.elementRef.nativeElement.getBoundingClientRect().left < 0;
+  // }
+
+  // movingTestRight(event) {
+  //   return event.elementRef.nativeElement.getBoundingClientRect().left > event.elementRef.nativeElement.ownerDocument.defaultView.innerWidth;
+  // }
+
+  cancelMovement() {
+    this.moving = false;
+    this.timeout = false;
+    if (this.animation) {
+      this.animation.pause();
+      this.animation = null;
+    }
+  }
 
   doResize(event) {
 
@@ -181,8 +245,7 @@ export class AdminComponent implements OnInit {
         this.choosing = null;
       });
     }
-
-    if (event.eventType === "chooseThing") {
+    else if (event.eventType === "chooseThing") {
       this.snackBar._openedSnackBarRef.dismiss();
       this.choosing = null;
     }
@@ -190,78 +253,42 @@ export class AdminComponent implements OnInit {
     setTimeout((length) => {
       if (this.requests.length > 0 && this.requests.length <= length) {
         let ev = this.requests[this.requests.length - 1];
-        // if(!ev)
-        //   debugger;
         this.setPosition(ev, this.moveCenter, 0, scale /*[1.0, 0.6, 1.0]*/ /*, 300*/);
         this.requests = [];
       }
     }, timeout, this.requests.length);
   }
 
-  moveCenter(positionNumberStart, widthOfThing, widthOfContainer, scale) {
-    let positionEnd = (widthOfContainer / 2) + (widthOfThing / -2);
-    return positionEnd;
-  }
-
-  moveLeft(positionNumberStart, widthOfThing, widthOfContainer, scale) {
-    let factor = positionNumberStart + (500 * (1 + scale));
-    if (factor >= 0) return 0;
-    return factor;
-  }
-
-  moveRight(positionNumberStart, widthOfThing, widthOfContainer, scale) {
-    let factor = positionNumberStart - 500;
-    let min = (widthOfContainer - widthOfThing) + (widthOfThing - (widthOfThing * scale));
-    if (factor <= min) return min;
-    return factor;
-  }
-
-  // movingTestLeft(event) {
-  //   return event.elementRef.nativeElement.getBoundingClientRect().left < 0;
-  // }
-
-  // movingTestRight(event) {
-  //   return event.elementRef.nativeElement.getBoundingClientRect().left > event.elementRef.nativeElement.ownerDocument.defaultView.innerWidth;
-  // }
-
-  cancelMovement() {
-    this.moving = false;
-    this.timeout = false;
-    if (this.animation) {
-      this.animation.pause();
-      this.animation = null;
-    }
-  }
-
-  setPosition(event: any, calc: Function, timeout: number, scale: number = 1, test: Function = null, easing: String = 'easeOutQuad') {
-
-    let scroller = this.elementRef.nativeElement.querySelector('.scrollable');
+  setPosition(event: any, calc: any, timeout: number, scale: number = 1, test: Function = null, easing: String = 'easeOutQuad') {
 
     let thing = this.elementRef.nativeElement.querySelector('app-admin-thing');
 
-    let widthOfContainer = scroller.clientWidth;
-    let heightOfContainer = scroller.clientHeight;
+    let widthOfContainer = this.scroller.clientWidth;
+    let heightOfContainer = this.scroller.clientHeight;
 
-    let div = this.elementRef.nativeElement.querySelector('app-admin-thing > div');
-    let widthOfThing = div.clientWidth;
-    let heightOfThing = div.clientHeight;
+    // let div = this.elementRef.nativeElement.querySelector('app-admin-thing > div');
+    if (!this.rootThingElement)
+      this.rootThingElement = this.elementRef.nativeElement.querySelector('.thing.root');
+
+    let widthOfThing = this.rootThingElement.clientWidth;
+    let heightOfThing = this.rootThingElement.clientHeight;
 
     let positionNumberStart = parseInt(thing.style.left.substr(0, thing.style.left.length - 1));
     let positionNumberEnd = 0;
 
-    let upOrDown = event.e ? ((this.mouseY - (heightOfContainer / 2)) / (heightOfContainer / 4)) * 400 : 0;
+    let upOrDown = event.mouseY ? ((event.mouseY - (heightOfContainer / 2)) / (heightOfContainer / 4)) * 400 : 0;
 
-    let scrollEnd = Math.min(heightOfThing, Math.max(0, scroller.scrollTop + upOrDown));
+    let scrollEnd = Math.min(heightOfThing, Math.max(0, this.scroller.scrollTop + upOrDown));
     // console.log('scrollEnd', scrollEnd);
 
     let scaleX = !scale[0] ? scale : 1;
     // console.log('scaleX', scaleX);
 
-    if (!event.event && event.eventType !== "focus" && widthOfThing * scaleX <= widthOfContainer) {
+    if (!event.event && event.eventType !== "focus" && event.eventType !== "drag" && widthOfThing * scaleX <= widthOfContainer) {
       positionNumberEnd = (widthOfContainer - (widthOfThing * scaleX)) / 2;
     }
     else {
-      positionNumberEnd = calc(positionNumberStart, /*count,*/ widthOfThing, widthOfContainer, scaleX);
+      positionNumberEnd = typeof calc === "function" ? calc(positionNumberStart, widthOfThing, widthOfContainer, scaleX) : positionNumberStart + calc;
 
       if (event.event) {
         let thingElement = event.event;
@@ -272,14 +299,14 @@ export class AdminComponent implements OnInit {
 
     positionNumberEnd = Math.floor(positionNumberEnd);
 
-    if (positionNumberStart === positionNumberEnd && scroller.scrollTop === scrollEnd) {
+    if (positionNumberStart === positionNumberEnd && this.scroller.scrollTop === scrollEnd) {
       this.timeout = false;
       return;
     }
 
     if (this.animation) {
       this.animation.pause();
-      console.log('animation paused');
+      // console.log('animation paused');
     }
 
     // console.log('Set Position due to Thing: ', event.thing.title, event);
@@ -298,19 +325,17 @@ export class AdminComponent implements OnInit {
 
     let positionAnimation = {
       targets: thing,
-      // left: [leftStart, leftEnd],
       left: leftEnd,
       scale: scale,
-      duration: 500,
+      duration: duration,
       easing: easing,
-      // elasticity: 600,
       offset: 0
     };
 
     let scrollAnimation = {
-      targets: scroller,
+      targets: this.scroller,
       scrollTop: scrollEnd,
-      duration: 250,
+      duration: duration / 2,
       easing: easing,
       offset: 0
     };

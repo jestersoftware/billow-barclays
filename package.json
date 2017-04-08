@@ -26,6 +26,7 @@
     "bcrypt": "^1.0.2",
     "hammerjs": "^2.0.8",
     "imagejs": "0.0.9",
+    "interactjs": "^1.2.8",
     "jimp": "^0.2.27",
     "meteor-node-stubs": "~0.2.6",
     "meteor-rxjs": "^0.4.7",

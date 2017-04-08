@@ -22,14 +22,13 @@
 
 </md-toolbar>
 
-<div class="scrollable">
+<div class="scrollable" (mousedown)="onMouseDownDesktop($event)" (mousemove)="onMouseMoveDesktop($event)" (mouseup)="onMouseUpDesktop($event)">
 
-  <div class="hovernav left" (mouseenter)="onLeftMouseEnter($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onLeftMouseMove($event)" (click)="onClickLeft($event)"></div>
+  <div class="hovernav left" (mouseleave)="onMouseLeave($event)" (mousemove)="onMouseMoveLeft($event)" (click)="onClickLeft($event)"></div>
 
-  <app-admin-thing [parent]="parent" [choosing]="choosing" (onResize)="doResize($event)" style="left: 0; position: relative; transform-origin: 0 0 0;"></app-admin-thing>
-  <!--left: 50%; transform: translateX(-50%); -->
+  <app-admin-thing style="left: 0; position: relative; transform-origin: 0 0 0;" [parent]="parent" [choosing]="choosing" (onResize)="doResize($event)"></app-admin-thing>
 
-  <div class="hovernav right" (mouseenter)="onRightMouseEnter($event)" (mouseleave)="onMouseLeave($event)" (mousemove)="onRightMouseMove($event)" (click)="onClickRight($event)"></div>
+  <div class="hovernav right" (mouseleave)="onMouseLeave($event)" (mousemove)="onMouseMoveRight($event)" (click)="onClickRight($event)"></div>
 
   <div class="footer">
     <div class="alignCenter">

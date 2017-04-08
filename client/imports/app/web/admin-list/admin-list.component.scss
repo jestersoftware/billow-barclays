@@ -7,6 +7,8 @@ app-admin-action {
 }
 
 .mat-card {
+  user-select: auto;
+
   display: inline-block;
 
   margin-left: 25px;
