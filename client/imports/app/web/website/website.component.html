@@ -3,7 +3,7 @@
     <md-toolbar>
 
       <a class="logo" [routerLink]="getLink(this.things.length > 0 ? this.things[0] : thing)">
-        <img *ngIf="thing.logo && thing.logo.path" class="logo" [src]="thing.logo.path" />
+        <img *ngIf="thing.logo?.path" class="logo" [src]="thing.logo.path" />
       </a>
 
       <h3 class="title">

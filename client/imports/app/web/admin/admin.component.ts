@@ -27,7 +27,7 @@ export class AdminComponent implements OnInit {
   parent: Object;
 
   moving = false;
-  dragging: any;
+  // dragging: any;
   animation: any;
   timeout = false;
 
@@ -63,7 +63,34 @@ export class AdminComponent implements OnInit {
       }
     });
 
-    
+    let abc = interact(".draggable")
+      .draggable({
+        // enable inertial throwing
+        inertia: true,
+        // // keep the element within the area of it's parent
+        // restrict: {
+        //   restriction: "parent",
+        //   endOnly: true,
+        //   elementRect: { top: 0, left: 0, bottom: 1, right: 1 }
+        // },
+        // // enable autoScroll
+        // autoScroll: true,
+        // styleCursor: false,
+
+        // call this function on every dragmove event
+        onmove: this.dragMoveListener,
+        // call this function on every dragend event
+        // onend: function (event) {
+        //   var textEl = event.target.querySelector('p');
+
+        //   textEl && (textEl.textContent =
+        //     'moved a distance of '
+        //     + (Math.sqrt(event.dx * event.dx +
+        //                 event.dy * event.dy)|0) + 'px');
+        // }
+      });
+   
+    abc.options.styleCursor = false;
   }
 
   login() {
@@ -75,46 +102,70 @@ export class AdminComponent implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  onMouseDownDesktop(event) {
-    console.log('mousedown', event);
+  // onMouseDownDesktop(event) {
+  //   console.log('mousedown', event);
 
-    if (event.srcElement.className.indexOf("thing") < 0)
+  //   if (event.srcElement.className.indexOf("thing") < 0)
+  //     return;
+
+  //   // event.stopPropagation();
+
+  //   this.dragging = event;
+  // }
+
+  // onMouseUpDesktop(event) {
+  //   console.log('mouseup');
+
+  //   // event.stopPropagation();
+
+  //   this.dragging = null;
+  // }
+
+  // onMouseMoveDesktop(event) {
+  //   // event.stopPropagation();
+
+  //   if (this.dragging && !this.timeout) {
+
+  //     this.timeout = true;
+
+  //     let amountMoved = event.x - this.dragging.x;
+
+  //     console.log('mousemove', amountMoved);
+
+  //     // if (amountMoved >= 0)
+  //     this.setPosition({ event: null, thing: this.parent, eventType: 'drag' }, amountMoved /*this.dragLeft*/, 0, 1);
+  //     // else
+  //     // this.setPosition({ event: null, thing: this.parent, eventType: 'drag' }, amountMoved/*this.dragRight*/, 0, 1);
+
+  //     this.dragging = event;
+  //   }
+  //   else {
+  //     console.log('mousemove skipped');
+  //   }
+  // }
+
+  dragMoveListener (event) {
+    let target = event.target; //,
+        // keep the dragged position in the data-x/data-y attributes
+        // x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx/*,
+        // y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy*/;
+
+    if (event.interaction.downEvent.target.className.indexOf("thing") < 0)
       return;
 
-    // event.stopPropagation();
+    // console.log(event);
 
-    this.dragging = event;
-  }
+    let x = parseInt(target.style.left) + event.dx;
 
-  onMouseUpDesktop(event) {
-    console.log('mouseup');
+    // translate the element
+    // target.style.webkitTransform =
+    // target.style.transform =
+    //   'translate(' + x + 'px, ' + y + 'px)';
+    target.style.left = x + 'px';
 
-    // event.stopPropagation();
-
-    this.dragging = null;
-  }
-
-  onMouseMoveDesktop(event) {
-    // event.stopPropagation();
-
-    if (this.dragging && !this.timeout) {
-
-      this.timeout = true;
-
-      let amountMoved = event.x - this.dragging.x;
-
-      console.log('mousemove', amountMoved);
-
-      // if (amountMoved >= 0)
-      this.setPosition({ event: null, thing: this.parent, eventType: 'drag' }, amountMoved /*this.dragLeft*/, 0, 1);
-      // else
-      // this.setPosition({ event: null, thing: this.parent, eventType: 'drag' }, amountMoved/*this.dragRight*/, 0, 1);
-
-      this.dragging = event;
-    }
-    else {
-      console.log('mousemove skipped');
-    }
+    // update the posiion attributes
+    // target.setAttribute('data-x', x);
+    // target.setAttribute('data-y', y);
   }
 
   onClickLeft(event) {

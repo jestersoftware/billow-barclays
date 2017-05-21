@@ -9,14 +9,20 @@
 }
 
 .scrollable {
-  user-select: none;
+  // user-select: none;
+  
   width: 100%;
   height: 100vh;
   overflow-x: hidden;
   overflow-y: scroll;
-  background-color: rgba(96, 125, 139, 0.3);
-  // background-image: url(/assets/images/background/carbon_fibre.png); // TODO
+
+  // background-color: rgba(96, 125, 139, 0.3);
+  // background-image: url(/assets/images/background/ep_naturalblack.png); // TODO
   // background-repeat: repeat;
+
+  background: #2980b9;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to bottom, #2c3e50, #2980b9);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to bottom, #2c3e50, #2980b9); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .hovernav {

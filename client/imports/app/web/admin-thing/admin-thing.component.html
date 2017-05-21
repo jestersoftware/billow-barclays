@@ -12,7 +12,7 @@
 
       <div md-card-avatar><md-icon>{{getArchetype(thing).icon}}</md-icon></div>
 
-      <span class="top left field-order">
+      <span *ngIf="!isRoot()" class="top left field-order">
         <input type="text" [disabled]="disabled({ thing: thing })" [(ngModel)]="thing.order.index" tabindex="100" title="{{thing._id}}" />
       </span>
 

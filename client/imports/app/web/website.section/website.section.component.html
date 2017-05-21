@@ -43,7 +43,7 @@
 
           <div *ngFor="let prop of getProperties(thing); trackBy: getId">
             <div *ngIf="!prop.hidden && thing[prop.key] && thing[prop.key][prop.name]">
-              <div [ngSwitch]="prop.type" class="item">
+              <div [ngSwitch]="prop.type" class="item {{prop.type}}">
                 <template ngSwitchCase="email">
                   <a md-raised-button href="mailto:{{thing[prop.key][prop.name]}}">{{ thing[prop.key][prop.name] }}</a>                
                 </template>

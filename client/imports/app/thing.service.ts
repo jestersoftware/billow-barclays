@@ -52,6 +52,8 @@ export class ThingService {
 
     return Observable.create(observer => {
       Things.find({ _id: thing._id }).subscribe(things => {
+        this.fixup(things);
+
         this.schemaService.fixup(things, true);
 
         observer.next(things);
@@ -94,15 +96,19 @@ export class ThingService {
 
   fixup(things) {
     things.forEach(thing => {
-      if (thing.background && thing.background._id) {
-        this.thingImageService.getImage({ _id: thing.background._id }).subscribe(image => {
-          thing.background.path = image.path + "?token=" + image.token;
-        });
-
-        this.thingImageService.getThumb({ _id: thing.background._id }).subscribe(thumb => {
-          thing.background.previewPath = thumb.path + "?token=" + thumb.token;
-        });
-      }
+      this.schemaService.getProperties(thing).forEach(property => {
+        if (property.type === "image") {
+          if (thing[property.key] && thing[property.key]._id) {
+            this.thingImageService.getImage({ _id: thing[property.key]._id }).subscribe(image => {
+              thing[property.key][property.name] = image.path + "?token=" + image.token;
+            });
+            
+            this.thingImageService.getThumb({ _id: thing[property.key]._id }).subscribe(thumb => {
+              thing[property.key][property.preview] = thumb.path + "?token=" + thumb.token;
+            });
+          }
+        }
+      });
     });
   }
 
