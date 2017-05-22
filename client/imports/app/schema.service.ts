@@ -58,7 +58,7 @@ export class SchemaService {
       key: "Collection",
       display: "Collection",
       icon: "list",
-      defaultFormat: "format",
+      // defaultFormat: "format",
       parent: ["Business", "Department", "Reference", "Section"]
     },
     {
@@ -67,15 +67,8 @@ export class SchemaService {
       display: "Product",
       icon: "attach_money",
       displaytype: "table",
-      parent: ["Collection", /*"Menu",*/ "Section", "Reference"]
-    }/*,
-    {
-      key: "Menu",
-      display: "Menu",
-      icon: "restaurant_menu",
-      defaultFormat: "format",
-      parent: ["Collection", "Reference"]
-    }*/,
+      parent: ["Collection", "List", "Section", "Reference"]
+    },
     {
       _id: "archetype9",
       key: "Web Site",
@@ -127,6 +120,14 @@ export class SchemaService {
       icon: "event",
       displaytype: "two-column",
       parent: ["Collection", "Reference"]
+    },
+    {
+      _id: "archetype16",
+      key: "List",
+      display: "List",
+      icon: "list",
+      defaultFormat: "format",
+      parent: ["Collection"]
     }
   ]
 
@@ -243,6 +244,38 @@ export class SchemaService {
       title: "Stop Time",
       type: "time",
       parent: ["Event"]
+    },
+    {
+      _id: "property13",
+      key: "code",
+      name: "number",
+      title: "Code",
+      type: "integer",
+      parent: ["Product"]
+    },
+    {
+      _id: "property14",
+      key: "abv",
+      name: "number",
+      title: "ABV",
+      type: "percentage",
+      parent: ["Product"]
+    },
+    {
+      _id: "property15",
+      key: "style",
+      name: "name",
+      title: "Style",
+      type: "string",
+      parent: ["Product"]
+    },
+    {
+      _id: "property15",
+      key: "size",
+      name: "amount",
+      title: "Size",
+      type: "string",
+      parent: ["Product"]
     }
   ];
 
@@ -269,7 +302,7 @@ export class SchemaService {
     return this.properties.filter(property => property.parent.find(parent => parent === thing.type || parent === "*"));
   }
 
-  fixup(things, reset, parent = null) {
+  fixup(things, reset, parent = null, enabled = false) {
     // let max_count = 0;
 
     things.forEach(thing => {
@@ -287,15 +320,15 @@ export class SchemaService {
       if (reset || !thing.view) {
         thing.view = {};
       }
-      // Format - set default, overwrite below if saved - therefore, this needs to go first
-      if (this.getArchetype(thing).defaultFormat && this.getArchetype(thing).defaultFormat === "format") {
-        thing.view.format = true;
-      }
       // Schema migration - view has moved to User collection
       if (reset) {
         if (this.viewService.getCurrentView().things && this.viewService.getCurrentView().things[thing._id]) {
           thing.view = this.viewService.getCurrentView().things[thing._id].view;
         }
+      }
+      // Format - set default, overwrite below if saved - therefore, this needs to go first
+      if (this.getArchetype(thing).defaultFormat && this.getArchetype(thing).defaultFormat === "format") {
+        thing.view.format = true;
       }
       // Image
       if (thing.type === "Image") {
@@ -304,7 +337,8 @@ export class SchemaService {
       // Session
       if (!thing.session) {
         thing.session = {}
-        thing.session.disabled = true;
+        thing.session.disabled = !enabled;
+        thing.session.editing = enabled;
         thing.session.initialized = true;
       }
       // Parent

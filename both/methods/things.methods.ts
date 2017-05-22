@@ -31,6 +31,16 @@ Meteor.methods({
     thing.meta.creator = this.userId;
     thing.meta.modifier = this.userId;
 
+    if (!thing.order) {
+      thing.order = {};
+    }
+
+    let max_index = Things.collection.findOne({ parent: thing.parent }, { sort: { "order.index": -1 } }).order.index; //.limit(1)
+
+    thing.order.index = (parseInt(max_index) + 1).toString();
+
+    // Things.find({}, { sort: { "order.index": -1 } }).fetch()
+
     // // let party = Parties.collection.findOne(id);
 
     // // if (!party)
@@ -82,5 +92,25 @@ Meteor.methods({
     thing.meta.modifier = this.userId;
 
     Things.collection.update(id, { $set: thing });
+  },
+  "things.remove": function (id: string) {
+    console.log('things.remove', id);
+
+    const security = new Security();
+
+    if (!security.checkRole(id, ["update"], this.userId)) {
+      throw new Meteor.Error('403', 'No permissions');
+    }
+
+    check(id, String);
+    // check(thing, Object); // TODO
+
+    // if (!thing.meta) {
+    //   thing.meta = {};
+    // }
+
+    // thing.meta.modifier = this.userId;
+
+    Things.collection.remove(id);
   }
 });

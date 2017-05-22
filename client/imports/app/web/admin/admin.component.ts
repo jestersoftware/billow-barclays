@@ -171,13 +171,13 @@ export class AdminComponent implements OnInit {
   onClickLeft(event) {
     this.cancelMovement();
 
-    this.setPosition({ event: null, thing: this.parent }, this.moveLeft, 0, 0.6);
+    this.setPosition({ event: null, thing: this.parent }, this.moveLeft, 0, 0.7);
   }
 
   onClickRight(event) {
     this.cancelMovement();
 
-    this.setPosition({ event: null, thing: this.parent }, this.moveRight, 0, 0.6);
+    this.setPosition({ event: null, thing: this.parent }, this.moveRight, 0, 0.7);
   }
 
   onMouseMoveLeft(event) {
@@ -187,7 +187,7 @@ export class AdminComponent implements OnInit {
 
       setTimeout(() => {
         if (this.moving)
-          this.setPosition({ mouseY: event.y, event: null, thing: this.parent }, this.moveLeft, 300, 0.6);
+          this.setPosition({ mouseY: event.y, event: null, thing: this.parent }, this.moveLeft, 500, 0.7);
         else
           this.timeout = false;
       }, 250);
@@ -201,7 +201,7 @@ export class AdminComponent implements OnInit {
 
       setTimeout(() => {
         if (this.moving)
-          this.setPosition({ mouseY: event.y, event: null, thing: this.parent }, this.moveRight, 300, 0.6);
+          this.setPosition({ mouseY: event.y, event: null, thing: this.parent }, this.moveRight, 500, 0.7);
         else
           this.timeout = false;
       }, 250);
@@ -363,8 +363,8 @@ export class AdminComponent implements OnInit {
     // console.log('Set Position due to Thing: ', event.thing.title, event);
 
     // let duration = Math.min(1000, 1000 - ((widthOfContainer / widthOfThing) * 1000));
-    // let duration = 500;
-    let duration = Math.abs((positionNumberEnd - positionNumberStart) / 2);
+    let duration = 500;
+    // let duration = Math.abs((positionNumberEnd - positionNumberStart) / 2);
 
     let positionStart = positionNumberStart.toString();
     let positionEnd = positionNumberEnd.toString();
@@ -388,7 +388,7 @@ export class AdminComponent implements OnInit {
       scrollTop: scrollEnd,
       duration: duration / 2,
       easing: easing,
-      offset: 0
+      offset: 50
     };
 
     this.animation

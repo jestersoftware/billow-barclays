@@ -23,6 +23,7 @@ export class AdminActionComponent implements OnInit {
   @Input() enableEdit: string = "yes";
   @Input() enableDelete: string = "none";
   @Input() enableExpand: boolean = true;
+  @Input() position: string = "center";
   @Input() editing: any = false;
   @Input() disabled: any = false;
   @Output() onCreate = new EventEmitter<any>();
@@ -40,6 +41,11 @@ export class AdminActionComponent implements OnInit {
   ngOnInit() {
   }
 
+  ngOnChanges(simpleChanges) {
+    var abc = simpleChanges;
+    // this.editing 
+  }
+
   getArchetypes(thing) {
     return this.schemaService.getArchetypes(thing);
   }
@@ -49,28 +55,27 @@ export class AdminActionComponent implements OnInit {
   }
 
   positionEdit() {
-    return this.enableCreate === "yes" ? "absolute" : "relative";
+    return this.position === "center" ? "absolute" : "relative";
   }
 
   rightEdit() {
-    return this.enableCreate === "yes" ? "0" : "-40%";
+    return this.position === "center" ? "0" : "-40%";
   }
 
   positionCancel() {
-    return this.enableCreate === "yes" ? "relative" : "absolute";
+    return this.position === "center" ? "relative" : "absolute";
   }
 
   transformCancel() {
-    return this.enableCreate === "yes" || this.enableDelete === "yes" ? "" : "translateX(62px)";
+    return this.position === "center" ? "translateX(0)" : "translateX(62px)";
   }
 
   positionDelete() {
-    // return this.enableCreate === "yes" ? "relative" : "absolute";
-    return "absolute";
+    return this.position === "center" ? "absolute" : "absolute";
   }
 
   leftDelete() {
-    return this.enableCreate || this.enableEdit === "yes" ? "0" : "0";
+    return this.position === "center" ? "0" : "128px";
   }
 
   toggle(event) {

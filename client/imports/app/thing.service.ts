@@ -16,6 +16,8 @@ export class ThingService {
   security: Security;
   thingsSubscription: Subscription;
 
+  isAdding: any = false;
+
   constructor(
     private schemaService: SchemaService,
     private thingImageService: ThingImageService) {
@@ -84,7 +86,9 @@ export class ThingService {
         if (uninitialized.length > 0) {
           this.fixup(uninitialized);
 
-          this.schemaService.fixup(uninitialized, true, thing);
+          this.schemaService.fixup(uninitialized, true, thing, this.isAdding);
+
+          this.isAdding = false;
 
           this.security.setPermissions(uninitialized, thing._id);
 
@@ -102,7 +106,7 @@ export class ThingService {
             this.thingImageService.getImage({ _id: thing[property.key]._id }).subscribe(image => {
               thing[property.key][property.name] = image.path + "?token=" + image.token;
             });
-            
+
             this.thingImageService.getThumb({ _id: thing[property.key]._id }).subscribe(thumb => {
               thing[property.key][property.preview] = thumb.path + "?token=" + thumb.token;
             });
@@ -112,16 +116,29 @@ export class ThingService {
     });
   }
 
+  doIt(query, observer) {
+    let things = Things.find(query, { sort: { "order.index": 1, title: 1 } }).fetch();
+
+    this.schemaService.fixup(things, true);
+
+    observer.next(things);
+  }
+
   getThingsByQuery(query): Observable<any> {
-    if (!this.thingsSubscription)
-      this.thingsSubscription = MeteorObservable.subscribe('thing.all').subscribe();
+    // if (!this.thingsSubscription)
+    //   this.thingsSubscription = MeteorObservable.subscribe('thing.all').subscribe();
 
     return Observable.create(observer => {
-      let things = Things.find(query, { sort: { "order.index": 1, title: 1 } }).fetch();
 
-      this.schemaService.fixup(things, true);
+      if (!this.thingsSubscription) {
 
-      observer.next(things);
+        this.thingsSubscription = MeteorObservable.subscribe('thing.all').subscribe(() => {
+          this.doIt(query, observer);
+        });
+      }
+      else {
+        this.doIt(query, observer);
+      }
     });
   }
 
@@ -131,6 +148,8 @@ export class ThingService {
       title: pushParam.title,
       type: pushParam.type
     };
+
+    this.isAdding = true;
 
     MeteorObservable.call('things.insert', thing).subscribe({
       next: () => {
@@ -164,5 +183,15 @@ export class ThingService {
     });
 
     return subject;
+  }
+
+  delete(thing) {
+    MeteorObservable.call('things.remove', thing._id).subscribe({
+      next: () => {
+      },
+      error: (e: Error) => {
+        console.log(e);
+      }
+    });
   }
 }

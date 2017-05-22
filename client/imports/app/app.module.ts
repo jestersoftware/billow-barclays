@@ -8,6 +8,7 @@ import { FormsModule } from '@angular/forms';
 
 /*AUTH*/
 import { AuthService } from './auth.service';
+import { AuthService2 } from './auth2.service';
 
 /*MATERIAL*/
 import { MaterialModule } from '@angular/material';
@@ -78,6 +79,7 @@ import { DisplayNamePipe } from './pipe/display-name.pipe';
   ],
   providers: [
     AuthService,
+    AuthService2,
     UserService,
     RoleService,
     ViewService,

@@ -12,9 +12,11 @@ import { WebsiteComponent } from './web/website/website.component';
 // import { MaterialComponent } from './material/material.component';
 
 import { AuthService } from './auth.service';
+import { AuthService2 } from './auth2.service';
 
 export const router: Routes = [
-    { path: '', redirectTo: 'admin', pathMatch: 'full' },
+    // { path: '', redirectTo: 'admin', pathMatch: 'full' },
+    { path: '', component: WebsiteComponent, pathMatch: 'full', canActivate: [AuthService2] },
     { path: 'login', component: LoginComponent },
     { path: 'signup', component: SignupComponent },
     { path: 'login-email', component: EmailComponent },

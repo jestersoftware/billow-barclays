@@ -15,7 +15,7 @@
             <md-icon *ngIf="thing.view?.showChildren">remove_circle_outline</md-icon>
           </button>
 
-          <md-icon md-list-avatar>{{getArchetype(thing).icon}}</md-icon>
+          <md-icon md-list-avatar style="transform: translateY(5px);">{{getArchetype(thing).icon}}</md-icon>
           
           <md-input-container>
             <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.order.index" placeholder="Order" title="{{thing._id}}" style="width: 50px;" />
@@ -31,13 +31,28 @@
             <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.title" placeholder="Title" title="{{thing.title}}" />
           </md-input-container>
 
+          <md-input-container>
+            <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing.description" placeholder="Description" />
+          </md-input-container>
+
           <div *ngFor="let prop of getProperties(thing); trackBy: getId">
             <md-input-container *ngIf="prop.type !== 'image'">
               <input type="text" mdInput [disabled]="!thing.session || thing.session.disabled" [(ngModel)]="thing[prop.key][prop.name]" placeholder="{{prop.title}}" title="{{thing[prop.key][prop.name]}}" style="width: 100px;" />
             </md-input-container>
           </div>
 
-          <app-admin-action [thing]="thing" (onSave)="save($event)" (onEdit)="edit($event)" [editing]="thing.session?.editing" [enableCreate]="'none'" [enableEdit]="!editingParent && thing.session?.editable ? 'yes' : 'none'" [enableExpand]="false"></app-admin-action>
+          <app-admin-action 
+            style="transform: translateY(-5px);" 
+            [thing]="thing" 
+            (onSave)="save($event)" 
+            (onEdit)="edit($event)" 
+            (onDelete)="delete($event)"
+            [position]="right" 
+            [editing]="thing.session?.editing || editingParent" 
+            [enableCreate]="'none'" 
+            [enableEdit]="!editingParent && thing.session?.editable ? 'yes' : 'none'" 
+            [enableDelete]="!editingParent && thing.session?.editable ? 'yes' : 'none'" 
+            [enableExpand]="false"></app-admin-action>
 
         </md-list-item>
 

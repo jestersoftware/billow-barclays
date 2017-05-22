@@ -157,10 +157,16 @@ export class AdminListComponent implements OnInit, OnChanges {
       parent: event.thing._id,
       title: "(enter title)",
       type: event.type
-    }
+    };
 
     this.thingService.insert(param);
   }
+
+  delete(event) {
+    event.event.stopPropagation();
+
+    this.thingService.delete(event.thing);
+  }  
 
   getId(index: number, item: any): number {
     return item._id;
