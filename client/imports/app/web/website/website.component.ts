@@ -16,8 +16,7 @@ import style from './website.component.scss';
 @Component({
   selector: 'app-website',
   template,
-  styles: [style]/*,
-  providers: [ThingService]*/
+  styles: [style]
 })
 @InjectUser('user')
 export class WebsiteComponent implements OnInit, AfterViewInit {

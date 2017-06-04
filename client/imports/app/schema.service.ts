@@ -58,7 +58,6 @@ export class SchemaService {
       key: "Collection",
       display: "Collection",
       icon: "list",
-      // defaultFormat: "format",
       parent: ["Business", "Department", "Reference", "Section"]
     },
     {
@@ -67,7 +66,7 @@ export class SchemaService {
       display: "Product",
       icon: "attach_money",
       displaytype: "table",
-      parent: ["Collection", "List", "Section", "Reference"]
+      parent: ["Collection", "List", "Section", "Product", "Reference"]
     },
     {
       _id: "archetype9",
@@ -89,7 +88,7 @@ export class SchemaService {
       key: "Section",
       display: "Section",
       icon: "web",
-      parent: ["Web Site", "Collection", "Section", /*"Menu",*/ "Reference"]
+      parent: ["Web Site", "Collection", "Section", "Reference"]
     },
     {
       _id: "archetype12",
@@ -270,7 +269,7 @@ export class SchemaService {
       parent: ["Product"]
     },
     {
-      _id: "property15",
+      _id: "property16",
       key: "size",
       name: "amount",
       title: "Size",
@@ -320,15 +319,19 @@ export class SchemaService {
       if (reset || !thing.view) {
         thing.view = {};
       }
-      // Schema migration - view has moved to User collection
-      if (reset) {
-        if (this.viewService.getCurrentView().things && this.viewService.getCurrentView().things[thing._id]) {
-          thing.view = this.viewService.getCurrentView().things[thing._id].view;
-        }
-      }
       // Format - set default, overwrite below if saved - therefore, this needs to go first
       if (this.getArchetype(thing).defaultFormat && this.getArchetype(thing).defaultFormat === "format") {
         thing.view.format = true;
+      }
+      // Schema migration - view has moved to User collection
+      if (reset) {
+        if (this.viewService.getCurrentView().things && this.viewService.getCurrentView().things[thing._id]) {
+          let currentFormat = thing.view.format;
+          thing.view = this.viewService.getCurrentView().things[thing._id].view;
+          if(currentFormat && thing.view.format === undefined) {
+            thing.view.format = true;
+          }
+        }
       }
       // Image
       if (thing.type === "Image") {

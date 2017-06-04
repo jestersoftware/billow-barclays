@@ -190,7 +190,7 @@ export class AdminComponent implements OnInit {
           this.setPosition({ mouseY: event.y, event: null, thing: this.parent }, this.moveLeft, 500, 0.7);
         else
           this.timeout = false;
-      }, 250);
+      }, 500);
     }
   }
 
@@ -204,7 +204,7 @@ export class AdminComponent implements OnInit {
           this.setPosition({ mouseY: event.y, event: null, thing: this.parent }, this.moveRight, 500, 0.7);
         else
           this.timeout = false;
-      }, 250);
+      }, 500);
     }
   }
 
@@ -273,7 +273,7 @@ export class AdminComponent implements OnInit {
 
     // console.log(event.event);
 
-    let timeout = 500;
+    let timeout = 700;
     let scale = 1;
 
     // // TEMP?
@@ -324,6 +324,8 @@ export class AdminComponent implements OnInit {
     let widthOfThing = this.rootThingElement.clientWidth;
     let heightOfThing = this.rootThingElement.clientHeight;
 
+    // console.log('widthOfContainer', widthOfContainer, 'widthOfThing', widthOfThing);
+
     let positionNumberStart = parseInt(thing.style.left.substr(0, thing.style.left.length - 1));
     let positionNumberEnd = 0;
 
@@ -344,7 +346,9 @@ export class AdminComponent implements OnInit {
       if (event.event) {
         let thingElement = event.event;
         positionNumberEnd = (widthOfContainer / 2) - (thingElement.offsetLeft + (thingElement.clientWidth / 2));
-        scrollEnd = Math.max(0, (thingElement.offsetTop * scaleX) - 200);
+        if(thingElement.offsetTop > (this.scroller.scrollTop + (heightOfContainer / 3.5))) {
+          scrollEnd = Math.max(0, (thingElement.offsetTop * scaleX) - 200);
+        }
       }
     }
 
@@ -363,7 +367,7 @@ export class AdminComponent implements OnInit {
     // console.log('Set Position due to Thing: ', event.thing.title, event);
 
     // let duration = Math.min(1000, 1000 - ((widthOfContainer / widthOfThing) * 1000));
-    let duration = 500;
+    let duration = 600;
     // let duration = Math.abs((positionNumberEnd - positionNumberStart) / 2);
 
     let positionStart = positionNumberStart.toString();
@@ -386,7 +390,7 @@ export class AdminComponent implements OnInit {
     let scrollAnimation = {
       targets: this.scroller,
       scrollTop: scrollEnd,
-      duration: duration / 2,
+      duration: duration, // / 2,
       easing: easing,
       offset: 50
     };

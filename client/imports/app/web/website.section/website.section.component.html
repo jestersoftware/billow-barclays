@@ -86,13 +86,15 @@
 
           <div class="table-row">
 
-            <div class="text">{{thing.title}}</div>
+            <div class="text" style="flex: 3;">{{thing.title}}</div>
 
-            <div class="text">{{thing.description}}</div>
+            <div *ngIf="thing.description" class="text" style="flex: 3;">{{thing.description}}</div>
 
-            <div *ngFor="let prop of getProperties(thing); trackBy: getId" class="text" [class.num]="prop.type === 'number' || prop.type === 'currency'">
-              {{thing[prop.key] ? thing[prop.key][prop.name] : ''}}
-            </div>
+            <template ngFor let-i="index" let-c="count" let-prop [ngForOf]="getProperties(thing)" [ngForTrackBy]="getId">
+              <div *ngIf="!isEmpty({ thing: thing, prop: prop })" class="text" [class.num]="prop.type === 'number' || prop.type === 'currency'">                
+                {{ thing[prop.key] ? thing[prop.key][prop.name] : '' }}
+              </div>
+            </template>
 
           </div>
 

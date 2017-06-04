@@ -64,19 +64,25 @@ section {
   padding-top: 20px;
   padding-bottom: 20px;
   display: flex;
-  flex-direction: row;
-  flex-grow: 0;
-  flex-wrap: wrap;
+  // flex-direction: row;
+  // flex-grow: 0;
+  // flex-wrap: wrap;
   width: 100%;
 
   .text {
-    flex-grow: 1;
+    flex: 1;
     // overflow: hidden;
     // white-space: nowrap;
     // text-overflow: ellipsis;
     // Fix the minimum width of the leaf level cells
-    width: $text-width;
+    // width: $text-width;
     padding-right: 20px;
+  }
+
+  .text:last-child {
+    flex: 1;
+    padding-right: 0;
+    text-align: right;
   }
 
   .num {
@@ -91,13 +97,13 @@ section {
   padding: 20px;
 
   .image {
-    flex-grow: 1;
+    flex: 1;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: 50% 50%;
   }
   .text {
-    flex-grow: 1;
+    flex: 1;
     padding-top: 50px;
     padding-bottom: 50px;
     text-align: center;
@@ -106,15 +112,16 @@ section {
 
 .flex {
   display: flex;
-  justify-content: space-around; 
+  flex-direction: column;
+  justify-content: space-around;
 
   .flex-column {
     flex-grow: 1;
     flex-shrink: 1;
     flex-basis: 0;
-    box-shadow: 0 3px 15px -2px rgba(0,0,0,.2), 0 2px 15px 0 rgba(0,0,0,.14), 0 1px 15px 0 rgba(0,0,0,.12);
-    margin-left: 25px;
-    margin-right: 25px;
+    // box-shadow: 0 3px 15px -2px rgba(0,0,0,.2), 0 2px 15px 0 rgba(0,0,0,.14), 0 1px 15px 0 rgba(0,0,0,.12);
+    margin-left: 100px;
+    margin-right: 100px;
   }
 }
 

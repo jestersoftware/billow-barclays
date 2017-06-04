@@ -351,6 +351,7 @@ export class AdminThingComponent implements OnInit, OnChanges {
 
     this.choosing.thing.reference._id = event.thing._id;
     this.choosing.thing.title = event.thing.title;
+    this.choosing.thing.view.showChildren = true;
     // this.choosing.thing.description = "Reference to " + event.thing.title; // TODO?
   }
 

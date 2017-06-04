@@ -14,7 +14,7 @@ import { Things, Security } from './../collections/things.collection';
 
 Meteor.methods({
   "things.insert": function (thing: any) {
-    console.log('things.insert', thing);
+    console.log('things.insert starting for thing:', thing);
 
     const security = new Security();
 
@@ -35,7 +35,8 @@ Meteor.methods({
       thing.order = {};
     }
 
-    let max_index = Things.collection.findOne({ parent: thing.parent }, { sort: { "order.index": -1 } }).order.index; //.limit(1)
+    let max_thing = Things.collection.findOne({ parent: thing.parent }, { sort: { "order.index": -1 } });
+    let max_index = max_thing && max_thing.order && max_thing.order.index ? max_thing.order.index : '0';
 
     thing.order.index = (parseInt(max_index) + 1).toString();
 

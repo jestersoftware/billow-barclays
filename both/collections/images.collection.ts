@@ -75,7 +75,7 @@ export const ImagesStore = new UploadFS.store.GridFS({
     minSize: 1,
     maxSize: 1024 * 5000, // 5MB
     contentTypes: ['image/*'],
-    extensions: ['jpg', 'png']
+    extensions: ['jpg', 'jpeg', 'png']
   }),
   copyTo: [
     ThumbsStore
