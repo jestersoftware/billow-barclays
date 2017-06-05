@@ -337,6 +337,9 @@ export class SchemaService {
       if (thing.type === "Image") {
         thing.view.showContent = true;
       }
+      else {
+        // thing.view.showContent = false;        
+      }
       // Session
       if (!thing.session) {
         thing.session = {}

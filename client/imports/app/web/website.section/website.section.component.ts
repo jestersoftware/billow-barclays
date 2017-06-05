@@ -64,7 +64,6 @@ export class WebsiteSectionComponent implements OnInit {
   }
 
   isEmpty(thingProp) {
-    // console.log(thingProp);
-    return !(typeof thingProp.thing[thingProp.prop.key] === 'object' && Object.keys(thingProp.thing[thingProp.prop.key]).length > 0);
+    return !(typeof thingProp.thing[thingProp.prop.key] === 'object' && Object.keys(thingProp.thing[thingProp.prop.key]).length > 0 && thingProp.thing[thingProp.prop.key][thingProp.prop.name]);
   }
 }

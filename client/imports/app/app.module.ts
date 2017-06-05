@@ -2,11 +2,12 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AppRoutes } from './app.routes';
 import { HttpModule } from '@angular/http';
 import { FormsModule } from '@angular/forms';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-/*AUTH*/
+/*ROUTES/AUTH*/
+import { AppRoutes } from './app.routes';
 import { AuthService } from './auth.service';
 import { AuthService2 } from './auth2.service';
 
@@ -26,9 +27,6 @@ import { AdminListComponent } from './web/admin-list/admin-list.component';
 import { AdminActionComponent } from './web/admin-action/admin-action.component';
 import { WebsiteComponent } from './web/website/website.component';
 import { WebsiteSectionComponent } from './web/website.section/website.section.component';
-
-// import { HomeComponent } from './home/home.component';
-// import { MaterialComponent } from './material/material.component';
 
 /*SERVICES*/
 import { UserService } from './user.service';
@@ -62,11 +60,10 @@ import { DisplayNamePipe } from './pipe/display-name.pipe';
     WebsiteComponent,
     WebsiteSectionComponent,
     DisplayNamePipe
-    // DialogContent,
-    // HomeComponent,
-    // MaterialComponent,
+    // DialogContent
   ],
   imports: [
+    BrowserAnimationsModule,
     BrowserModule,
     RouterModule,
     AppRoutes,
