@@ -27,6 +27,7 @@ export class AuthService2 implements CanActivate {
           if (things.length > 0) {
             this.routed = true;
             this.router.navigate([things[0]._id]);
+            document.title = things[0].title; // TODO
           }
           else {
             if (!authenticated) {

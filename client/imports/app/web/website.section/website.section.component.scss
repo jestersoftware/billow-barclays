@@ -134,3 +134,10 @@ section {
    right: 10px; 
    top: 10px;
 }
+
+@media print {
+    // .container h2.header
+    .pagebreakavoid {
+      page-break-inside: avoid;
+    }
+}

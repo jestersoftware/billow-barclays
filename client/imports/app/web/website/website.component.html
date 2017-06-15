@@ -40,7 +40,7 @@
   </div>
 </div>
 
-<div scrollSpyElement="scroller" class="scrollable" [ngStyle]="{ 'font-family': font }">
+<div scrollSpyElement="scroller" [class.scrollable]="params.mode !== 'print'" [ngStyle]="{ 'font-family': font }">
 
   <div>
 

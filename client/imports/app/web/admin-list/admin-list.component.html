@@ -1,6 +1,6 @@
 <div class="thing-list alignCenter">
 
-  <md-card (click)="click({ event: $event })" [class.reference]="parent.type === 'Reference' || (!parent.view?.showChildren && !parent.session?.editable)">
+  <md-card (click)="click({ event: $event })" [class.reference]="parent.type === 'Reference' || (!parent.view?.showChildren)">   <!--&& !parent.session?.editable-->
 
     <md-list *ngIf="parent.view?.showChildren || parent.type === 'Reference'">
 

@@ -1,6 +1,6 @@
 <div *ngIf="things.length > 0" [class.section-container]="parent.type !== 'Reference'" [class.flex]="getArchetype(this.things[0]).displaytype === 'flex-column'">
 
-  <div *ngFor="let thing of things; let i=index; trackBy: getId" [class.flex-column]="getArchetype(thing).displaytype === 'flex-column'">
+  <div *ngFor="let thing of things; let i=index; trackBy: getId" [class.flex-column]="getArchetype(thing).displaytype === 'flex-column'" class="pagebreakavoid">
 
     <div *ngIf="!thing.reference || !thing.reference._id" style="position: relative;">
 
